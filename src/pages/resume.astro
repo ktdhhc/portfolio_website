@@ -1,0 +1,107 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Education from '../components/Education.astro';
+import Experience from '../components/Experience.astro';
+import Skills from '../components/Skills.astro';
+import Footer from '../components/Footer.astro';
+import profile from '../../content/profile.json';
+import resume from '../../content/resume.json';
+import { getCollection } from 'astro:content';
+import { hasResumePdf } from '../utils/resume-pdf';
+
+const education = resume.education;
+const experience = resume.experience;
+const skills = resume.skills;
+const projects = await getCollection('projects');
+const resumePdfAvailable = hasResumePdf();
+---
+
+<Base title={`在线简历 — ${profile.name}`}>
+  <Nav name={profile.name} projects={projects} hasResumePdf={resumePdfAvailable} />
+  <section class="container" style="padding-top: 8rem;">
+    <SectionHeader tag="Resume" title="在线简历" />
+    <div class="pdf-download">
+      {resumePdfAvailable ? (
+        <a href="/resume.pdf" download class="pdf-button">下载 PDF 简历</a>
+      ) : (
+        <span class="pdf-unavailable">PDF 简历待补充</span>
+      )}
+    </div>
+  </section>
+  <Education education={education} />
+  <Experience experience={experience} />
+  <Skills skills={skills} />
+  <section class="container">
+    <SectionHeader tag="Projects" title="项目索引" />
+    <div class="project-index">
+      {projects.map((project) => (
+        <a href={`/projects/${project.id}`} class="index-item">
+          <div class="index-name">{project.data.name}</div>
+          <div class="index-tagline">{project.data.tagline}</div>
+        </a>
+      ))}
+    </div>
+  </section>
+  <Footer github={profile.github} homepage={profile.homepage} email={profile.email} />
+</Base>
+
+<style>
+  .project-index {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .index-item {
+    display: block;
+    padding: 1.25rem 1.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    transition: var(--transition);
+  }
+  .index-item:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 4px 20px rgba(31, 35, 41, 0.06);
+  }
+  .index-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .index-tagline {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+  }
+  .pdf-download {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .pdf-button {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: var(--radius-button);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  .pdf-button:hover {
+    opacity: 0.85;
+  }
+  .pdf-unavailable {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.7rem 1.5rem;
+    background: var(--bg-muted);
+    color: var(--fg-muted);
+    border-radius: var(--radius-button);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: default;
+  }
+</style>

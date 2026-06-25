@@ -2,28 +2,66 @@
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
-import About from '../components/About.astro';
-import Education from '../components/Education.astro';
-import Skills from '../components/Skills.astro';
-import Experience from '../components/Experience.astro';
-import Projects from '../components/Projects.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import AgentCTA from '../components/AgentCTA.astro';
 import Footer from '../components/Footer.astro';
 import profile from '../../content/profile.json';
-import resume from '../../content/resume.json';
 import { getCollection } from 'astro:content';
+import { hasResumePdf } from '../utils/resume-pdf';
 
 const projects = await getCollection('projects');
+const featuredProjects = projects.filter((p) => p.data.featured);
+const resumePdfAvailable = hasResumePdf();
 ---
 
 <Base title={`${profile.name} — AI Agent 产品 & 认知系统工程`}>
-  <Nav name={profile.name} />
-  <Hero profile={profile} />
-  <About profile={profile} />
-  <Education education={resume.education} />
-  <Skills skills={resume.skills} />
-  <Experience experience={resume.experience} />
-  <Projects projects={projects} />
+  <Nav name={profile.name} projects={projects} hasResumePdf={resumePdfAvailable} />
+  <Hero profile={profile} hasResumePdf={resumePdfAvailable} />
+  <section id="projects" class="container">
+    <SectionHeader tag="Selected Projects" title="代表项目" />
+    <div class="projects-grid">
+      {featuredProjects.map((project) => (
+        <ProjectCard
+          name={project.data.name}
+          tagline={project.data.tagline}
+          period={project.data.period}
+          tags={project.data.tags}
+          links={project.data.links}
+          type={project.data.type}
+          role={project.data.role}
+          company={project.data.company}
+          slug={project.id}
+        />
+      ))}
+    </div>
+    <div class="all-projects-link">
+      <a href="/projects/">查看全部项目 →</a>
+    </div>
+  </section>
   <AgentCTA />
   <Footer github={profile.github} homepage={profile.homepage} email={profile.email} />
 </Base>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .all-projects-link {
+    text-align: center;
+    margin-top: 2.5rem;
+  }
+  .all-projects-link a {
+    color: var(--accent-dark);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  .all-projects-link a:hover {
+    color: var(--fg);
+  }
+</style>

@@ -8,10 +8,12 @@
     "preview": "astro preview",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:schema": "tsx tests/schema-validation.ts"
+    "test:schema": "tsx tests/schema-validation.ts",
+    "test:lighthouse": "node scripts/lighthouse-check.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
+    "lighthouse": "^13.4.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0"
   },

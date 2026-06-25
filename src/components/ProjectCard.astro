@@ -1,12 +1,18 @@
 ---
-const { name, tagline, period, tags = [], links } = Astro.props;
+const { name, tagline, period, tags = [], links, type, role, company, slug } = Astro.props;
+const typeLabel = type === 'internship' ? '实习项目' : '个人项目';
 ---
 
 <article class="project-card">
+  {type && <div class="project-type-badge">{typeLabel}</div>}
   <div class="project-header">
     <div class="project-name">{name}</div>
     <div class="project-time">{period}</div>
   </div>
+  {role && <div class="project-role">{role}</div>}
+  {type === 'internship' && company && (
+    <div class="project-company">{company}</div>
+  )}
   <p class="project-desc">{tagline}</p>
   {tags.length > 0 && (
     <div class="project-tags">
@@ -18,6 +24,11 @@ const { name, tagline, period, tags = [], links } = Astro.props;
       {links.demo && <a href={links.demo} class="project-link" target="_blank">产品主页</a>}
       {links.github && <a href={links.github} class="project-link" target="_blank">GitHub</a>}
       {links.docs && <a href={links.docs} class="project-link" target="_blank">文档</a>}
+    </div>
+  )}
+  {slug && (
+    <div class="project-detail-link">
+      <a href={`/projects/${slug}`}>查看详情 →</a>
     </div>
   )}
 </article>
@@ -34,6 +45,16 @@ const { name, tagline, period, tags = [], links } = Astro.props;
     border-color: var(--border-hover);
     box-shadow: 0 4px 20px rgba(31, 35, 41, 0.06);
   }
+  .project-type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
   .project-header {
     display: flex;
     justify-content: space-between;
@@ -49,6 +70,17 @@ const { name, tagline, period, tags = [], links } = Astro.props;
   .project-time {
     font-size: 0.8rem;
     color: var(--fg-muted);
+  }
+  .project-role {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    margin-bottom: 0.5rem;
+  }
+  .project-company {
+    font-size: 0.85rem;
+    color: var(--accent-dark);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
   }
   .project-desc {
     color: var(--fg-secondary);
@@ -83,6 +115,18 @@ const { name, tagline, period, tags = [], links } = Astro.props;
   }
   .project-link:hover {
     border-color: var(--fg);
+    color: var(--fg);
+  }
+  .project-detail-link {
+    margin-top: 1rem;
+  }
+  .project-detail-link a {
+    color: var(--accent-dark);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  .project-detail-link a:hover {
     color: var(--fg);
   }
   @media (max-width: 640px) {

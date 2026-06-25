@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import Footer from '../../components/Footer.astro';
+import profile from '../../../content/profile.json';
+import { getCollection } from 'astro:content';
+import { hasResumePdf } from '../../utils/resume-pdf';
+
+const projects = await getCollection('projects');
+const resumePdfAvailable = hasResumePdf();
+---
+
+<Base title={`项目 — ${profile.name}`}>
+  <Nav name={profile.name} projects={projects} hasResumePdf={resumePdfAvailable} />
+  <section class="container" style="padding-top: 8rem;">
+    <SectionHeader tag="Projects" title="全部项目" />
+    <div class="projects-grid">
+      {projects.map((project) => (
+        <ProjectCard
+          name={project.data.name}
+          tagline={project.data.tagline}
+          period={project.data.period}
+          tags={project.data.tags}
+          links={project.data.links}
+          type={project.data.type}
+          role={project.data.role}
+          company={project.data.company}
+          slug={project.id}
+        />
+      ))}
+    </div>
+  </section>
+  <Footer github={profile.github} homepage={profile.homepage} email={profile.email} />
+</Base>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+</style>

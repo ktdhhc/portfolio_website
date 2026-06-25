@@ -1,19 +1,135 @@
 ---
-const { name } = Astro.props;
+const { name, projects = [], hasResumePdf = false } = Astro.props;
 ---
 
 <nav>
   <div class="nav-container">
-    <div class="nav-logo">{name}</div>
+    <a href="/" class="nav-logo">{name}</a>
     <ul class="nav-links">
-      <li><a href="#about">关于</a></li>
-      <li><a href="#education">教育</a></li>
-      <li><a href="#experience">经历</a></li>
-      <li><a href="#projects">项目</a></li>
-      <li><a href="#agent">Agent</a></li>
+      <li><a href="/" class="nav-link">首页</a></li>
+      <li class="nav-dropdown">
+        <button
+          type="button"
+          class="dropdown-label"
+          aria-expanded="false"
+          aria-controls="resume-menu"
+        >
+          简历 ▾
+        </button>
+        <ul id="resume-menu" class="dropdown-menu">
+          <li><a href="/resume#education">教育</a></li>
+          <li><a href="/resume#experience">经历</a></li>
+          <li><a href="/resume#skills">技能</a></li>
+          {hasResumePdf ? (
+            <li><a href="/resume.pdf" download>PDF 下载</a></li>
+          ) : (
+            <li><span class="dropdown-disabled">PDF 待补充</span></li>
+          )}
+        </ul>
+      </li>
+      <li class="nav-dropdown">
+        <button
+          type="button"
+          class="dropdown-label"
+          aria-expanded="false"
+          aria-controls="projects-menu"
+        >
+          项目 ▾
+        </button>
+        <ul id="projects-menu" class="dropdown-menu">
+          {projects.map((project) => (
+            <li><a href={`/projects/${project.id}`}>{project.data.name}</a></li>
+          ))}
+          <li><a href="/projects/" class="dropdown-all">查看全部 →</a></li>
+        </ul>
+      </li>
+      <li><a href="/#agent" class="nav-link">Agent</a></li>
     </ul>
   </div>
 </nav>
+
+<script is:inline>
+  const dropdowns = Array.from(document.querySelectorAll('.nav-dropdown'));
+  const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  const setExpanded = (dropdown, expanded) => {
+    const trigger = dropdown.querySelector('.dropdown-label');
+    if (trigger) {
+      trigger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    }
+  };
+
+  const closeDropdown = (dropdown) => {
+    dropdown.classList.remove('is-open', 'is-hover');
+    setExpanded(dropdown, false);
+  };
+
+  const closeAllDropdowns = (except) => {
+    dropdowns.forEach((dropdown) => {
+      if (dropdown !== except) {
+        closeDropdown(dropdown);
+      }
+    });
+  };
+
+  dropdowns.forEach((dropdown) => {
+    const trigger = dropdown.querySelector('.dropdown-label');
+    if (!trigger) return;
+
+    if (supportsHover) {
+      dropdown.addEventListener('mouseenter', () => {
+        closeAllDropdowns(dropdown);
+        dropdown.classList.add('is-hover');
+        setExpanded(dropdown, true);
+      });
+
+      dropdown.addEventListener('mouseleave', () => {
+        dropdown.classList.remove('is-hover');
+        if (!dropdown.classList.contains('is-open')) {
+          setExpanded(dropdown, false);
+        }
+      });
+    }
+
+    trigger.addEventListener('click', () => {
+      const willOpen = !dropdown.classList.contains('is-open');
+      closeAllDropdowns(dropdown);
+      dropdown.classList.remove('is-hover');
+
+      if (willOpen) {
+        dropdown.classList.add('is-open');
+        setExpanded(dropdown, true);
+      } else {
+        closeDropdown(dropdown);
+      }
+    });
+
+    trigger.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        trigger.click();
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        closeAllDropdowns();
+        trigger.blur();
+      }
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.nav-dropdown')) {
+      closeAllDropdowns();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeAllDropdowns();
+    }
+  });
+</script>
 
 <style>
   nav {
@@ -42,20 +158,90 @@ const { name } = Astro.props;
   }
   .nav-links {
     display: flex;
-    gap: 2.5rem;
+    gap: 2rem;
     list-style: none;
+    align-items: center;
   }
-  .nav-links a {
+  .dropdown-label {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--fg-secondary);
+    font-size: 0.9rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .nav-link {
     color: var(--fg-secondary);
     font-size: 0.9rem;
     transition: var(--transition);
   }
-  .nav-links a:hover {
+  .nav-link:hover {
     color: var(--fg);
+  }
+  .nav-dropdown.is-hover .dropdown-label,
+  .nav-dropdown.is-open .dropdown-label {
+    color: var(--fg);
+  }
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-button);
+    box-shadow: 0 4px 20px rgba(31, 35, 41, 0.08);
+    padding: 0.5rem 0;
+    list-style: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .nav-dropdown {
+    position: relative;
+  }
+  .nav-dropdown.is-hover .dropdown-menu,
+  .nav-dropdown.is-open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .dropdown-menu li a {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+  .dropdown-menu li a:hover {
+    background: var(--bg-muted);
+    color: var(--fg);
+  }
+  .dropdown-disabled {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    white-space: nowrap;
+    cursor: default;
+  }
+  .dropdown-all {
+    border-top: 1px solid var(--border);
+    color: var(--accent-dark) !important;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    padding-top: 0.6rem !important;
   }
   @media (max-width: 640px) {
     .nav-links {
-      display: none;
+      gap: 1.25rem;
+    }
+    .dropdown-label {
+      font-size: 0.85rem;
     }
   }
 </style>

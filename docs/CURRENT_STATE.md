@@ -22,17 +22,23 @@
 
 ## 当前阶段
 
-**阶段 0 准备期**：方案与设计已确定，demo 已确认设计风格，Astro 工程尚未初始化。
+**阶段 1 已完成**：全部公开静态页面已实现并测试通过（74 个测试全绿：70 E2E + 4 schema）。Lighthouse 首页 Performance 100、Accessibility 91、Best Practices 96、SEO 90，4 项均 ≥ 90。
 
-已就绪：
+阶段 0-1 已交付：
 - 产品大纲、个人侧写、前端设计约束（FRONTEND_DESIGN.md）
 - 7 个 ADR、5 个领域术语（CONTEXT.md）
-- 1 份设计原型（demo/index.html，暖白主题，已对齐 FRONTEND_DESIGN.md）
+- Astro 7 工程初始化（手写 CSS + Astro `<style>` 隔离，无 Tailwind）
+- `src/content.config.ts`：Content Collections + Zod schema（含 type=internship 条件必填 refine）
+- `content/` 完整建模：profile.json、resume.json、4 个项目（各含 index.md 九段式 + refs/）、agent/（system-prompt + answer-rules）
+- 首页 `/`：14 个组件组装，内容全部来自 content/
+- `/resume` 简历页：复用 Education/Skills/Experience + 项目索引 + PDF 下载入口（PDF 缺失时显示待补充文案）
+- `/projects` 项目列表页：全部项目卡片网格，ProjectCard 含类型/角色/公司/详情链接
+- `/projects/[slug]` 项目详情页：九段式正文渲染 + 元信息 + 返回链接，构建时生成静态 HTML
+- Nav 统一下拉导航：桌面 hover 自动展开，触屏/键盘可点击展开，支持首页/简历/项目/Agent 切换
+- 测试：Playwright E2E（70 个）+ tsx schema 校验（4 个）
+- Lighthouse 性能审计全部 ≥ 90
 
-未开始：
-- Astro 工程初始化
-- content/ 内容模型建立
-- 任何 src/ 或 functions/ 代码
+阶段 2 待做：Candidate Agent（`/agent` 页面 + `/api/chat` 端点 + tool-use 循环 + 流式 SSE + 短期记忆）。详见 `docs/plans/initial-implementation-plan.md`。
 
 ## 范围边界
 
@@ -42,13 +48,14 @@
 ## 当前架构
 
 ```text
-- 前端：Astro（默认零 JS 静态输出，Agent 聊天框用 React Island）— 待初始化
+- 前端：Astro 7（静态 HTML 为主，Nav 下拉含极小内联 JS；Agent 聊天框后续用 React Island）— 5 个公开页面已实现，Agent 页面待建
+- 内容：Content Collections（glob loader + Zod schema），content/ 下 Markdown / JSON，Git 版本管理
 - API：Cloudflare Pages Functions（functions/api/）— 待建立
 - 持久化：Cloudflare D1（埋点、Agent 对话记录、短期记忆）— 待建立
 - 模型：外部 LLM API（DeepSeek + MiMo，部署时环境变量切换）
-- 内容管理：content/ 下的 Markdown / JSON，Git 版本管理
 - 部署：Cloudflare Pages，main 分支自动部署，GitHub 私有仓库
 - 后台权限：管理员 token（环境变量）
+- 测试：Playwright E2E + tsx schema 校验脚本
 ```
 
 ## 主流程关键事实
@@ -68,15 +75,17 @@
 
 ## 当前 UI 结构
 
-设计原型在 `demo/index.html`，已对齐 `docs/FRONTEND_DESIGN.md` 的暖白主题（bg #faf8f5，accent #d4a574），居中 Hero + 单栏卡片布局，含导航、Hero、关于、教育、技能、实习经历、代表项目、Agent CTA、Footer。后续可能更新一版暗色主题作为备选，落地时以当前暖白主题为准。
+首页 `src/pages/index.astro` 已实现，定位为"精选橱窗"：Hero + 1-2 个 featured 项目卡片 + "查看全部项目"链接 + Agent CTA。教育/技能/经历等完整简历内容不在首页展示，移至 `/resume` 页面。设计 token 定义在 `src/styles/global.css`，`.container` 作为全局 utility class。设计原型在 `demo/index.html`（保留作参考）。
 
-页面规划：
-- `/` 首页：Hero + 核心能力 + 技能 + 代表项目 + Agent CTA
-- `/resume` 在线简历页：教育 + 经历 + 技能 + 项目索引 + PDF 下载
-- `/projects` 项目列表页：卡片网格
-- `/projects/[slug]` 项目详情页：九段式
-- `/agent` Agent 页面：聊天 UI + 预设问题 + JD 粘贴框
-- `/admin` 私有面板（第二阶段）
+导航栏统一使用下拉模式（所有页面一致）："简历"→ 展开教育/经历/技能/PDF 子链接（指向 `/resume#education` 等锚点）；"项目"→ 展开各项目名 + "查看全部"链接（指向 `/projects/[slug]`）；"Agent"链接指向首页 Agent CTA。桌面端鼠标靠近自动展开；触屏/键盘通过按钮点击/Enter/Space 展开；点击外部或按 Esc 收起。实现为极小内联 JS，不引入额外框架。
+
+页面规划与实现状态：
+- `/` 首页 ✅ 已实现：Hero + featured 项目卡片 + 查看全部链接 + Agent CTA（精选橱窗模式）
+- `/resume` 在线简历页 ✅ 已实现：教育 + 经历 + 技能 + 项目索引 + PDF 下载入口（缺文件时降级为待补充文案）
+- `/projects` 项目列表页 ✅ 已实现：全部项目卡片网格（含类型/角色/公司/详情链接）
+- `/projects/[slug]` 项目详情页 ✅ 已实现：九段式正文 + 元信息 + 返回链接
+- `/agent` Agent 页面 ⬜ 待建（阶段 2）：聊天 UI + 预设问题 + JD 粘贴框
+- `/admin` 私有面板 ⬜ 待建（阶段 4）
 
 ## 关键文件地图
 
@@ -84,19 +93,35 @@
 portfolio_website/
 ├── CONTEXT.md                 # 领域术语表
 ├── AGENTS.md                  # coding agent 工作规则
-├── content/                   # 个人资料（待建立）
-├── src/                       # Astro 源码（待建立）
+├── astro.config.mjs           # Astro 配置
+├── playwright.config.ts       # Playwright 配置（webServer: npm run preview）
+├── content/                   # 个人资料（已建模）
+│   ├── profile.json           # 姓名/联系方式/定位
+│   ├── resume.json            # 教育/经历/技能/论文
+│   ├── projects/{slug}/       # 4 个项目：aindexer, character-memory, ai-prototype-rd, memory-system-testing
+│   │   ├── index.md           # 九段式正文（公开路由）
+│   │   └── refs/*.md          # Agent 参考资料（不生成公开路由）
+│   └── agent/                 # system-prompt.md + answer-rules.md
+├── src/
+│   ├── content.config.ts      # Content Collections schema（Zod + refine）
+│   ├── pages/index.astro      # 首页（已实现）
+│   ├── layouts/Base.astro     # 基础 HTML 布局
+│   ├── styles/global.css      # 设计 token + reset + .container utility
+│   └── components/            # 14 个 .astro 组件
+├── tests/
+│   ├── homepage.spec.ts       # 3 个 E2E 渲染测试
+│   ├── qa-full.spec.ts        # 33 个 QA 场景测试（P0/P1/P2）
+│   └── schema-validation.ts   # 4 个 schema 校验测试（tsx）
 ├── functions/api/             # Pages Functions（待建立）
-├── public/                    # 静态资源（待建立）
+├── public/                    # 静态资源（待放 PDF）
 ├── migrations/                # D1 schema（待建立）
 ├── docs/
-│   ├── 产品大纲.md             # 产品定位与边界
-│   ├── personal_profile.md    # 候选人侧写
-│   ├── FRONTEND_DESIGN.md     # 前端稳定设计约束
+│   ├── 产品大纲.md, personal_profile.md, FRONTEND_DESIGN.md
 │   ├── CURRENT_STATE.md       # 本文件
 │   ├── adr/                   # 7 个 ADR
-│   └── plans/                 # 实施方案
-└── demo/index.html            # 设计原型（深色，仅参考布局）
+│   ├── plans/                 # 实施方案
+│   └── prd/, issues/, handoffs/
+└── demo/index.html            # 设计原型（保留参考，非生产代码）
 ```
 
 ## 项目 frontmatter schema（已确定）
@@ -131,26 +156,33 @@ summary: <一句话摘要>           # 必填，供 Agent 文件索引用
 
 ```text
 所有命令在仓库根目录执行。
-开发：npm run dev（Astro dev，待初始化后生效）
-构建：npm run build（待初始化后生效）
-当前无可用命令（Astro 工程尚未初始化）。
+开发：npm run dev（Astro dev，http://localhost:4321）
+构建：npm run build（构建到 dist/）
+预览：npm run preview（预览构建产物）
+E2E 测试：npm test（Playwright，自动启动 preview 作为 webServer）
+schema 测试：npm run test:schema（tsx 脚本，自动 build 验证 frontmatter）
+Lighthouse：npm run test:lighthouse（自动 build + preview + 审计 7 个公开静态页面）
+全量验证：npm run build && npm test && npm run test:schema && npm run test:lighthouse
 ```
 
 ## 默认验证方式
 
 ```text
-- 前端页面改动：astro dev 本地预览，确认内容来自 content/ 而非硬编码
-- Content Collections schema：构建时 Zod 校验，字段缺失/类型错会报错
-- Agent 降级路径：手动模拟 LLM API / D1 失败，确认降级提示正常
-- 当前无测试框架（待初始化后补充）
+- 前端页面改动：npm run build + npm run preview 本地预览，确认内容来自 content/ 而非硬编码
+- Content Collections schema：npm run build 时 Zod 校验，字段缺失/类型错会报错；npm run test:schema 用 fixture 跑边界用例
+- E2E：npm test 跑 Playwright（70 个测试，覆盖 5 页面可访问性/内容驱动/导航/hover/触屏/键盘/404/console error）
+- Lighthouse：npm run test:lighthouse 跑 7 个公开静态页面，当前基线为 Performance 100 / Accessibility 95 / Best Practices 96 / SEO 90（全部页面一致，均 ≥ 90）
+- Agent 降级路径：手动模拟 LLM API / D1 失败，确认降级提示正常（阶段 2 后适用）
 - 高成本检查：完整 Cloudflare 部署验证，不作为默认快速验证方式
 ```
 
 ## 当前可维护性热点
 
-- Astro 工程尚未初始化，所有 `src/`、`functions/`、`content/` 路径均为规划态。
+- 阶段 1 新建页面时复用现有 14 个组件，避免重复造轮子；`.container` 已是全局 class，新组件直接用。
+- 设计 token 在 `src/styles/global.css`，组件内样式应使用变量（如 `var(--section-gap)`）而非硬编码值。
 - 7 个 ADR 已锁定核心架构决策，落地时如需变更应先评估 ADR 约束。
-- 后续可能新增暗色主题 demo 作为备选，落地时以当前暖白主题为准。
+- `content/` 里的个人资料内容由用户手动维护，agent 不擅自修改内容。
+- 安全审查遗留（非阻塞，用户说后面手动调）：公开页面提及内部测试集名称（KnowMe-Bench、CloneMem）可能有 NDA 风险；邮箱含手机号。
 
 ## 后续会话约束
 
