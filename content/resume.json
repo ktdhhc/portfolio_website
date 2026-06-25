@@ -2,13 +2,13 @@
   "education": [
     {
       "school": "华南师范大学",
-      "degree": "应用心理学硕士",
+      "degree": "应用心理硕士",
       "detail": "研究方向：视觉记忆与统计建模",
       "period": "2024 — 2026"
     },
     {
       "school": "华南农业大学",
-      "degree": "社会工作本科",
+      "degree": "社会工作系",
       "detail": "主修社会心理学、社会统计学、社会调查理论与方法、数据库应用",
       "period": "2019 — 2023"
     }
@@ -37,16 +37,15 @@
   ],
   "skills": [
     { "name": "Python", "highlight": true },
-    { "name": "FastAPI", "highlight": true },
     { "name": "Prompt Engineering", "highlight": true },
+    { "name": "Claude code", "highlight": true },
     { "name": "LangChain" },
     { "name": "LangGraph" },
+    { "name": "FastAPI"},
     { "name": "React" },
     { "name": "TypeScript" },
     { "name": "SQLite" },
     { "name": "统计分析" },
-    { "name": "实验设计" },
-    { "name": "PsychoPy" },
     { "name": "Matlab" }
   ]
 }

@@ -21,7 +21,7 @@ const resumePdfAvailable = hasResumePdf();
 <Base title={`在线简历 — ${profile.name}`}>
   <Nav name={profile.name} projects={projects} hasResumePdf={resumePdfAvailable} />
   <section class="container" style="padding-top: 8rem;">
-    <SectionHeader tag="Resume" title="在线简历" />
+    <SectionHeader tag=" " title=" " />
     <div class="pdf-download">
       {resumePdfAvailable ? (
         <a href="/resume.pdf" download class="pdf-button">下载 PDF 简历</a>
@@ -30,24 +30,32 @@ const resumePdfAvailable = hasResumePdf();
       )}
     </div>
   </section>
-  <Education education={education} />
-  <Experience experience={experience} />
-  <Skills skills={skills} />
-  <section class="container">
-    <SectionHeader tag="Projects" title="项目索引" />
-    <div class="project-index">
-      {projects.map((project) => (
-        <a href={`/projects/${project.id}`} class="index-item">
-          <div class="index-name">{project.data.name}</div>
-          <div class="index-tagline">{project.data.tagline}</div>
-        </a>
-      ))}
-    </div>
-  </section>
+  <div class="resume-sections">
+    <Education education={education} />
+    <Experience experience={experience} />
+    <Skills skills={skills} />
+    <section class="container">
+      <SectionHeader tag="Projects" title="项目索引" />
+      <div class="project-index">
+        {projects.map((project) => (
+          <a href={`/projects/${project.id}`} class="index-item">
+            <div class="index-name">{project.data.name}</div>
+            <div class="index-tagline">{project.data.tagline}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
   <Footer github={profile.github} homepage={profile.homepage} email={profile.email} />
 </Base>
 
 <style>
+  .resume-sections {
+    --resume-section-gap: 3rem;
+  }
+  .resume-sections :global(section.container + section.container) {
+    margin-top: var(--resume-section-gap);
+  }
   .project-index {
     display: grid;
     grid-template-columns: 1fr;
@@ -103,5 +111,10 @@ const resumePdfAvailable = hasResumePdf();
     font-size: 0.9rem;
     font-weight: 500;
     cursor: default;
+  }
+  @media (max-width: 640px) {
+    .resume-sections {
+      --resume-section-gap: 3rem;
+    }
   }
 </style>

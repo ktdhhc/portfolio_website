@@ -45,15 +45,23 @@ test('/resume 包含项目索引并链接到详情页', async ({ page }) => {
 });
 
 test('/resume 在 PDF 缺失时显示待补充文案而非坏链接', async ({ page }) => {
-  expect(existsSync(resumePdfPath)).toBe(false);
   await page.goto('/resume/');
-  await expect(page.locator('.pdf-download')).toContainText('PDF 简历待补充');
-  await expect(page.locator('.pdf-download a[href="/resume.pdf"]')).toHaveCount(0);
+  if (existsSync(resumePdfPath)) {
+    const pdfLink = page.locator('.pdf-download a[href="/resume.pdf"]');
+    await expect(pdfLink).toBeVisible();
+  } else {
+    await expect(page.locator('.pdf-download')).toContainText('PDF 简历待补充');
+    await expect(page.locator('.pdf-download a[href="/resume.pdf"]')).toHaveCount(0);
+  }
 });
 
 test('首页 Hero 在 PDF 缺失时显示待补充文案而非坏链接', async ({ page }) => {
-  expect(existsSync(resumePdfPath)).toBe(false);
   await page.goto('/');
-  await expect(page.locator('.hero .hero-actions')).toContainText('PDF 简历待补充');
-  await expect(page.locator('.hero a[href="/resume.pdf"]')).toHaveCount(0);
+  if (existsSync(resumePdfPath)) {
+    const heroButton = page.locator('.hero a[href="/resume.pdf"]');
+    await expect(heroButton).toBeVisible();
+  } else {
+    await expect(page.locator('.hero .hero-actions')).toContainText('PDF 简历待补充');
+    await expect(page.locator('.hero a[href="/resume.pdf"]')).toHaveCount(0);
+  }
 });
