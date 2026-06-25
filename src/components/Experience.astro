@@ -1,0 +1,92 @@
+---
+import SectionHeader from '../components/SectionHeader.astro';
+
+const { experience = [] } = Astro.props;
+---
+
+<section id="experience" class="container">
+  <SectionHeader tag="Experience" title="实习经历" />
+  {experience.map((exp) => (
+    <div class="exp-card">
+      <div class="exp-header">
+        <div>
+          <div class="exp-title">{exp.title}</div>
+          <div class="exp-company">{exp.company}</div>
+        </div>
+        <div class="exp-time">{exp.period}</div>
+      </div>
+      <p class="exp-desc">{exp.description}</p>
+      <ul class="exp-projects">
+        {exp.projects.map((project) => (
+          <li class="exp-project">
+            <div class="exp-project-title">{project.title}</div>
+            <div class="exp-project-desc">{project.description}</div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</section>
+
+<style>
+  .exp-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 2.5rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .exp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .exp-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .exp-company {
+    color: var(--accent-dark);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .exp-time {
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+  }
+  .exp-desc {
+    font-size: 0.95rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .exp-projects {
+    list-style: none;
+  }
+  .exp-project {
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .exp-project:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+  .exp-project-title {
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+  }
+  .exp-project-desc {
+    font-size: 0.9rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+  }
+  @media (max-width: 640px) {
+    .exp-header {
+      flex-direction: column;
+    }
+  }
+</style>

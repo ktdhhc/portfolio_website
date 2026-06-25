@@ -1,0 +1,56 @@
+---
+import Badge from '../components/Badge.astro';
+import Button from '../components/Button.astro';
+
+const { profile } = Astro.props;
+---
+
+<section class="hero">
+  <div class="container">
+    <Badge text="正在寻找 AI Agent / 认知产品方向机会" />
+    <h1>构建可信的 <span class="accent">AI Agent</span>，<br />连接认知科学与产品工程。</h1>
+    <p class="hero-desc">{profile.description}</p>
+    <div class="hero-actions">
+      <Button variant="primary" href="#">下载简历 (PDF)</Button>
+      <Button variant="secondary" href="#agent">与资料 Agent 对话</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: var(--hero-padding-top) 0 var(--hero-padding-bottom);
+    text-align: center;
+  }
+  h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+  .accent {
+    color: var(--accent-dark);
+  }
+  .hero-desc {
+    font-size: 1.15rem;
+    color: var(--fg-secondary);
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 640px) {
+    .hero {
+      padding: var(--hero-padding-top-mobile) 0 var(--hero-padding-bottom-mobile);
+    }
+    h1 {
+      font-size: 2.25rem;
+    }
+  }
+</style>

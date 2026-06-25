@@ -1,0 +1,34 @@
+---
+const { text } = Astro.props;
+---
+
+<div class="hero-badge">
+  <span class="dot"></span>
+  {text}
+</div>
+
+<style>
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--accent-bg);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-pill);
+    font-size: 0.85rem;
+    color: var(--accent-dark);
+    margin-bottom: 2.5rem;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+</style>

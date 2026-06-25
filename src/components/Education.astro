@@ -1,0 +1,52 @@
+---
+import SectionHeader from '../components/SectionHeader.astro';
+
+const { education = [] } = Astro.props;
+---
+
+<section id="education" class="container">
+  <SectionHeader tag="Education" title="教育背景" />
+  <div class="edu-list">
+    {education.map((edu) => (
+      <div class="edu-item">
+        <div class="edu-main">
+          <h3>{edu.school} · {edu.degree}</h3>
+          <p>{edu.detail}</p>
+        </div>
+        <div class="edu-time">{edu.period}</div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .edu-list {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .edu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .edu-item:first-child {
+    padding-top: 0;
+  }
+  .edu-main h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .edu-main p {
+    font-size: 0.9rem;
+    color: var(--fg-secondary);
+  }
+  .edu-time {
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    white-space: nowrap;
+    margin-left: 1rem;
+  }
+</style>

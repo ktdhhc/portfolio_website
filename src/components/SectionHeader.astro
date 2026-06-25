@@ -1,0 +1,28 @@
+---
+const { tag, title } = Astro.props;
+---
+
+<div class="section-header">
+  <div class="section-tag">{tag}</div>
+  <h2 class="section-title">{title}</h2>
+</div>
+
+<style>
+  .section-header {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+  .section-tag {
+    font-size: 0.75rem;
+    color: var(--accent-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+  .section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+</style>

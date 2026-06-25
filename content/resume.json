@@ -1,0 +1,52 @@
+{
+  "education": [
+    {
+      "school": "华南师范大学",
+      "degree": "应用心理学硕士",
+      "detail": "研究方向：视觉记忆与统计建模",
+      "period": "2024 — 2026"
+    },
+    {
+      "school": "华南农业大学",
+      "degree": "社会工作本科",
+      "detail": "主修社会心理学、社会统计学、社会调查理论与方法、数据库应用",
+      "period": "2019 — 2023"
+    }
+  ],
+  "experience": [
+    {
+      "company": "趣丸科技",
+      "title": "社交产品实习生",
+      "period": "2025.11 — 2026.05",
+      "description": "围绕认知科学驱动的 AI 产品研发，参与原型设计、记忆系统评测、数据集建设与产品异常案例分析。",
+      "projects": [
+        {
+          "title": "认知科学驱动的 AI 原型研发",
+          "description": "梳理心理学与认知神经科学文献，为 Agent 架构设计提供理论依据；协助将认知科学理论转化为产品功能模块。"
+        },
+        {
+          "title": "记忆系统测试与数据异常分析",
+          "description": "深度参与 KnowMe-Bench、CloneMem 测试集全量测试，分析记忆召回、角色一致性与回答生成问题来源。"
+        },
+        {
+          "title": "HEART-Bench 论文与数据集构建",
+          "description": "作为作者之一参与 HEART-Bench 论文工作；协调高校专家团队完成数据标注与质检。"
+        }
+      ]
+    }
+  ],
+  "skills": [
+    { "name": "Python", "highlight": true },
+    { "name": "FastAPI", "highlight": true },
+    { "name": "Prompt Engineering", "highlight": true },
+    { "name": "LangChain" },
+    { "name": "LangGraph" },
+    { "name": "React" },
+    { "name": "TypeScript" },
+    { "name": "SQLite" },
+    { "name": "统计分析" },
+    { "name": "实验设计" },
+    { "name": "PsychoPy" },
+    { "name": "Matlab" }
+  ]
+}

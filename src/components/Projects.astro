@@ -1,0 +1,31 @@
+---
+import SectionHeader from '../components/SectionHeader.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+
+const { projects = [] } = Astro.props;
+---
+
+<section id="projects" class="container">
+  <SectionHeader tag="Selected Projects" title="代表项目" />
+  <div class="projects-grid">
+    {projects.map((project) => (
+      <ProjectCard
+        name={project.data.name}
+        tagline={project.data.tagline}
+        period={project.data.period}
+        tags={project.data.tags}
+        links={project.data.links}
+      />
+    ))}
+  </div>
+</section>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+</style>

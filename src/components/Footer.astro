@@ -1,0 +1,46 @@
+---
+const { github, homepage, email } = Astro.props;
+---
+
+<footer>
+  <div class="footer-container">
+    <div class="footer-links">
+      {github && <a href={github} target="_blank">GitHub</a>}
+      {homepage && <a href={homepage} target="_blank">产品主页</a>}
+      {email && <a href={`mailto:${email}`}>Email</a>}
+    </div>
+    <p class="footer-copy">© 2025 Kaho</p>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 0;
+    text-align: center;
+  }
+  .footer-container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--container-padding);
+  }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    color: var(--fg-secondary);
+    font-size: 0.9rem;
+    transition: var(--transition);
+  }
+  .footer-links a:hover {
+    color: var(--fg);
+  }
+  .footer-copy {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+</style>

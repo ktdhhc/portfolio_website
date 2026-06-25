@@ -1,0 +1,38 @@
+---
+import Button from '../components/Button.astro';
+---
+
+<section id="agent" class="container">
+  <div class="agent-cta">
+    <h2>与 Candidate Agent 对话</h2>
+    <p>
+      基于简历、项目文档与公开作品资料构建的问答助手。
+      可以询问项目细节、技术方案、岗位匹配度等问题。
+    </p>
+    <Button variant="primary" href="#">开始对话</Button>
+  </div>
+</section>
+
+<style>
+  .agent-cta {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-cta);
+    padding: 4rem 2rem;
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .agent-cta h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  .agent-cta p {
+    color: var(--fg-secondary);
+    max-width: 440px;
+    margin: 0 auto 1.5rem;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+</style>

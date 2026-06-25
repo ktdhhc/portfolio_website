@@ -1,0 +1,93 @@
+---
+const { name, tagline, period, tags = [], links } = Astro.props;
+---
+
+<article class="project-card">
+  <div class="project-header">
+    <div class="project-name">{name}</div>
+    <div class="project-time">{period}</div>
+  </div>
+  <p class="project-desc">{tagline}</p>
+  {tags.length > 0 && (
+    <div class="project-tags">
+      {tags.map((tag) => <span class="project-tag">{tag}</span>)}
+    </div>
+  )}
+  {links && (
+    <div class="project-links">
+      {links.demo && <a href={links.demo} class="project-link" target="_blank">产品主页</a>}
+      {links.github && <a href={links.github} class="project-link" target="_blank">GitHub</a>}
+      {links.docs && <a href={links.docs} class="project-link" target="_blank">文档</a>}
+    </div>
+  )}
+</article>
+
+<style>
+  .project-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: var(--card-padding);
+    transition: var(--transition);
+  }
+  .project-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 4px 20px rgba(31, 35, 41, 0.06);
+  }
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .project-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .project-time {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+  .project-desc {
+    color: var(--fg-secondary);
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+  .project-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .project-tag {
+    padding: 0.3rem 0.7rem;
+    background: var(--bg);
+    border-radius: var(--radius-tag);
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+  .project-links {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  .project-link {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-tag);
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    transition: var(--transition);
+  }
+  .project-link:hover {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+  @media (max-width: 640px) {
+    .project-header {
+      flex-direction: column;
+    }
+  }
+</style>

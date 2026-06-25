@@ -1,0 +1,26 @@
+---
+const { label, highlight = false } = Astro.props;
+---
+
+<span class={`skill-tag ${highlight ? 'highlight' : ''}`}>{label}</span>
+
+<style>
+  .skill-tag {
+    padding: 0.5rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    transition: var(--transition);
+  }
+  .skill-tag:hover {
+    border-color: var(--accent);
+    color: var(--fg);
+  }
+  .skill-tag.highlight {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+    color: var(--accent-dark);
+  }
+</style>

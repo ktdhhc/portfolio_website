@@ -1,0 +1,26 @@
+---
+import SectionHeader from '../components/SectionHeader.astro';
+import Tag from '../components/Tag.astro';
+
+const { skills = [] } = Astro.props;
+---
+
+<section id="skills" class="container">
+  <SectionHeader tag="Tech Stack" title="技能工具" />
+  <div class="skills-cloud">
+    {skills.map((skill) => (
+      <Tag label={skill.name} highlight={skill.highlight} />
+    ))}
+  </div>
+</section>
+
+<style>
+  .skills-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+</style>

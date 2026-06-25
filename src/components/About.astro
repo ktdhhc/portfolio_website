@@ -1,0 +1,65 @@
+---
+const { profile } = Astro.props;
+---
+
+<section id="about" class="container">
+  <div class="intro">
+    <p class="intro-text">
+      专注于 Agent 架构设计、多智能体协作、RAG 系统与产品结构化。
+      将复杂需求拆解为可维护的系统，在可控复杂度内实现可靠的人机协作。
+      擅长将认知科学理论转化为产品模块、评测维度与数据标准。
+    </p>
+    <div class="intro-meta">
+      <div class="meta-item">
+        <div class="meta-label">学历</div>
+        <div class="meta-value">{profile.education}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">院校</div>
+        <div class="meta-value">{profile.school}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">毕业</div>
+        <div class="meta-value">{profile.graduation}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .intro {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .intro-text {
+    font-size: 1.05rem;
+    color: var(--fg-secondary);
+    line-height: 1.8;
+  }
+  .intro-meta {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .meta-label {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.35rem;
+  }
+  .meta-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  @media (max-width: 640px) {
+    .intro-meta {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  }
+</style>
