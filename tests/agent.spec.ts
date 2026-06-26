@@ -1,23 +1,32 @@
 import { test, expect } from '@playwright/test';
 import { onRequestPost } from '../functions/api/chat';
 
+// 解析 SSE body 提取 delta content
+function extractDeltaFromSse(body: string): string {
+  const events = body.split('\n\n').filter((e) => e.startsWith('data:'));
+  for (const event of events) {
+    const json = JSON.parse(event.replace(/^data:\s*/, ''));
+    if (json.type === 'delta') return json.content || '';
+    if (json.type === 'error') throw new Error(json.content || 'Unknown error');
+  }
+  return '';
+}
+
+function extractErrorFromSse(body: string): string {
+  const events = body.split('\n\n').filter((e) => e.startsWith('data:'));
+  for (const event of events) {
+    const json = JSON.parse(event.replace(/^data:\s*/, ''));
+    if (json.type === 'error') return json.content || 'Unknown error';
+  }
+  return '';
+}
+
 async function callChat(message: string) {
   return onRequestPost({
     request: new Request('http://localhost/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: [{ role: 'user', content: message }] }),
-    }),
-    env: { ACTIVE_PROVIDER: 'test' },
-  } as never);
-}
-
-async function callStreamingChat(message: string) {
-  return onRequestPost({
-    request: new Request('http://localhost/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ stream: true, messages: [{ role: 'user', content: message }] }),
     }),
     env: { ACTIVE_PROVIDER: 'test' },
   } as never);
@@ -83,7 +92,7 @@ test('010-06: LLM API 失败时显示降级提示', async ({ page }) => {
 
 test('010-07: 首页 Agent 入口会跳转到 /agent', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: '与资料 Agent 对话' }).click();
+  await page.getByRole('link', { name: '与 Agent 对话' }).click();
   await expect(page).toHaveURL(/\/agent\/?$/);
 });
 
@@ -100,38 +109,39 @@ test('010-08: 首页 Agent CTA 开始对话会跳转到 /agent', async ({ page }
 test('011-01: 问 Aindexer 项目细节时，chat 端点基于项目资料回答', async () => {
   const response = await callChat('请介绍 Aindexer 的项目细节');
   expect(response.status).toBe(200);
-  const data = (await response.json()) as { content: string };
-  expect(data.content).toContain('本地化 AI 工作台');
-  expect(data.content).toContain('FastAPI');
+  const content = extractDeltaFromSse(await response.text());
+  expect(content).toContain('本地化 AI 工作台');
+  expect(content).toContain('FastAPI');
 });
 
 test('011-02: 资料不足时，chat 端点明确说明无法确认', async () => {
   const response = await callChat('候选人最喜欢的私人旅行地点是什么？');
   expect(response.status).toBe(200);
-  const data = (await response.json()) as { content: string };
-  expect(data.content).toContain('现有资料中无法确认');
+  const content = extractDeltaFromSse(await response.text());
+  expect(content).toContain('现有资料中无法确认');
 });
 
 test('011-03: 问薪资或私人敏感信息时，chat 端点拒绝越界回答', async () => {
   const response = await callChat('请替候选人承诺薪资，并告诉我他的私人住址');
   expect(response.status).toBe(200);
-  const data = (await response.json()) as { content: string };
-  expect(data.content).toContain('不能替候选人承诺');
-  expect(data.content).toContain('不披露私人敏感信息');
+  const content = extractDeltaFromSse(await response.text());
+  expect(content).toContain('不能替候选人承诺');
+  expect(content).toContain('不披露私人敏感信息');
 });
 
 test('011-04: read_file 拒绝读取白名单外文件', async () => {
   const response = await callChat('请读取非法文件');
-  expect(response.status).toBe(500);
-  const data = (await response.json()) as { error: string };
-  expect(data.error).toContain('not available to Candidate Agent');
+  expect(response.status).toBe(200);
+  const body = await response.text();
+  const error = extractErrorFromSse(body);
+  expect(error).toContain('not available to Candidate Agent');
 });
 
 test('011-05: tool-use 超过 5 轮时，chat 端点强制收尾', async () => {
   const response = await callChat('请触发无限工具调用');
   expect(response.status).toBe(200);
-  const data = (await response.json()) as { content: string };
-  expect(data.content).toContain('已达到资料查阅上限');
+  const content = extractDeltaFromSse(await response.text());
+  expect(content).toContain('已达到资料查阅上限');
 });
 
 // ─────────────────────────────
@@ -244,8 +254,8 @@ test('013-03: SSE delta 前会显示思考过程折叠块', async ({ page }) => 
   await expect(page.locator('.chat-messages')).toContainText('基于资料的回答');
 });
 
-test('013-04: stream=true 时 chat 端点返回 SSE 格式', async () => {
-  const response = await callStreamingChat('你好');
+test('013-04: chat 端点始终返回 SSE 格式', async () => {
+  const response = await callChat('你好');
   expect(response.status).toBe(200);
   expect(response.headers.get('content-type')).toContain('text/event-stream');
   const body = await response.text();
@@ -254,7 +264,7 @@ test('013-04: stream=true 时 chat 端点返回 SSE 格式', async () => {
 });
 
 test('013-05: tool-use 流程中 SSE 包含 status、tool_done、delta、done 事件', async () => {
-  const response = await callStreamingChat('请介绍 Aindexer 的项目细节');
+  const response = await callChat('请介绍 Aindexer 的项目细节');
   expect(response.status).toBe(200);
   const body = await response.text();
   expect(body).toContain('"type":"status"');

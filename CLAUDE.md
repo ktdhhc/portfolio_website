@@ -87,7 +87,7 @@
 ### 1. 开发与验证习惯
 
 - 本项目为单体 Astro 工程，前端与 Pages Functions 在同一仓库。
-- 开发命令在仓库根目录执行：`npm run dev`（Astro dev）。
+- 开发命令在仓库根目录执行：`npm run dev`（build 后用本地 Node harness 运行 dist/ + `/api/chat`，默认 http://localhost:4321，端口占用时自动递增）。不要用 `npm run dev:astro`，它不服务 Pages Functions。
 - 前端文件避免全部写在同一个大文件里；增加新组件或新功能前，先判断是否应拆成新文件。
 - 优先运行有针对性的验证，而不是默认做全量重跑。
 - 高成本集成检查（如完整 Cloudflare 部署验证）不应作为默认快速验证方式。
@@ -125,8 +125,8 @@
 ```text
 portfolio_website/
 ├── CONTEXT.md                 # 领域术语表（glossary），不含实现细节
-├── AGENTS.md                  # 本文件，coding agent 工作规则
-├── content/                   # 所有个人资料，Git 管理（待建立）
+├── AGENTS.md / CLAUDE.md      # coding agent 工作规则（两份需保持同步）
+├── content/                   # 所有个人资料，Git 管理
 │   ├── profile.json           # 姓名/联系方式/定位等结构化字段
 │   ├── resume.json            # 教育经历/工作经历/技能栈
 │   ├── projects/              # 每个项目一个目录
@@ -137,18 +137,21 @@ portfolio_website/
 │   └── agent/
 │       ├── system-prompt.md   # Agent 人格与边界
 │       └── answer-rules.md    # 回答规则
-├── src/                       # Astro 源码（待建立）
-│   ├── pages/                 # 路由
+├── src/                       # Astro 源码
+│   ├── pages/                 # 路由（index/resume/projects/[slug]/agent）
 │   ├── components/            # 复用组件
 │   ├── layouts/               # 基础布局
 │   └── styles/                # 全局样式
-├── functions/                 # Cloudflare Pages Functions（待建立）
+├── functions/                 # Cloudflare Pages Functions
 │   └── api/
-│       ├── chat.ts            # Agent 对话接口
-│       ├── track.ts           # 行为埋点接口
-│       └── admin/
-│           ├── logs.ts        # 私有：日志查询
-│           └── stats.ts       # 私有：统计聚合
+│       ├── chat.ts            # Agent 对话接口（始终返回 SSE）
+│       ├── _providers/        # 供应商抽象（DeepSeek/MiMo/fake）
+│       ├── _tools/            # read_file tool（白名单读取）
+│       └── _generated/        # 构建时生成的 Agent 资料模块
+├── scripts/                   # 构建/开发/验证脚本
+│   ├── generate-agent-materials.mjs  # 构建前生成 Agent 资料模块
+│   ├── pages-dev.ts           # 本地 Node harness（服务 dist/ + /api/chat）
+│   └── verify-agent-provider.ts      # 真实 provider smoke test
 ├── public/                    # 静态资源（PDF 简历等）
 ├── migrations/                # D1 schema（待建立）
 ├── docs/                      # 文档
@@ -166,8 +169,9 @@ portfolio_website/
 │   │   └── 0007-agent-rate-limit-uuid-global-no-origin.md
 │   └── plans/                 # 实施方案
 │       └── initial-implementation-plan.md
-└── demo/                      # 设计原型（HTML），非生产代码
-    └── index.html
+└── demo/                      # 设计原型（HTML），非生产代码）
+    ├── index.html
+    └── agent.html
 ```
 
 ## 五、主流程与分支的稳定认知

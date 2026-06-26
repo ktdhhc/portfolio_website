@@ -7,7 +7,6 @@ import { agentMaterials, readableAgentFileIds } from './_generated/agent-materia
 
 interface ChatRequestBody {
   messages?: ChatMessage[];
-  stream?: boolean;
 }
 
 const maxToolRounds = 5;
@@ -89,73 +88,45 @@ export const onRequestPost: PagesFunction<ProviderEnv> = async (context) => {
     const provider = getProvider(context.env);
     const messages = [...buildMainContext(), ...body.messages];
 
-    if (body.stream) {
-      return createStreamResponse(
-        (async function* () {
-          for (let round = 0; round < maxToolRounds; round += 1) {
-            const response = await provider.chat({ messages, tools: [readFileTool] });
+    return createStreamResponse(
+      (async function* () {
+        for (let round = 0; round < maxToolRounds; round += 1) {
+          const response = await provider.chat({ messages, tools: [readFileTool] });
 
-            if (!response.tool_calls || response.tool_calls.length === 0) {
-              yield sseEvent({ type: 'delta', content: response.content });
-              yield sseEvent({ type: 'done' });
-              return;
-            }
-
-            messages.push({ role: 'assistant', content: response.content, tool_calls: response.tool_calls });
-
-            for (const toolCall of response.tool_calls) {
-              if (toolCall.function.name !== 'read_file') {
-                throw new Error(`Unknown tool: ${toolCall.function.name}`);
-              }
-              const args = JSON.parse(toolCall.function.arguments) as { file?: string };
-              if (!args.file) throw new Error('read_file requires file');
-
-              yield sseEvent({ type: 'status', content: `正在查阅 ${args.file}` });
-
-              const fileContent = readAgentFile(args.file);
-
-              yield sseEvent({ type: 'tool_done', content: args.file });
-
-              messages.push({
-                role: 'tool',
-                name: 'read_file',
-                tool_call_id: toolCall.id,
-                content: fileContent,
-              });
-            }
+          if (!response.tool_calls || response.tool_calls.length === 0) {
+            yield sseEvent({ type: 'delta', content: response.content });
+            yield sseEvent({ type: 'done' });
+            return;
           }
 
-          yield sseEvent({ type: 'delta', content: '已达到资料查阅上限，我会基于当前已读取的信息收尾回答。' });
-          yield sseEvent({ type: 'done' });
-        })(),
-      );
-    }
+          messages.push({ role: 'assistant', content: response.content, tool_calls: response.tool_calls });
 
-    // Non-streaming JSON path (unchanged)
-    for (let round = 0; round < maxToolRounds; round += 1) {
-      const response = await provider.chat({ messages, tools: [readFileTool] });
-      if (!response.tool_calls || response.tool_calls.length === 0) {
-        return toJsonResponse(response);
-      }
+          for (const toolCall of response.tool_calls) {
+            if (toolCall.function.name !== 'read_file') {
+              throw new Error(`Unknown tool: ${toolCall.function.name}`);
+            }
+            const args = JSON.parse(toolCall.function.arguments) as { file?: string };
+            if (!args.file) throw new Error('read_file requires file');
 
-      messages.push({ role: 'assistant', content: response.content, tool_calls: response.tool_calls });
+            yield sseEvent({ type: 'status', content: `正在查阅 ${args.file}` });
 
-      for (const toolCall of response.tool_calls) {
-        if (toolCall.function.name !== 'read_file') {
-          throw new Error(`Unknown tool: ${toolCall.function.name}`);
+            const fileContent = readAgentFile(args.file);
+
+            yield sseEvent({ type: 'tool_done', content: args.file });
+
+            messages.push({
+              role: 'tool',
+              name: 'read_file',
+              tool_call_id: toolCall.id,
+              content: fileContent,
+            });
+          }
         }
-        const args = JSON.parse(toolCall.function.arguments) as { file?: string };
-        if (!args.file) throw new Error('read_file requires file');
-        messages.push({
-          role: 'tool',
-          name: 'read_file',
-          tool_call_id: toolCall.id,
-          content: readAgentFile(args.file),
-        });
-      }
-    }
 
-    return toJsonResponse({ content: '已达到资料查阅上限，我会基于当前已读取的信息收尾回答。' });
+        yield sseEvent({ type: 'delta', content: '已达到资料查阅上限，我会基于当前已读取的信息收尾回答。' });
+        yield sseEvent({ type: 'done' });
+      })(),
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return toJsonResponse({ error: message }, 500);

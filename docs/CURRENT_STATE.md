@@ -22,7 +22,7 @@
 
 ## 当前阶段
 
-**阶段 2 无记忆 Agent MVP 已实现**：公开静态页面已完成；`/agent` 页面、`POST /api/chat`、tool-use 资料读取、SSE 流式返回、预设问题和 JD 粘贴分析已接通。Agent 自动化测试 19 个通过，DeepSeek 与 MiMo 真实 provider smoke test 均通过。
+**阶段 2 无记忆 Agent MVP 已完成**：公开静态页面已完成；`/agent` 页面、`POST /api/chat`、tool-use 资料读取、SSE 流式返回、预设问题和 JD 粘贴分析已接通。Agent 自动化测试 21 个通过，DeepSeek 与 MiMo 真实 provider smoke test 均通过。`/api/chat` 始终返回 SSE（无 JSON 路径），前端实时 markdown 渲染。
 
 阶段 0-1 已交付：
 - 产品大纲、个人侧写、前端设计约束（FRONTEND_DESIGN.md）
@@ -35,7 +35,7 @@
 - `/projects` 项目列表页：全部项目卡片网格，ProjectCard 含类型/角色/公司/详情链接
 - `/projects/[slug]` 项目详情页：九段式正文渲染 + 元信息 + 返回链接，构建时生成静态 HTML
 - Nav 统一下拉导航：桌面 hover 自动展开，触屏/键盘可点击展开，支持首页/简历/项目/Agent 切换
-- 测试：Playwright E2E + tsx schema 校验；Agent 专项 E2E/API seam 19 个
+- 测试：Playwright E2E + tsx schema 校验；Agent 专项 E2E/API seam 21 个
 - Lighthouse 性能审计全部 ≥ 90
 
 阶段 3 待做：数据采集与短期记忆（localStorage UUID + D1 持久化 + 限频 + 埋点）。详见 `docs/plans/initial-implementation-plan.md`。
@@ -84,7 +84,7 @@
 - `/resume` 在线简历页 ✅ 已实现：教育 + 经历 + 技能 + 项目索引 + PDF 下载入口（缺文件时降级为待补充文案）
 - `/projects` 项目列表页 ✅ 已实现：全部项目卡片网格（含类型/角色/公司/详情链接）
 - `/projects/[slug]` 项目详情页 ✅ 已实现：九段式正文 + 元信息 + 返回链接
-- `/agent` Agent 页面 ✅ 已实现（阶段 2）：聊天 UI + 预设问题 + JD 粘贴分析 + SSE 流式响应；当前为无记忆 Agent MVP
+- `/agent` Agent 页面 ✅ 已实现（阶段 2）：聊天 UI + 预设问题 + JD 粘贴分析 + SSE 流式响应 + 实时 markdown 渲染 + tool chip 状态展示 + 思考过程折叠块；当前为无记忆 Agent MVP
 - `/admin` 私有面板 ⬜ 待建（阶段 4）
 
 ## 关键文件地图
@@ -112,8 +112,8 @@ portfolio_website/
 │   ├── homepage.spec.ts       # 3 个 E2E 渲染测试
 │   ├── qa-full.spec.ts        # 33 个 QA 场景测试（P0/P1/P2）
 │   └── schema-validation.ts   # 4 个 schema 校验测试（tsx）
-├── functions/api/             # Pages Functions：chat.ts + provider 抽象 + read_file tool
-├── public/                    # 静态资源（待放 PDF）
+├── functions/api/             # Pages Functions：chat.ts（始终 SSE）+ provider 抽象 + read_file tool + 构建时生成资料模块
+├── public/                    # 静态资源（resume.pdf 已就位）
 ├── migrations/                # D1 schema（待建立）
 ├── docs/
 │   ├── 产品大纲.md, personal_profile.md, FRONTEND_DESIGN.md
@@ -170,9 +170,9 @@ Lighthouse：npm run test:lighthouse（自动 build + preview + 审计 7 个公�
 ```text
 - 前端页面改动：npm run build + npm run preview 本地预览，确认内容来自 content/ 而非硬编码；涉及 `/api/chat` 时使用默认 `npm run dev` / `npm run preview`，不要使用 `dev:astro` / `preview:astro`
 - Content Collections schema：npm run build 时 Zod 校验，字段缺失/类型错会报错；npm run test:schema 用 fixture 跑边界用例
-- E2E：npm test 跑 Playwright（70 个测试，覆盖 5 页面可访问性/内容驱动/导航/hover/触屏/键盘/404/console error）
+- E2E：npm test 跑 Playwright（覆盖首页/简历/项目/Agent 页面可访问性/内容驱动/导航/hover/触屏/键盘/404/console error；Agent 专项 21 个测试）
 - Lighthouse：npm run test:lighthouse 跑 7 个公开静态页面，当前基线为 Performance 100 / Accessibility 95 / Best Practices 96 / SEO 90（全部页面一致，均 ≥ 90）
-- Agent 验证：`npm run test:agent-provider` 验证 DeepSeek/MiMo 真实 provider smoke test；手动模拟 LLM API 失败确认降级提示正常。D1 失败分支阶段 3 后适用
+- Agent 验证：`npm run test:agent-provider` 验证 DeepSeek/MiMo 真实 provider smoke test（解析 SSE 响应）；手动模拟 LLM API 失败确认降级提示正常。D1 失败分支阶段 3 后适用
 - 高成本检查：完整 Cloudflare 部署验证，不作为默认快速验证方式
 ```
 

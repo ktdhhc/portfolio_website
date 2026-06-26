@@ -50,8 +50,15 @@ async function verify(provider: string) {
     throw new Error(`${provider} failed with HTTP ${response.status}: ${text.slice(0, 400)}`);
   }
 
-  const data = JSON.parse(text) as { content?: string };
-  const content = data.content || '';
+  // 解析 SSE 提取 delta content
+  const events = text.split('\n\n').filter((e) => e.startsWith('data:'));
+  let content = '';
+  for (const event of events) {
+    const json = JSON.parse(event.replace(/^data:\s*/, ''));
+    if (json.type === 'delta') content = json.content || '';
+    if (json.type === 'error') throw new Error(json.content || 'Unknown error');
+  }
+
   if (!/(FastAPI|SQLite|React|RAG)/i.test(content)) {
     throw new Error(`${provider} response did not include expected Aindexer material keyword: ${content.slice(0, 400)}`);
   }

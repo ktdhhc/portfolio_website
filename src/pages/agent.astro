@@ -579,12 +579,12 @@ const projects = await getCollection('projects');
       let cur = '';
       for (const ch of text.split('')) {
         cur += ch;
-        el.textContent = cur;
+        const savedScroll = messages.scrollTop;
+        el.innerHTML = renderMarkdown(cur);
+        messages.scrollTop = savedScroll;
         scroll();
         await sleep(ms);
       }
-      // 逐字完成后渲染 markdown
-      el.innerHTML = renderMarkdown(text);
     }
 
     // 最小 markdown 渲染器：标题、粗体、斜体、列表、代码块、行内代码、链接、段落
@@ -721,7 +721,6 @@ const projects = await getCollection('projects');
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            stream: true,
             messages: [{ role: 'user', content: text }],
           }),
         });

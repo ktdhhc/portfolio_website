@@ -33,7 +33,7 @@ test('P0-02: 首页包含核心区块', async ({ page }) => {
 test('P0-03: Hero 区按钮文本正确', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('body')).toContainText('PDF 简历待补充');
-  await expect(page.locator('body')).toContainText('与资料 Agent 对话');
+  await expect(page.locator('body')).toContainText('与 Agent 对话');
 });
 
 test('P0-04: Agent CTA 区按钮文本正确', async ({ page }) => {
