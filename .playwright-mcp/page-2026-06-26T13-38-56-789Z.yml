@@ -1,0 +1,87 @@
+- generic [ref=e1]:
+  - navigation "主导航" [ref=e2]:
+    - generic [ref=e3]:
+      - link "Kaho" [ref=e4] [cursor=pointer]:
+        - /url: ./index.html
+      - list [ref=e5]:
+        - listitem [ref=e6]:
+          - button "简历 ▾" [ref=e7] [cursor=pointer]
+          - list [ref=e87]:
+            - listitem [ref=e88]:
+              - link "教育" [ref=e89] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e90]:
+              - link "经历" [ref=e91] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e92]:
+              - link "技能" [ref=e93] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e94]:
+              - generic [ref=e95]: PDF 待补充
+        - listitem [ref=e8]:
+          - button "项目 ▾" [ref=e9] [cursor=pointer]
+        - listitem [ref=e10]:
+          - link "Agent" [ref=e11] [cursor=pointer]:
+            - /url: "#agent-demo"
+  - complementary "隐私提示横幅" [ref=e12]:
+    - generic [ref=e15]: 提问内容可能会被记录，请勿输入敏感信息
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - generic [ref=e18]: Candidate Agent · Warm Tech Demo
+      - heading "把 候选人资料 变成可追问、可降级、可验证的对话入口" [level=1] [ref=e20]
+      - paragraph [ref=e21]: 这个演示页强调克制的对话体验：先给出隐私边界，再展示思考、tool-use、流式输出与服务降级，确保 Agent 是简历的增强层，而不是唯一入口。
+      - generic [ref=e22]:
+        - button "重新演示流式输出" [ref=e23] [cursor=pointer]
+        - button "切换为服务不可用" [ref=e24] [cursor=pointer]
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]: candidate agent
+        - heading "对话页演示" [level=2] [ref=e28]
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Kaho Candidate Agent
+            - generic [ref=e33]: 基于简历、项目正文与 refs 资料生成回答，失败时回退到静态页面引导。
+          - generic "演示控制" [ref=e34]:
+            - button "展开 / 收起思考" [ref=e35] [cursor=pointer]
+            - button "发送当前预设问题" [ref=e36] [cursor=pointer]
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e40]:
+              - generic [ref=e41]: 访客
+              - generic [ref=e42]: 请介绍一下你自己
+            - group [ref=e44]:
+              - generic "Agent 推理 思考中..." [ref=e45] [cursor=pointer]:
+                - generic [ref=e46]:
+                  - generic [ref=e47]: Agent 推理
+                  - text: 思考中...
+                - generic [ref=e48]: 展开
+            - generic [ref=e55]:
+              - generic [ref=e56]: Tool Use
+              - generic [ref=e57]:
+                - generic [ref=e58]: read_project_refs
+                - generic [ref=e86]: 已读取 3 份资料
+              - list [ref=e62]:
+                - listitem [ref=e63]: content/projects/aindexer/index.md
+                - listitem [ref=e64]: content/projects/aindexer/refs/architecture.md
+                - listitem [ref=e65]: content/projects/aindexer/refs/iteration-history.md
+            - generic [ref=e67]:
+              - generic [ref=e68]: Candidate Agent
+              - generic [ref=e69]: 我是 Kaho，应用心理硕士在读，研究方向是视觉记忆与统计建模。我的工作方式不是先追求炫技，而是先拆清楚问题、资料边界和验证路径。过去我做过 Agent 原型设计、评测方法梳理，也独立开发过 Aindexer 这样的本地化 AI 工作台，所以我比较擅长把“模型能力”翻译成“可维护的产品流程”。
+          - generic [ref=e70]:
+            - paragraph [ref=e71]: 预设问题
+            - generic [ref=e72]:
+              - button "自我介绍" [ref=e73] [cursor=pointer]
+              - button "项目问答" [active] [ref=e74] [cursor=pointer]
+              - button "岗位匹配" [ref=e75] [cursor=pointer]
+              - button "优势不足" [ref=e76] [cursor=pointer]
+              - button "面试问题" [ref=e77] [cursor=pointer]
+              - button "JD 分析" [ref=e78] [cursor=pointer]
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - generic [ref=e81]: 输入问题
+            - textbox "输入问题" [ref=e82]:
+              - /placeholder: 例如：请介绍一下你自己
+              - text: 你做过的代表项目里，Aindexer 主要解决了什么问题？
+            - button "发送" [ref=e83] [cursor=pointer]
+          - paragraph [ref=e84]: 提问内容可能会被记录，请勿输入身份证号、住址、账号、口令等敏感信息。

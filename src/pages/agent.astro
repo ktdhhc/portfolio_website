@@ -1,0 +1,838 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import profile from '../../content/profile.json';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+---
+
+<Base title={`Candidate Agent — ${profile.name}`}>
+  <Nav name={profile.name} projects={projects} />
+
+  <header class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Candidate Agent
+      </div>
+      <h1>向 Agent 提问，<br><span class="accent">了解候选人</span></h1>
+      <p class="hero-desc">
+        基于简历、项目文档与公开作品资料回答，不会替你确认未经验证的信息。
+      </p>
+      <p class="privacy-note">提问内容可能被记录，请勿输入敏感信息</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="chat-card" aria-label="Candidate Agent 对话">
+      <div class="chat-messages" id="chatMessages">
+        <div class="empty-state" id="emptyState">
+          <p>从这里开始</p>
+          <span>选择下方预设问题，或直接输入</span>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="jd-wrap" id="jdWrap">
+          <textarea class="jd-textarea" id="jdInput" placeholder="粘贴 JD 文本，Agent 会分析匹配点、风险点和建议追问。"></textarea>
+        </div>
+        <div class="input-row">
+          <input type="text" class="chat-input" id="chatInput" placeholder="输入你的问题…" autocomplete="off" />
+          <button class="send-btn" id="sendBtn" type="button" aria-label="发送">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+        <div class="input-meta">
+          <div class="presets" id="presetBar">
+            <button class="preset" data-question="请快速介绍候选人">自我介绍</button>
+            <button class="preset" data-question="请介绍候选人的代表项目">项目问答</button>
+            <button class="preset" data-question="请分析候选人与这个岗位的匹配度">岗位匹配</button>
+            <button class="preset" data-question="请总结候选人的优势与不足">优势不足</button>
+            <button class="preset" data-question="请生成建议面试问题">面试问题</button>
+          </div>
+          <button class="jd-toggle" id="jdToggle" type="button">JD 分析</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer github={profile.github} homepage={profile.homepage} email={profile.email} />
+</Base>
+
+<style>
+  /* ── Hero ── */
+  .hero {
+    padding: 11rem 0 5rem;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.8rem; color: var(--fg-muted);
+    margin-bottom: 1.25rem;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--success);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .hero h1 {
+    font-size: 3rem; font-weight: 700;
+    letter-spacing: -0.03em; line-height: 1.1;
+    margin-bottom: 1.25rem;
+  }
+  .hero h1 .accent { color: var(--accent-dark); }
+  .hero-desc {
+    font-size: 1rem; color: var(--fg-secondary);
+    max-width: 420px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  .privacy-note {
+    margin-top: 1.75rem;
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 2.25rem; }
+    .hero { padding: 8rem 0 4rem; }
+  }
+
+  /* ── Chat Card ── */
+  .chat-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    min-height: 560px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 4rem;
+  }
+  .chat-messages {
+    flex: 1;
+    padding: 2.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+  @media (max-width: 640px) {
+    .chat-messages { padding: 1.5rem; }
+  }
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--fg-muted);
+  }
+  .empty-state p {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  .empty-state span {
+    font-size: 0.85rem;
+  }
+</style>
+
+<!-- Global styles for JS-dynamically-created elements (cannot use scoped CSS) -->
+<style is:global>
+  /* ── Messages ── */
+  .message {
+    max-width: 88%;
+    opacity: 0;
+    animation: fadeIn 0.25s ease forwards;
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+  .message.user { align-self: flex-end; }
+  .message.agent { align-self: flex-start; }
+  .message-label {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    margin-bottom: 0.35rem;
+  }
+  .message.user .message-label { text-align: right; }
+  .message-bubble {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    white-space: pre-wrap;
+  }
+  .message.user .message-bubble {
+    background: var(--fg);
+    color: var(--bg);
+    padding: 0.9rem 1.2rem;
+    border-radius: var(--radius-card);
+    border-bottom-right-radius: 4px;
+  }
+  .message.agent .message-bubble {
+    color: var(--fg);
+    padding-left: 1rem;
+    border-left: 2px solid var(--accent);
+  }
+  .message.agent .message-bubble p {
+    margin-bottom: 0.75rem;
+  }
+  .message.agent .message-bubble p:last-child {
+    margin-bottom: 0;
+  }
+  .message.agent .message-bubble h1,
+  .message.agent .message-bubble h2,
+  .message.agent .message-bubble h3,
+  .message.agent .message-bubble h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 1rem 0 0.5rem;
+    line-height: 1.4;
+  }
+  .message.agent .message-bubble ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .message.agent .message-bubble ul li {
+    margin-bottom: 0.35rem;
+  }
+  .message.agent .message-bubble code {
+    background: var(--bg-muted);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-tag);
+    font-size: 0.85rem;
+    font-family: "SF Mono", "Fira Code", monospace;
+  }
+  .message.agent .message-bubble pre {
+    background: var(--bg-muted);
+    padding: 1rem;
+    border-radius: var(--radius-button);
+    overflow-x: auto;
+    margin-bottom: 0.75rem;
+  }
+  .message.agent .message-bubble pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.85rem;
+  }
+  .message.agent .message-bubble strong {
+    font-weight: 700;
+  }
+  .message.agent .message-bubble em {
+    font-style: italic;
+  }
+  .message.agent .message-bubble a {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .message.agent .message-bubble hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.25rem 0;
+  }
+  .message.agent .message-bubble table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+  }
+  .message.agent .message-bubble th,
+  .message.agent .message-bubble td {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+  .message.agent .message-bubble th {
+    background: var(--bg-muted);
+    font-weight: 700;
+  }
+  .message.agent .message-bubble tbody tr:nth-child(even) {
+    background: var(--bg-muted);
+  }
+
+  /* ── Tool Chips ── */
+  .tool-row {
+    align-self: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 0.25s ease forwards;
+  }
+  .tool-chip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    background: var(--bg-muted);
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    color: var(--fg-secondary);
+  }
+  .tool-chip .dot {
+    width: 5px; height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: chipPulse 1.5s ease-in-out infinite;
+  }
+  .tool-chip.done .dot {
+    background: var(--success);
+    animation: none;
+  }
+  @keyframes chipPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── Thinking ── */
+  .thinking-block {
+    align-self: flex-start;
+    max-width: 90%;
+    opacity: 0;
+    animation: fadeIn 0.25s ease forwards;
+  }
+  .thinking-summary {
+    list-style: none;
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .thinking-summary::-webkit-details-marker { display: none; }
+  .thinking-content {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    font-style: italic;
+    line-height: 1.7;
+  }
+  .thinking-content p { margin-bottom: 0.4rem; }
+  .thinking-content p:last-child { margin-bottom: 0; }
+
+  /* ── Typing ── */
+  .typing {
+    align-self: flex-start;
+    display: flex; align-items: center; gap: 0.35rem;
+  }
+  .typing span {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: typingPulse 1.4s ease-in-out infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingPulse {
+    0%, 80%, 100% { opacity: 0.4; }
+    40% { opacity: 1; }
+  }
+
+  /* ── Error ── */
+  .error-message {
+    align-self: flex-start;
+    max-width: 90%;
+    padding: 1rem 1.2rem;
+    background: var(--bg-muted);
+    border-radius: var(--radius-card);
+    font-size: 0.9rem;
+    color: var(--fg-secondary);
+    line-height: 1.65;
+  }
+  .error-message a {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>
+
+<style>
+  /* ── Input Area ── */
+  .chat-input-area {
+    padding: 1.25rem 2rem 2rem;
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 640px) {
+    .chat-input-area { padding: 1rem 1.5rem 1.5rem; }
+  }
+  .jd-wrap {
+    display: none;
+    margin-bottom: 0.75rem;
+  }
+  .jd-wrap.active { display: block; }
+  .jd-textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-button);
+    font-size: 0.9rem;
+    color: var(--fg);
+    background: var(--bg);
+    resize: vertical;
+    line-height: 1.6;
+    font-family: inherit;
+  }
+  .jd-textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+    transition: var(--transition);
+  }
+  .input-row:focus-within {
+    border-color: var(--accent);
+  }
+  .chat-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    color: var(--fg);
+    line-height: 1.6;
+    font-family: inherit;
+  }
+  .chat-input:focus { outline: none; }
+  .chat-input::placeholder { color: var(--fg-muted); }
+  .send-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: var(--fg);
+    color: var(--bg);
+    cursor: pointer;
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+  .send-btn:hover { opacity: 0.8; }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .input-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.9rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .preset {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--fg-secondary);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+  }
+  .preset:hover {
+    border-color: var(--accent);
+    color: var(--fg);
+  }
+  .preset:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .jd-toggle {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+  }
+  .jd-toggle:hover { color: var(--accent-dark); }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const messages = document.getElementById('chatMessages');
+    const emptyState = document.getElementById('emptyState');
+    const input = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const presets = document.querySelectorAll('.preset');
+    const jdToggle = document.getElementById('jdToggle');
+    const jdWrap = document.getElementById('jdWrap');
+    const jdInput = document.getElementById('jdInput');
+
+    let isProcessing = false;
+    let jdMode = false;
+
+    function setBusy(busy) {
+      isProcessing = busy;
+      input.disabled = busy;
+      sendBtn.disabled = busy;
+      presets.forEach((p) => (p.disabled = busy));
+    }
+
+    function clearEmpty() {
+      if (emptyState && emptyState.parentNode) emptyState.remove();
+    }
+
+    function scroll() {
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function addUser(text) {
+      clearEmpty();
+      const el = document.createElement('div');
+      el.className = 'message user';
+      el.innerHTML = '<div class="message-label">你</div><div class="message-bubble"></div>';
+      el.querySelector('.message-bubble').textContent = text;
+      messages.appendChild(el);
+      scroll();
+    }
+
+    function addTyping() {
+      const el = document.createElement('div');
+      el.className = 'typing';
+      el.id = 'typing';
+      el.innerHTML = '<span></span><span></span><span></span>';
+      messages.appendChild(el);
+      scroll();
+    }
+
+    function removeTyping() {
+      const el = document.getElementById('typing');
+      if (el) el.remove();
+    }
+
+    function addToolChip(label) {
+      const file = label.replace(/^正在查阅\s*/, '');
+      const row = document.querySelector('.tool-row') || (() => {
+        const r = document.createElement('div');
+        r.className = 'tool-row';
+        messages.appendChild(r);
+        return r;
+      })();
+      const chip = document.createElement('span');
+      chip.className = 'tool-chip';
+      chip.dataset.file = file;
+      chip.innerHTML = '<span class="dot"></span>' + label;
+      row.appendChild(chip);
+      scroll();
+    }
+
+    function markToolDone(file) {
+      const chip = document.querySelector('.tool-chip[data-file="' + file + '"]');
+      if (chip) chip.classList.add('done');
+      scroll();
+    }
+
+    function addThinking(files) {
+      const el = document.createElement('details');
+      el.className = 'thinking-block';
+      el.open = false;
+      const summary = document.createElement('summary');
+      summary.className = 'thinking-summary';
+      summary.textContent = '思考过程';
+      const content = document.createElement('div');
+      content.className = 'thinking-content';
+      const p = document.createElement('p');
+      p.textContent = '已读取 ' + files.join('、') + '，正在基于资料综合分析并组织回答。';
+      content.appendChild(p);
+      el.appendChild(summary);
+      el.appendChild(content);
+      messages.appendChild(el);
+      scroll();
+    }
+
+    function addAgent() {
+      const el = document.createElement('div');
+      el.className = 'message agent';
+      el.innerHTML = '<div class="message-label">Candidate Agent</div><div class="message-bubble"></div>';
+      messages.appendChild(el);
+      scroll();
+      return el.querySelector('.message-bubble');
+    }
+
+    function addError() {
+      const el = document.createElement('div');
+      el.className = 'error-message';
+      el.innerHTML = 'Agent 服务暂时不可用，请<a href="/resume">查看静态简历</a>和<a href="/projects">项目页</a>了解更多。';
+      messages.appendChild(el);
+      scroll();
+    }
+
+    function sleep(ms) {
+      return new Promise((r) => setTimeout(r, ms));
+    }
+
+    async function stream(el, text, ms) {
+      let cur = '';
+      for (const ch of text.split('')) {
+        cur += ch;
+        el.textContent = cur;
+        scroll();
+        await sleep(ms);
+      }
+      // 逐字完成后渲染 markdown
+      el.innerHTML = renderMarkdown(text);
+    }
+
+    // 最小 markdown 渲染器：标题、粗体、斜体、列表、代码块、行内代码、链接、段落
+    function renderMarkdown(text) {
+      function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function inline(s) {
+        return escapeHtml(s)
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+      }
+
+      const lines = text.split('\n');
+      const html = [];
+      let inCodeBlock = false;
+      let codeBuffer = [];
+      let listBuffer = [];
+      let tableBuffer = [];
+      let tableHeader = false;
+
+      function flushList() {
+        if (listBuffer.length > 0) {
+          html.push('<ul>' + listBuffer.map((item) => '<li>' + item + '</li>').join('') + '</ul>');
+          listBuffer = [];
+        }
+      }
+
+      function flushTable() {
+        if (tableBuffer.length === 0) return;
+        let table = '<table>';
+        tableBuffer.forEach((cells, i) => {
+          const tag = i === 0 ? 'th' : 'td';
+          const rowTag = i === 0 ? 'thead' : 'tbody';
+          if (i === 1) table += '<tbody>';
+          table += '<tr>' + cells.map((c) => '<' + tag + '>' + inline(c) + '</' + tag + '>').join('') + '</tr>';
+        });
+        table += '</tbody></table>';
+        html.push(table);
+        tableBuffer = [];
+        tableHeader = false;
+      }
+
+      function isTableSeparator(line) {
+        return /^\|[\s:|-]+\|$/.test(line.trim()) && line.includes('-');
+      }
+
+      function parseTableRow(line) {
+        return line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+      }
+
+      for (const line of lines) {
+        if (line.trim().startsWith('```')) {
+          flushList();
+          flushTable();
+          if (inCodeBlock) {
+            html.push('<pre><code>' + escapeHtml(codeBuffer.join('\n')) + '</code></pre>');
+            codeBuffer = [];
+            inCodeBlock = false;
+          } else {
+            inCodeBlock = true;
+          }
+          continue;
+        }
+        if (inCodeBlock) {
+          codeBuffer.push(line);
+          continue;
+        }
+        // 水平分隔线
+        if (/^[-*]{3,}$/.test(line.trim()) || /^_{3,}$/.test(line.trim())) {
+          flushList();
+          flushTable();
+          html.push('<hr>');
+          continue;
+        }
+        const headingMatch = line.match(/^(#{1,4})\s+(.*)$/);
+        if (headingMatch) {
+          flushList();
+          flushTable();
+          const level = headingMatch[1].length;
+          html.push('<h' + level + '>' + inline(headingMatch[2]) + '</h' + level + '>');
+          continue;
+        }
+        // 表格行
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          if (isTableSeparator(line)) {
+            tableHeader = true;
+            continue;
+          }
+          flushList();
+          tableBuffer.push(parseTableRow(line));
+          continue;
+        }
+        flushTable();
+        const listItemMatch = line.match(/^[\s]*[-*]\s+(.*)$/);
+        if (listItemMatch) {
+          listBuffer.push(inline(listItemMatch[1]));
+          continue;
+        }
+        const numberedMatch = line.match(/^[\s]*\d+\.\s+(.*)$/);
+        if (numberedMatch) {
+          listBuffer.push(inline(numberedMatch[1]));
+          continue;
+        }
+        flushList();
+        if (line.trim() === '') {
+          continue;
+        }
+        html.push('<p>' + inline(line) + '</p>');
+      }
+
+      if (inCodeBlock && codeBuffer.length > 0) {
+        html.push('<pre><code>' + escapeHtml(codeBuffer.join('\n')) + '</code></pre>');
+      }
+      flushList();
+      flushTable();
+      return html.join('\n');
+    }
+
+    async function sendMessage(value) {
+      const text = (value ?? input.value).trim();
+      if (!text || isProcessing) return;
+
+      setBusy(true);
+      addUser(text);
+      input.value = '';
+      addTyping();
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            stream: true,
+            messages: [{ role: 'user', content: text }],
+          }),
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('text/event-stream')) {
+          removeTyping();
+          const data = await res.json();
+          const bubble = addAgent();
+          bubble.innerHTML = renderMarkdown(data.content);
+          setBusy(false);
+          input.focus();
+          return;
+        }
+
+        let agentBubble = null;
+        let doneFiles = [];
+        const decoder = new TextDecoder();
+        const reader = res.body.getReader();
+        let buffer = '';
+
+        const handleEvent = async (eventText) => {
+          const data = eventText
+            .split('\n')
+            .filter((line) => line.startsWith('data:'))
+            .map((line) => line.slice(5).trim())
+            .join('\n');
+          if (!data) return;
+          const event = JSON.parse(data);
+
+          if (event.type === 'status') {
+            addToolChip(event.content);
+          }
+          if (event.type === 'tool_done') {
+            markToolDone(event.content);
+            doneFiles.push(event.content);
+          }
+          if (event.type === 'delta') {
+            if (!agentBubble) {
+              removeTyping();
+              if (doneFiles.length > 0) {
+                addThinking(doneFiles);
+              }
+              agentBubble = addAgent();
+            }
+            await stream(agentBubble, event.content, 16);
+          }
+          if (event.type === 'error') {
+            throw new Error(event.content);
+          }
+        };
+
+        while (true) {
+          const { value: chunk, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(chunk, { stream: true });
+          const parts = buffer.split('\n\n');
+          buffer = parts.pop() || '';
+          for (const part of parts) {
+            await handleEvent(part);
+          }
+        }
+        buffer += decoder.decode();
+        if (buffer.trim()) {
+          for (const part of buffer.split('\n\n')) {
+            await handleEvent(part);
+          }
+        }
+
+        if (!agentBubble) removeTyping();
+
+        setBusy(false);
+        input.focus();
+      } catch {
+        removeTyping();
+        addError();
+        setBusy(false);
+        input.focus();
+      }
+    }
+
+    function submit() {
+      if (jdMode) {
+        const jd = jdInput.value.trim();
+        if (!jd || isProcessing) return;
+        jdInput.value = '';
+        sendMessage(`请基于以下岗位描述分析候选人的匹配点、风险点和建议追问：\n\n${jd}`);
+      } else {
+        sendMessage();
+      }
+    }
+
+    sendBtn.addEventListener('click', submit);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submit();
+    });
+
+    presets.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        sendMessage(btn.dataset.question || btn.textContent || '');
+      });
+    });
+
+    jdToggle.addEventListener('click', () => {
+      jdMode = !jdMode;
+      jdWrap.classList.toggle('active', jdMode);
+      jdToggle.textContent = jdMode ? '取消 JD 分析' : 'JD 分析';
+      if (jdMode) jdInput.focus();
+      else input.focus();
+    });
+  });
+</script>

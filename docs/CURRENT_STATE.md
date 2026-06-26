@@ -22,7 +22,7 @@
 
 ## 当前阶段
 
-**阶段 1 已完成**：全部公开静态页面已实现并测试通过（74 个测试全绿：70 E2E + 4 schema）。Lighthouse 首页 Performance 100、Accessibility 91、Best Practices 96、SEO 90，4 项均 ≥ 90。
+**阶段 2 无记忆 Agent MVP 已实现**：公开静态页面已完成；`/agent` 页面、`POST /api/chat`、tool-use 资料读取、SSE 流式返回、预设问题和 JD 粘贴分析已接通。Agent 自动化测试 19 个通过，DeepSeek 与 MiMo 真实 provider smoke test 均通过。
 
 阶段 0-1 已交付：
 - 产品大纲、个人侧写、前端设计约束（FRONTEND_DESIGN.md）
@@ -35,10 +35,10 @@
 - `/projects` 项目列表页：全部项目卡片网格，ProjectCard 含类型/角色/公司/详情链接
 - `/projects/[slug]` 项目详情页：九段式正文渲染 + 元信息 + 返回链接，构建时生成静态 HTML
 - Nav 统一下拉导航：桌面 hover 自动展开，触屏/键盘可点击展开，支持首页/简历/项目/Agent 切换
-- 测试：Playwright E2E（70 个）+ tsx schema 校验（4 个）
+- 测试：Playwright E2E + tsx schema 校验；Agent 专项 E2E/API seam 19 个
 - Lighthouse 性能审计全部 ≥ 90
 
-阶段 2 待做：Candidate Agent（`/agent` 页面 + `/api/chat` 端点 + tool-use 循环 + 流式 SSE + 短期记忆）。详见 `docs/plans/initial-implementation-plan.md`。
+阶段 3 待做：数据采集与短期记忆（localStorage UUID + D1 持久化 + 限频 + 埋点）。详见 `docs/plans/initial-implementation-plan.md`。
 
 ## 范围边界
 
@@ -48,9 +48,9 @@
 ## 当前架构
 
 ```text
-- 前端：Astro 7（静态 HTML 为主，Nav 下拉含极小内联 JS；Agent 聊天框后续用 React Island）— 5 个公开页面已实现，Agent 页面待建
+- 前端：Astro 7（静态 HTML 为主，Nav/Agent 页面含少量内联 JS；无 React 依赖）— 公开页面与 Agent 页面已实现
 - 内容：Content Collections（glob loader + Zod schema），content/ 下 Markdown / JSON，Git 版本管理
-- API：Cloudflare Pages Functions（functions/api/）— 待建立
+- API：Cloudflare Pages Functions（functions/api/chat.ts）— Agent 对话端点已实现；本地开发用 `scripts/pages-dev.ts` 启动 Node harness 服务 dist/ 并转发 `/api/chat` 到同一 Function 入口
 - 持久化：Cloudflare D1（埋点、Agent 对话记录、短期记忆）— 待建立
 - 模型：外部 LLM API（DeepSeek + MiMo，部署时环境变量切换）
 - 部署：Cloudflare Pages，main 分支自动部署，GitHub 私有仓库
@@ -62,7 +62,7 @@
 
 1. **静态优先**：公开页面（首页/简历/项目列表/项目详情）构建时生成静态 HTML，即使 LLM API、D1 全部宕机仍完整可访问。
 2. **内容驱动**：所有个人资料来自 `content/`，Astro Content Collections 用 Zod schema 校验 frontmatter，改文件即改页面。
-3. **Agent 渐进式披露**：主上下文只含 system prompt + answer-rules + profile 摘要 + 文件索引（文件名 + 手写 summary）。LLM 自主发起 tool call 读取完整文件，循环上限 5 轮，流式 SSE 输出 + 中间状态展示。
+3. **Agent 渐进式披露**：主上下文只含 system prompt + answer-rules + profile 摘要 + 文件索引。构建时由 `scripts/generate-agent-materials.mjs` 生成 Agent 资料模块，运行时 LLM 通过 `read_file` tool call 读取白名单资料，循环上限 5 轮，流式 SSE 输出 + 中间状态展示。
 4. **分层信息披露**：项目 `index.md` 公开可访问生成静态页面；`refs/*.md` 只注入 Agent 上下文，不生成公开路由，访客只能通过 Agent 问答间接获取。
 5. **短期记忆**：同一访客（localStorage UUID）24 小时内可见对话上下文延续，超 24 小时访客侧视为新会话；D1 永久保留对话记录供管理者下载。恢复时按 100K token/UUID/天预算截断。
 6. **埋点**：页面级（PV + 路径 + 停留时长）+ Agent 级（打开、提问内容、回答状态、模型耗时），sendBeacon 批量 flush，页面卸载前发送。
@@ -77,14 +77,14 @@
 
 首页 `src/pages/index.astro` 已实现，定位为"精选橱窗"：Hero + 1-2 个 featured 项目卡片 + "查看全部项目"链接 + Agent CTA。教育/技能/经历等完整简历内容不在首页展示，移至 `/resume` 页面。设计 token 定义在 `src/styles/global.css`，`.container` 作为全局 utility class。设计原型在 `demo/index.html`（保留作参考）。
 
-导航栏统一使用下拉模式（所有页面一致）："简历"→ 展开教育/经历/技能/PDF 子链接（指向 `/resume#education` 等锚点）；"项目"→ 展开各项目名 + "查看全部"链接（指向 `/projects/[slug]`）；"Agent"链接指向首页 Agent CTA。桌面端鼠标靠近自动展开；触屏/键盘通过按钮点击/Enter/Space 展开；点击外部或按 Esc 收起。实现为极小内联 JS，不引入额外框架。
+导航栏统一使用下拉模式（所有页面一致）："简历"→ 展开教育/经历/技能/PDF 子链接（指向 `/resume#education` 等锚点）；"项目"→ 展开各项目名 + "查看全部"链接（指向 `/projects/[slug]`）；"Agent"链接指向 `/agent/`。桌面端鼠标靠近自动展开；触屏/键盘通过按钮点击/Enter/Space 展开；点击外部或按 Esc 收起。实现为极小内联 JS，不引入额外框架。
 
 页面规划与实现状态：
 - `/` 首页 ✅ 已实现：Hero + featured 项目卡片 + 查看全部链接 + Agent CTA（精选橱窗模式）
 - `/resume` 在线简历页 ✅ 已实现：教育 + 经历 + 技能 + 项目索引 + PDF 下载入口（缺文件时降级为待补充文案）
 - `/projects` 项目列表页 ✅ 已实现：全部项目卡片网格（含类型/角色/公司/详情链接）
 - `/projects/[slug]` 项目详情页 ✅ 已实现：九段式正文 + 元信息 + 返回链接
-- `/agent` Agent 页面 ⬜ 待建（阶段 2）：聊天 UI + 预设问题 + JD 粘贴框
+- `/agent` Agent 页面 ✅ 已实现（阶段 2）：聊天 UI + 预设问题 + JD 粘贴分析 + SSE 流式响应；当前为无记忆 Agent MVP
 - `/admin` 私有面板 ⬜ 待建（阶段 4）
 
 ## 关键文件地图
@@ -112,7 +112,7 @@ portfolio_website/
 │   ├── homepage.spec.ts       # 3 个 E2E 渲染测试
 │   ├── qa-full.spec.ts        # 33 个 QA 场景测试（P0/P1/P2）
 │   └── schema-validation.ts   # 4 个 schema 校验测试（tsx）
-├── functions/api/             # Pages Functions（待建立）
+├── functions/api/             # Pages Functions：chat.ts + provider 抽象 + read_file tool
 ├── public/                    # 静态资源（待放 PDF）
 ├── migrations/                # D1 schema（待建立）
 ├── docs/
@@ -156,9 +156,9 @@ summary: <一句话摘要>           # 必填，供 Agent 文件索引用
 
 ```text
 所有命令在仓库根目录执行。
-开发：npm run dev（Astro dev，http://localhost:4321）
+开发：npm run dev（build 后用本地 Node harness 运行 dist/ + /api/chat，默认 http://localhost:4321；若端口占用会自动尝试后续端口）
 构建：npm run build（构建到 dist/）
-预览：npm run preview（预览构建产物）
+预览：npm run preview（用本地 Node harness 预览 dist/ + /api/chat）
 E2E 测试：npm test（Playwright，自动启动 preview 作为 webServer）
 schema 测试：npm run test:schema（tsx 脚本，自动 build 验证 frontmatter）
 Lighthouse：npm run test:lighthouse（自动 build + preview + 审计 7 个公开静态页面）
@@ -168,11 +168,11 @@ Lighthouse：npm run test:lighthouse（自动 build + preview + 审计 7 个公�
 ## 默认验证方式
 
 ```text
-- 前端页面改动：npm run build + npm run preview 本地预览，确认内容来自 content/ 而非硬编码
+- 前端页面改动：npm run build + npm run preview 本地预览，确认内容来自 content/ 而非硬编码；涉及 `/api/chat` 时使用默认 `npm run dev` / `npm run preview`，不要使用 `dev:astro` / `preview:astro`
 - Content Collections schema：npm run build 时 Zod 校验，字段缺失/类型错会报错；npm run test:schema 用 fixture 跑边界用例
 - E2E：npm test 跑 Playwright（70 个测试，覆盖 5 页面可访问性/内容驱动/导航/hover/触屏/键盘/404/console error）
 - Lighthouse：npm run test:lighthouse 跑 7 个公开静态页面，当前基线为 Performance 100 / Accessibility 95 / Best Practices 96 / SEO 90（全部页面一致，均 ≥ 90）
-- Agent 降级路径：手动模拟 LLM API / D1 失败，确认降级提示正常（阶段 2 后适用）
+- Agent 验证：`npm run test:agent-provider` 验证 DeepSeek/MiMo 真实 provider smoke test；手动模拟 LLM API 失败确认降级提示正常。D1 失败分支阶段 3 后适用
 - 高成本检查：完整 Cloudflare 部署验证，不作为默认快速验证方式
 ```
 

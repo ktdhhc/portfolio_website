@@ -23,3 +23,7 @@ _Avoid_: Agent 知识库、私有项目资料、agent knowledge base、private p
 **短期记忆（Short-Term Memory）**:
 同一访客（基于浏览器本地标识）在 24 小时内可见的对话上下文延续。超过 24 小时后，访客侧不再延续历史（视为新会话），但 D1 中的对话记录永久保留供管理者下载分析，不自动删除。区别于长期记忆（跨天以上的持久化，第一版不做）。
 _Avoid_: 会话记忆、24h 上下文、session memory、day memory
+
+**JD 粘贴分析（JD Paste Analysis）**:
+访客将岗位描述粘贴给 Candidate Agent，请其基于现有简历、项目文档和公开作品资料，分析候选人与该岗位的匹配点、风险点和建议追问。它属于 Candidate Agent 的资料问答能力，不是独立的评测系统或招聘自动化流程。
+_Avoid_: JD 评测、岗位打分器、自动筛选、job scoring
