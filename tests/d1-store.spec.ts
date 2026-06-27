@@ -75,6 +75,26 @@ function wrapAsD1(db: DatabaseSync) {
   };
 }
 
+async function withMockedNow<T>(iso: string, fn: () => Promise<T>): Promise<T> {
+  const RealDate = Date;
+  const fixed = new RealDate(iso);
+  class MockDate extends RealDate {
+    constructor(...args: ConstructorParameters<typeof Date>) {
+      super(args.length === 0 ? fixed.toISOString() : (args[0] as string | number | Date));
+    }
+    static override now(): number {
+      return fixed.getTime();
+    }
+  }
+  // @ts-expect-error test-only Date override
+  globalThis.Date = MockDate;
+  try {
+    return await fn();
+  } finally {
+    globalThis.Date = RealDate;
+  }
+}
+
 // ─────────────────────────────
 // D1 Store 实现
 // ─────────────────────────────
@@ -141,4 +161,15 @@ test('d1-05: D1 限频全局阈值拒绝', async () => {
   const result = await stores.rateLimitStore.checkAndIncrement('d1-uuid-5b');
   expect(result.allowed).toBe(false);
   expect(result.reason).toBe('global_limit');
+});
+
+test('d1-06: D1 限频分桶使用人类可读月份（6月不是5月）', async () => {
+  await withMockedNow('2026-06-27T04:00:00.000Z', async () => {
+    const db = wrapAsD1(makeDb());
+    const stores = createD1Stores(db as never);
+    await stores.rateLimitStore.checkAndIncrement('d1-uuid-6');
+    const row = await db.prepare('SELECT hour_bucket, date_bucket FROM rate_limit_counters WHERE visitor_uuid = ?').bind('d1-uuid-6').first() as Record<string, unknown>;
+    expect(String(row.hour_bucket).startsWith('2026-6-')).toBe(true);
+    expect(String(row.date_bucket).startsWith('2026-6-')).toBe(true);
+  });
 });

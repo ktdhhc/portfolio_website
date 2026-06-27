@@ -35,12 +35,12 @@ export class FakeRateLimitStore implements RateLimitStore {
 
   private currentHourBucket(): string {
     const d = new Date(Date.now() + this.nowOffset);
-    return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}-${d.getHours()}`;
+    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-${d.getHours()}`;
   }
 
   private currentDateBucket(): string {
     const d = new Date(Date.now() + this.nowOffset);
-    return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
   }
 
   async checkAndIncrement(visitorUuid: string): Promise<RateLimitResult> {

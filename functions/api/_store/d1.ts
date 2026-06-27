@@ -6,12 +6,12 @@ import type { BehaviorEventStore, AgentTurnStore, RateLimitStore, StoreEnv, Beha
 
 function hourBucket(): string {
   const d = new Date();
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}-${d.getHours()}`;
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-${d.getHours()}`;
 }
 
 function dateBucket(): string {
   const d = new Date();
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 }
 
 export function createD1Stores(db: D1Database) {

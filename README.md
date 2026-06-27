@@ -4,14 +4,14 @@
 
 ## 技术栈
 
-- **前端框架**：Astro 5（默认零 JS 静态输出，Agent 聊天框用 React Island）
+- **前端框架**：Astro 7（默认零 JS 静态输出）
 - **样式**：手写 CSS + Astro 原生 `<style>` 组件级隔离，不引入 Tailwind
 - **内容管理**：Markdown / JSON，通过 Content Collections + Zod schema 校验
-- **API**：Cloudflare Pages Functions（规划中）
-- **数据库**：Cloudflare D1（规划中）
+- **API**：Cloudflare Pages Functions（`/api/chat` + `/api/track`）
+- **数据库**：Cloudflare D1（`behavior_events`、`agent_turns`、`rate_limit_counters`）
 - **模型**：外部 LLM API（DeepSeek + MiMo，部署时环境变量切换）
 - **部署**：Cloudflare Pages，GitHub 私有仓库，main 分支自动部署
-- **测试**：Playwright（E2E）+ tsx 脚本（schema 校验）
+- **测试**：Playwright（E2E + API seam）+ tsx / sqlite smoke 脚本
 
 ## 环境要求
 
@@ -44,6 +44,9 @@ npm test
 # 运行 schema 校验测试（自动 build 验证 frontmatter）
 npm run test:schema
 
+# 阶段 3 数据层 smoke test
+npm run test:stage3
+
 # Playwright UI 模式
 npm run test:ui
 ```
@@ -66,38 +69,31 @@ npm run build && npm test && npm run test:schema
 portfolio_website/
 ├── content/                    # 个人资料（Git 管理）
 │   ├── profile.json            # 姓名/联系方式/定位
-│   ├── resume.json             # 教育/经历/技能（待建立）
+│   ├── resume.json             # 教育/经历/技能
 │   ├── projects/
 │   │   └── {slug}/
 │   │       ├── index.md        # 项目详情页正文（九段式）
 │   │       └── refs/           # Agent 参考资料（不生成公开路由）
 │   └── agent/
-│       ├── system-prompt.md    # Agent 人格与边界（待建立）
-│       └── answer-rules.md     # 回答规则（待建立）
+│       ├── system-prompt.md    # Agent 人格与边界
+│       └── answer-rules.md     # 回答规则
 ├── src/
 │   ├── pages/                  # Astro 路由
 │   ├── components/             # 复用组件
 │   ├── layouts/                # 基础布局
 │   ├── styles/                 # 全局样式
 │   └── content.config.ts       # Content Collections schema（Zod）
-├── functions/api/              # Cloudflare Pages Functions（待建立）
+├── functions/api/              # Cloudflare Pages Functions（chat / track / store）
 ├── public/                     # 静态资源（PDF 简历等）
-├── migrations/                 # D1 schema（待建立）
+├── migrations/                 # D1 schema
 ├── tests/                      # 测试
-│   ├── homepage.spec.ts        # E2E 渲染测试
+│   ├── homepage.spec.ts        # 页面 E2E
+│   ├── agent.spec.ts           # Agent E2E + API seam
+│   ├── track.spec.ts           # track / behavior event E2E + API seam
+│   ├── d1-store.spec.ts        # D1 store sqlite seam
 │   └── schema-validation.ts    # schema 校验脚本
-├── docs/                       # 文档
-│   ├── 产品大纲.md
-│   ├── personal_profile.md
-│   ├── FRONTEND_DESIGN.md      # 前端稳定设计约束
-│   ├── CURRENT_STATE.md        # 当前项目事实快照
-│   ├── adr/                    # 7 个架构决策记录
-│   ├── plans/                  # 实施方案
-│   ├── prd/                    # PRD
-│   └── issues/                 # Issue 跟踪
 ├── demo/                       # 设计原型（非生产代码）
 ├── CONTEXT.md                  # 领域术语表
-├── AGENTS.md                   # coding agent 工作规则
 ├── astro.config.mjs
 ├── playwright.config.ts
 ├── tsconfig.json
@@ -143,22 +139,24 @@ summary: string           # 必填，供 Agent 文件索引
 | 变量 | 用途 |
 |------|------|
 | `DEEPSEEK_API_KEY` | DeepSeek API key |
+| `DEEPSEEK_BASE_URL` | DeepSeek OpenAI-compatible endpoint |
+| `DEEPSEEK_MODEL` | DeepSeek model name |
 | `MIMO_API_KEY` | MiMo API key |
+| `MIMO_BASE_URL` | MiMo OpenAI-compatible endpoint |
+| `MIMO_MODEL` | MiMo model name |
 | `ACTIVE_PROVIDER` | 当前生效供应商：`deepseek` \| `mimo` |
 | `ADMIN_TOKEN` | admin 面板访问 token |
 
-## 文档导航
-
-- **新会话首选读**：`docs/CURRENT_STATE.md`（当前事实快照）
-- **术语参考**：`CONTEXT.md`（领域术语表）
-- **前端约束**：`docs/FRONTEND_DESIGN.md`（稳定设计规范）
-- **架构决策**：`docs/adr/`（7 个 ADR）
-- **工作规则**：`AGENTS.md`（coding agent 操作指南）
-- **实施方案**：`docs/plans/initial-implementation-plan.md`
-- **阶段 0 PRD**：`docs/prd/stage-0-scaffold-and-content-model.md`
+数据库通过 Cloudflare Pages 的 D1 binding 注入，变量名固定为 `DB`。
 
 ## 当前状态
 
-阶段 0 进行中：Astro 工程已初始化，Content Collections schema 已建立，Aindexer 项目内容已建模，E2E + schema 测试跑通。剩余工作见 `docs/issues/`。
+阶段 3 已完成：
 
-详细当前事实见 `docs/CURRENT_STATE.md`。
+- Candidate Agent 无记忆问答主链路已上线
+- `Behavior Event` 已覆盖页面浏览、PDF 下载、项目点击、外链点击与 `agent_open`
+- `Agent Turn` 已记录普通提问与 JD 粘贴分析
+- UUID 限频与全局限频已接通
+- D1 退化时主链路保持可用
+
+当前仓库保留运行所需的源码、测试、迁移和部署配置；规划与过程型文档仅保留在本地工作区，不随仓库同步。

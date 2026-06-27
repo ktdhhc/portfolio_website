@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Kaho</title>
+    <style>
+        :root {
+            --bg: #faf8f5;
+            --bg-elevated: #ffffff;
+            --bg-muted: #f5f0e8;
+            --border: #e8e0d4;
+            --border-hover: #d4ccc0;
+            --fg: #1f2329;
+            --fg-secondary: #5c5652;
+            --fg-muted: #9a9590;
+            --accent: #d4a574;
+            --accent-dark: #b8895a;
+            --accent-bg: #fef6ee;
+            --success: #6dbf7a;
+            --warning: #e9c46a;
+            --danger: #e07a5f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: "";
+            position: fixed; inset: 0;
+            opacity: 0.015;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 9999;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 1.25rem 0;
+            background: rgba(250, 248, 245, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+        }
+        nav .container {
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            font-weight: 700; font-size: 1.15rem;
+            letter-spacing: -0.02em;
+            color: var(--fg);
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex; gap: 1.5rem; list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--fg-secondary); text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        .nav-links a:hover { color: var(--fg); }
+        .logout-link {
+            padding: 0.4rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        .logout-link:hover {
+            border-color: var(--fg-muted);
+            color: var(--fg);
+        }
+
+        /* ── Hero ── */
+        .hero {
+            padding: 10rem 0 4rem;
+        }
+        .hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .hero h1 {
+            font-size: 2.25rem; font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+        .hero-desc {
+            color: var(--fg-secondary);
+            font-size: 0.95rem;
+        }
+        .period-selector {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.3rem;
+        }
+        .period-btn {
+            padding: 0.4rem 0.9rem;
+            border: none;
+            background: transparent;
+            color: var(--fg-secondary);
+            font-size: 0.85rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .period-btn:hover { color: var(--fg); }
+        .period-btn.active {
+            background: var(--fg);
+            color: var(--bg);
+        }
+
+        /* ── Section ── */
+        section { margin-bottom: 5rem; }
+        .section-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .section-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .section-tag {
+            font-size: 0.7rem; color: var(--accent-dark);
+            text-transform: uppercase; letter-spacing: 0.15em;
+            font-weight: 500;
+            background: var(--accent-bg);
+            padding: 0.25rem 0.6rem;
+            border-radius: 100px;
+        }
+        .section-title {
+            font-size: 1.25rem; font-weight: 600;
+        }
+        .section-action {
+            font-size: 0.85rem; color: var(--fg-secondary);
+        }
+
+        /* ── Stats Grid ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 5rem;
+        }
+        .stat-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+        .stat-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 4px 20px rgba(31, 35, 41, 0.05);
+        }
+        .stat-label {
+            font-size: 0.8rem; color: var(--fg-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.75rem;
+        }
+        .stat-value {
+            font-size: 2rem; font-weight: 700;
+            color: var(--fg);
+            margin-bottom: 0.5rem;
+        }
+        .stat-change {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .stat-change.up { color: var(--success); }
+        .stat-change.down { color: var(--danger); }
+        .stat-change.neutral { color: var(--fg-muted); }
+
+        /* ── Two Column Layout ── */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* ── Ranking Cards ── */
+        .rank-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .rank-list {
+            list-style: none;
+        }
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .rank-item:last-child { border-bottom: none; }
+        .rank-num {
+            width: 24px; height: 24px;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--bg-muted);
+            border-radius: 6px;
+            font-size: 0.75rem; font-weight: 600;
+            color: var(--fg-secondary);
+            flex-shrink: 0;
+        }
+        .rank-num.top {
+            background: var(--accent-bg);
+            color: var(--accent-dark);
+        }
+        .rank-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .rank-name {
+            font-size: 0.9rem; font-weight: 500;
+            color: var(--fg);
+            margin-bottom: 0.15rem;
+        }
+        .rank-meta {
+            font-size: 0.8rem; color: var(--fg-muted);
+        }
+        .rank-bar {
+            width: 60px; height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .rank-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+        .rank-value {
+            font-size: 0.85rem; font-weight: 600;
+            color: var(--fg-secondary);
+            width: 40px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        /* ── Tag Cloud ── */
+        .cloud-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .cloud-tag {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.9rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--fg-secondary);
+            transition: all 0.2s ease;
+        }
+        .cloud-tag:hover {
+            border-color: var(--accent);
+            color: var(--fg);
+        }
+        .cloud-tag-count {
+            background: var(--accent-bg);
+            color: var(--accent-dark);
+            padding: 0.1rem 0.4rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* ── Issue List ── */
+        .issue-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .issue-list {
+            list-style: none;
+        }
+        .issue-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .issue-item:last-child { border-bottom: none; }
+        .issue-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin-top: 0.45rem;
+            flex-shrink: 0;
+        }
+        .issue-dot.error { background: var(--danger); }
+        .issue-dot.warn { background: var(--warning); }
+        .issue-content {
+            flex: 1;
+        }
+        .issue-title {
+            font-size: 0.9rem; font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+        .issue-meta {
+            font-size: 0.8rem; color: var(--fg-muted);
+        }
+        .issue-count {
+            font-size: 0.85rem; font-weight: 600;
+            color: var(--fg-secondary);
+        }
+
+        /* ── Records Management ── */
+        .records-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .records-actions {
+            display: flex; gap: 0.75rem;
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.6rem 1.1rem;
+            border-radius: 8px;
+            font-size: 0.85rem; font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer; border: 1px solid var(--border);
+            background: var(--bg-elevated);
+            color: var(--fg-secondary);
+        }
+        .btn:hover {
+            border-color: var(--fg-muted);
+            color: var(--fg);
+        }
+        .btn-primary {
+            background: var(--fg);
+            color: var(--bg);
+            border-color: var(--fg);
+        }
+        .btn-primary:hover { opacity: 0.85; }
+        .btn-danger {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+        .btn-danger:hover {
+            background: var(--danger);
+            color: var(--bg);
+        }
+
+        .record-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        .record-card:hover {
+            border-color: var(--border-hover);
+        }
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .record-question {
+            font-size: 0.95rem;
+            color: var(--fg);
+            line-height: 1.5;
+        }
+        .record-time {
+            font-size: 0.8rem; color: var(--fg-muted);
+            white-space: nowrap;
+        }
+        .record-empty {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--fg-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ── Login Screen ── */
+        .login-overlay {
+            position: fixed; inset: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .login-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-card h2 {
+            font-size: 1.5rem; font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .login-card p {
+            color: var(--fg-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .login-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--bg);
+            color: var(--fg);
+            margin-bottom: 1rem;
+        }
+        .login-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--fg);
+            color: var(--bg);
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        .login-btn:hover { opacity: 0.85; }
+        .login-error {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .hidden { display: none !important; }
+
+        /* ── Footer ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        .footer-copy {
+            font-size: 0.8rem; color: var(--fg-muted);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 720px) {
+            .two-col { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .hero-top { flex-direction: column; align-items: flex-start; }
+            .records-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <p>请输入管理员 token 访问数据面板</p>
+            <input type="password" class="login-input" id="tokenInput" placeholder="admin-token" value="demo">
+            <button class="login-btn" onclick="login()">进入面板</button>
+            <p class="login-error" id="loginError">Token 错误</p>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden">
+        <nav>
+            <div class="container">
+                <a href="index.html" class="nav-logo">Kaho</a>
+                <ul class="nav-links">
+                    <li><a href="index.html" target="_blank">查看主页</a></li>
+                    <li><a href="#" class="logout-link" onclick="logout()">退出</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <section class="hero">
+            <div class="container">
+                <div class="hero-top">
+                    <div>
+                        <h1>数据面板</h1>
+                        <p class="hero-desc">了解访客行为、Agent 使用情况与页面表现</p>
+                    </div>
+                    <div class="period-selector">
+                        <button class="period-btn" onclick="setPeriod(this, 'today')">今日</button>
+                        <button class="period-btn active" onclick="setPeriod(this, 'week')">本周</button>
+                        <button class="period-btn" onclick="setPeriod(this, 'month')">本月</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">页面访问</div>
+                    <div class="stat-value">1,284</div>
+                    <div class="stat-change up">↑ 12% 较上周</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">简历下载</div>
+                    <div class="stat-value">47</div>
+                    <div class="stat-change up">↑ 8% 较上周</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Agent 提问</div>
+                    <div class="stat-value">326</div>
+                    <div class="stat-change up">↑ 24% 较上周</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">JD 分析</div>
+                    <div class="stat-value">18</div>
+                    <div class="stat-change neutral">— 与上周持平</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">平均停留</div>
+                    <div class="stat-value">3m 42s</div>
+                    <div class="stat-change up">↑ 6% 较上周</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Agent 失败</div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-change down">↑ 2 较上周</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="two-col">
+                <div>
+                    <div class="section-header">
+                        <div class="section-title-group">
+                            <span class="section-tag">Pages</span>
+                            <h2 class="section-title">热门页面</h2>
+                        </div>
+                    </div>
+                    <div class="rank-card">
+                        <ul class="rank-list">
+                            <li class="rank-item">
+                                <span class="rank-num top">1</span>
+                                <div class="rank-info">
+                                    <div class="rank-name">首页 /</div>
+                                    <div class="rank-meta">58% 的访问</div>
+                                </div>
+                                <div class="rank-bar"><div class="rank-bar-fill" style="width: 100%;"></div></div>
+                                <span class="rank-value">745</span>
+                            </li>
+                            <li class="rank-item">
+                                <span class="rank-num top">2</span>
+                                <div class="rank-info">
+                                    <div class="rank-name">在线简历 /resume</div>
+                                    <div class="rank-meta">22% 的访问</div>
+                                </div>
+                                <div class="rank-bar"><div class="rank-bar-fill" style="width: 62%;"></div></div>
+                                <span class="rank-value">283</span>
+                            </li>
+                            <li class="rank-item">
+                                <span class="rank-num">3</span>
+                                <div class="rank-info">
+                                    <div class="rank-name">Agent 对话 /agent</div>
+                                    <div class="rank-meta">15% 的访问</div>
+                                </div>
+                                <div class="rank-bar"><div class="rank-bar-fill" style="width: 42%;"></div></div>
+                                <span class="rank-value">193</span>
+                            </li>
+                            <li class="rank-item">
+                                <span class="rank-num">4</span>
+                                <div class="rank-info">
+                                    <div class="rank-name">项目列表 /projects</div>
+                                    <div class="rank-meta">5% 的访问</div>
+                                </div>
+                                <div class="rank-bar"><div class="rank-bar-fill" style="width: 18%;"></div></div>
+                                <span class="rank-value">63</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="section-header">
+                        <div class="section-title-group">
+                            <span class="section-tag">Projects</span>
+                            <h2 class="section-title">项目点击排行</h2>
+                        </div>
+                    </div>
+                    <div class="rank-card">
+                        <ul class="rank-list">
+                            <li class="rank-item">
+                                <span class="rank-num top">1</span>
+                                <div class="rank-info">
+                                    <div class="rank-name">Aindexer</div>
+                                    <div class="rank-meta">文献索引与翻译工作台</div>
+                                </div>
+                                <div class="rank-bar"><div class="rank-bar-fill" style="width: 100%;"></div></div>
+                                <span class="rank-value">156</span>
+                            </li>
+                            <li class="rank-item">
+                                <span class="rank-num top">2</span>
+                                <div class="rank-info">
+                                    <div class="rank-name">角色记忆情境数据构建平台</div>
+                                    <div class="rank-meta">角色数据工作台</div>
+                                </div>
+                                <div class="rank-bar"><div class="rank-bar-fill" style="width: 45%;"></div></div>
+                                <span class="rank-value">71</span>
+                            </li>
+                            <li class="rank-item">
+                                <span class="rank-num">3</span>
+                                <div class="rank-info">
+                                    <div class="rank-name">Candidate Agent</div>
+                                    <div class="rank-meta">简历辅助 Agent</div>
+                                </div>
+                                <div class="rank-bar"><div class="rank-bar-fill" style="width: 28%;"></div></div>
+                                <span class="rank-value">44</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <span class="section-tag">Agent</span>
+                    <h2 class="section-title">高频问题</h2>
+                </div>
+                <span class="section-action">近 30 天提问分布</span>
+            </div>
+            <div class="cloud-card">
+                <div class="tag-cloud">
+                    <span class="cloud-tag">项目经验 <span class="cloud-tag-count">68</span></span>
+                    <span class="cloud-tag">岗位匹配 <span class="cloud-tag-count">54</span></span>
+                    <span class="cloud-tag">技术栈 <span class="cloud-tag-count">43</span></span>
+                    <span class="cloud-tag">自我介绍 <span class="cloud-tag-count">38</span></span>
+                    <span class="cloud-tag">Aindexer <span class="cloud-tag-count">31</span></span>
+                    <span class="cloud-tag">面试问题 <span class="cloud-tag-count">27</span></span>
+                    <span class="cloud-tag">认知科学 <span class="cloud-tag-count">19</span></span>
+                    <span class="cloud-tag">JD 分析 <span class="cloud-tag-count">18</span></span>
+                    <span class="cloud-tag">工作方式 <span class="cloud-tag-count">15</span></span>
+                    <span class="cloud-tag">教育背景 <span class="cloud-tag-count">13</span></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <span class="section-tag">Issues</span>
+                    <h2 class="section-title">Agent 失败记录</h2>
+                </div>
+                <span class="section-action">最近 7 天</span>
+            </div>
+            <div class="issue-card">
+                <ul class="issue-list">
+                    <li class="issue-item">
+                        <span class="issue-dot error"></span>
+                        <div class="issue-content">
+                            <div class="issue-title">模型 API 调用超时</div>
+                            <div class="issue-meta">DeepSeek API · 2026-06-26 14:32</div>
+                        </div>
+                        <span class="issue-count">2 次</span>
+                    </li>
+                    <li class="issue-item">
+                        <span class="issue-dot warn"></span>
+                        <div class="issue-content">
+                            <div class="issue-title">回答长度超过限制被截断</div>
+                            <div class="issue-meta">MiMo API · 2026-06-25 09:18</div>
+                        </div>
+                        <span class="issue-count">2 次</span>
+                    </li>
+                    <li class="issue-item">
+                        <span class="issue-dot error"></span>
+                        <div class="issue-content">
+                            <div class="issue-title">D1 数据库写入失败</div>
+                            <div class="issue-meta">Cloudflare D1 · 2026-06-24 22:05</div>
+                        </div>
+                        <span class="issue-count">1 次</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <span class="section-tag">Records</span>
+                    <h2 class="section-title">提问记录管理</h2>
+                </div>
+                <span class="section-action">共 326 条记录</span>
+            </div>
+            <div class="records-header">
+                <p style="color: var(--fg-secondary); font-size: 0.9rem;">提问原文入库保存，可导出或手动清理</p>
+                <div class="records-actions">
+                    <button class="btn" onclick="exportRecords()">导出 CSV</button>
+                    <button class="btn btn-danger" onclick="clearRecords()">全部清理</button>
+                </div>
+            </div>
+
+            <div id="recordsList">
+                <div class="record-card">
+                    <div class="record-header">
+                        <p class="record-question">请介绍一下你的 Agent 系统设计经验</p>
+                        <span class="record-time">2026-06-28 10:23</span>
+                    </div>
+                </div>
+                <div class="record-card">
+                    <div class="record-header">
+                        <p class="record-question">Aindexer 和 Zotero 相比有什么优势？</p>
+                        <span class="record-time">2026-06-28 09:56</span>
+                    </div>
+                </div>
+                <div class="record-card">
+                    <div class="record-header">
+                        <p class="record-question">你如何看待 AI Agent 的幻觉问题？</p>
+                        <span class="record-time">2026-06-27 18:41</span>
+                    </div>
+                </div>
+                <div class="record-card">
+                    <div class="record-header">
+                        <p class="record-question">帮我分析这个岗位的匹配度 [ pasted JD ]</p>
+                        <span class="record-time">2026-06-27 15:12</span>
+                    </div>
+                </div>
+                <div class="record-card">
+                    <div class="record-header">
+                        <p class="record-question">你熟悉哪些 LLM API 和框架？</p>
+                        <span class="record-time">2026-06-27 11:08</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <p class="footer-copy">© 2025 Kaho · Admin Dashboard</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function login() {
+            const input = document.getElementById('tokenInput').value;
+            if (input === 'demo') {
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('loginError').style.display = 'none';
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('tokenInput').value = '';
+        }
+
+        function setPeriod(btn, period) {
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function exportRecords() {
+            alert('导出 CSV 功能（实际项目中调用 /api/admin/logs/export）');
+        }
+
+        function clearRecords() {
+            if (confirm('确定要清空所有提问记录吗？此操作不可恢复。')) {
+                document.getElementById('recordsList').innerHTML = '<div class="record-empty">暂无提问记录</div>';
+            }
+        }
+
+        document.getElementById('tokenInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>
