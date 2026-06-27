@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 import { onRequestPost as chat } from '../functions/api/chat';
+import { onRequestPost as track } from '../functions/api/track';
 
 function loadDotEnv() {
   if (!existsSync('.env')) return;
@@ -95,6 +96,23 @@ const server = createServer(async (req, res) => {
         body: requestBody,
       });
       const response = await chat({ request, env: process.env } as never);
+      await writeFetchResponse(res, response);
+      return;
+    }
+
+    if (url.pathname === '/api/track' && req.method === 'POST') {
+      const body = await readRequestBody(req);
+      let requestBody: ArrayBuffer | undefined;
+      if (body) {
+        requestBody = new ArrayBuffer(body.byteLength);
+        new Uint8Array(requestBody).set(body);
+      }
+      const request = new Request(url, {
+        method: 'POST',
+        headers: req.headers as HeadersInit,
+        body: requestBody,
+      });
+      const response = await track({ request, env: process.env } as never);
       await writeFetchResponse(res, response);
       return;
     }

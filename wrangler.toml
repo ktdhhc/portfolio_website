@@ -1,0 +1,15 @@
+# Cloudflare Pages 配置
+# 生产部署时需要绑定 D1 数据库
+
+name = "portfolio-website"
+compatibility_date = "2024-09-01"
+pages_build_output_dir = "dist"
+
+# D1 数据库绑定
+# 部署前需先创建 D1 数据库：
+#   wrangler d1 create portfolio-db
+# 然后将返回的 database_id 填入下方
+[[d1_databases]]
+binding = "DB"
+database_name = "portfolio-db"
+database_id = "5e732b9d-ecd5-456a-aa3b-3a8984d10bc7"

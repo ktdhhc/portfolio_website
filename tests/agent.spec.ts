@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { onRequestPost } from '../functions/api/chat';
+import { FakeAgentTurnStore } from '../functions/api/_store/fake';
+import { FakeRateLimitStore } from '../functions/api/_store/fake';
 
 // 解析 SSE body 提取 delta content
 function extractDeltaFromSse(body: string): string {
@@ -271,4 +273,223 @@ test('013-05: tool-use 流程中 SSE 包含 status、tool_done、delta、done �
   expect(body).toContain('"type":"tool_done"');
   expect(body).toContain('"type":"delta"');
   expect(body).toContain('"type":"done"');
+});
+
+// ─────────────────────────────
+// Issue 017: Agent Turn 记录 + JD 类型归类 + Tool Trace 摘要
+// ─────────────────────────────
+
+test('017-01: 普通提问成功后写入一条 agent_turn', async () => {
+  const fakeTurnStore = new FakeAgentTurnStore();
+  const response = await onRequestPost({
+    request: new Request('http://localhost/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorUuid: 'test-uuid-017',
+        agentSessionId: 'test-session-017',
+        messages: [{ role: 'user', content: '你好' }],
+      }),
+    }),
+    env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: fakeTurnStore },
+  } as never);
+  await response.text();
+  expect(response.status).toBe(200);
+  expect(fakeTurnStore.records).toHaveLength(1);
+  expect(fakeTurnStore.records[0].visitorUuid).toBe('test-uuid-017');
+  expect(fakeTurnStore.records[0].agentSessionId).toBe('test-session-017');
+  expect(fakeTurnStore.records[0].userMessage).toBe('你好');
+  expect(fakeTurnStore.records[0].turnType).toBe('chat');
+});
+
+test('017-02: JD 粘贴分析被记录为独立 turn_type', async () => {
+  const fakeTurnStore = new FakeAgentTurnStore();
+  const response = await onRequestPost({
+    request: new Request('http://localhost/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorUuid: 'test-uuid-017b',
+        agentSessionId: 'test-session-017b',
+        turnType: 'jd_analysis',
+        messages: [{ role: 'user', content: '请基于以下岗位描述分析候选人：需要 AI Agent 工程师' }],
+      }),
+    }),
+    env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: fakeTurnStore },
+  } as never);
+  await response.text();
+  expect(response.status).toBe(200);
+  expect(fakeTurnStore.records).toHaveLength(1);
+  expect(fakeTurnStore.records[0].turnType).toBe('jd_analysis');
+});
+
+test('017-03: Tool Trace 只保存摘要，不保存完整工具返回内容', async () => {
+  const fakeTurnStore = new FakeAgentTurnStore();
+  const response = await onRequestPost({
+    request: new Request('http://localhost/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorUuid: 'test-uuid-017c',
+        agentSessionId: 'test-session-017c',
+        messages: [{ role: 'user', content: '请介绍 Aindexer 的项目细节' }],
+      }),
+    }),
+    env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: fakeTurnStore },
+  } as never);
+  const body = await response.text();
+  expect(response.status).toBe(200);
+  expect(fakeTurnStore.records).toHaveLength(1);
+  const trace = fakeTurnStore.records[0].toolTrace;
+  expect(trace).toBeDefined();
+  expect(JSON.stringify(trace)).not.toContain('本地化 AI 工作台');
+});
+
+test('017-04: D1 写入失败时 SSE 回答仍成功', async () => {
+  const failingStore: { insertTurn: () => Promise<void> } = {
+    async insertTurn() {
+      throw new Error('D1 unavailable');
+    },
+  };
+  const response = await onRequestPost({
+    request: new Request('http://localhost/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorUuid: 'test-uuid-017d',
+        agentSessionId: 'test-session-017d',
+        messages: [{ role: 'user', content: '你好' }],
+      }),
+    }),
+    env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: failingStore },
+  } as never);
+  const body = await response.text();
+  expect(response.status).toBe(200);
+  expect(body).toContain('data:');
+  expect(body).toContain('Candidate Agent');
+});
+
+// ─────────────────────────────
+// Issue 018: Agent Turn 限频 + 静默退化
+// ─────────────────────────────
+
+test('018-01: 同一 visitorUuid 超过每小时 20 次后，第 21 次命中限频', async () => {
+  const fakeRateLimit = new FakeRateLimitStore();
+  for (let i = 0; i < 20; i++) {
+    await fakeRateLimit.checkAndIncrement('test-uuid-018');
+  }
+  const response = await onRequestPost({
+    request: new Request('http://localhost/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorUuid: 'test-uuid-018',
+        agentSessionId: 'test-session-018',
+        messages: [{ role: 'user', content: '你好' }],
+      }),
+    }),
+    env: { ACTIVE_PROVIDER: 'test', RATE_LIMIT_STORE: fakeRateLimit },
+  } as never);
+  const body = await response.text();
+  expect(response.status).toBe(200);
+  expect(body).toContain('已达上限');
+});
+
+test('018-02: 全站超过每天 200 次后命中全局限频', async () => {
+  const fakeRateLimit = new FakeRateLimitStore();
+  fakeRateLimit.globalLimit = 1;
+  await fakeRateLimit.checkAndIncrement('filler-uuid');
+  const response = await onRequestPost({
+    request: new Request('http://localhost/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorUuid: 'test-uuid-018b',
+        agentSessionId: 'test-session-018b',
+        messages: [{ role: 'user', content: '你好' }],
+      }),
+    }),
+    env: { ACTIVE_PROVIDER: 'test', RATE_LIMIT_STORE: fakeRateLimit },
+  } as never);
+  const body = await response.text();
+  expect(response.status).toBe(200);
+  expect(body).toContain('已达上限');
+});
+
+test('018-03: 限频计数单位采用 Agent Turn，多轮 tool-use 只算 1 次', async () => {
+  const fakeRateLimit = new FakeRateLimitStore();
+  const fakeTurnStore = new FakeAgentTurnStore();
+  const response = await onRequestPost({
+    request: new Request('http://localhost/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorUuid: 'test-uuid-018c',
+        agentSessionId: 'test-session-018c',
+        messages: [{ role: 'user', content: '请介绍 Aindexer 的项目细节' }],
+      }),
+    }),
+    env: {
+      ACTIVE_PROVIDER: 'test',
+      RATE_LIMIT_STORE: fakeRateLimit,
+      AGENT_TURN_STORE: fakeTurnStore,
+    },
+  } as never);
+  await response.text();
+  expect(fakeRateLimit.uuidCounts.get('test-uuid-018c')).toBe(1);
+  expect(fakeRateLimit.globalCount).toBe(1);
+});
+
+test('018-04: D1 不可用时限频退化，Agent 主链路仍可回答', async () => {
+  const failingRateLimit: { checkAndIncrement: () => Promise<{ allowed: boolean }> } = {
+    async checkAndIncrement() {
+      throw new Error('D1 unavailable');
+    },
+  };
+  const response = await onRequestPost({
+    request: new Request('http://localhost/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        visitorUuid: 'test-uuid-018d',
+        agentSessionId: 'test-session-018d',
+        messages: [{ role: 'user', content: '你好' }],
+      }),
+    }),
+    env: { ACTIVE_PROVIDER: 'test', RATE_LIMIT_STORE: failingRateLimit },
+  } as never);
+  const body = await response.text();
+  expect(response.status).toBe(200);
+  expect(body).toContain('data:');
+  expect(body).toContain('Candidate Agent');
+});
+
+test('018-05: 跨小时后 UUID 限频计数重置', async () => {
+  const fakeRateLimit = new FakeRateLimitStore();
+  fakeRateLimit.uuidLimit = 2;
+  for (let i = 0; i < 2; i++) {
+    await fakeRateLimit.checkAndIncrement('test-uuid-window');
+  }
+  let result = await fakeRateLimit.checkAndIncrement('test-uuid-window');
+  expect(result.allowed).toBe(false);
+  expect(result.reason).toBe('uuid_limit');
+
+  fakeRateLimit.advanceTime(61 * 60 * 1000);
+  result = await fakeRateLimit.checkAndIncrement('test-uuid-window');
+  expect(result.allowed).toBe(true);
+});
+
+test('018-06: 跨天后全局限频计数重置', async () => {
+  const fakeRateLimit = new FakeRateLimitStore();
+  fakeRateLimit.globalLimit = 2;
+  for (let i = 0; i < 2; i++) {
+    await fakeRateLimit.checkAndIncrement('test-uuid-day-a');
+  }
+  let result = await fakeRateLimit.checkAndIncrement('test-uuid-day-b');
+  expect(result.allowed).toBe(false);
+  expect(result.reason).toBe('global_limit');
+
+  fakeRateLimit.advanceTime(25 * 60 * 60 * 1000);
+  result = await fakeRateLimit.checkAndIncrement('test-uuid-day-c');
+  expect(result.allowed).toBe(true);
 });

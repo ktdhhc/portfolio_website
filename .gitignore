@@ -20,9 +20,28 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
-# opencode tool config
-.opencode/
+# local-only docs / agent instructions / screenshots
+AGENTS.md
+CLAUDE.md
+docs/
+agent-demo-desktop.png
+agent-demo-mobile.png
+agent-demo-tablet.png
+
+# opencode project skills: keep tracked skill sources, ignore local deps/tool files
+.opencode/*
+!.opencode/skills/
+!.opencode/skills/prebuild-docs/
+!.opencode/skills/prebuild-docs/**
+.opencode/node_modules/
+.opencode/package.json
+.opencode/package-lock.json
+.opencode/.gitignore
+
+# opencode runtime / continuation state
 .omo/
+.codegraph/
+.playwright-mcp/
 
 # Playwright
 test-results/

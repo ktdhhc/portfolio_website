@@ -14,5 +14,67 @@ const { title, children } = Astro.props;
     <main>
       <slot />
     </main>
+    <script is:inline>
+      (function () {
+        var VISITOR_UUID_KEY = 'portfolio_visitor_uuid';
+
+        function getOrCreateVisitorUuid() {
+          try {
+            var uuid = localStorage.getItem(VISITOR_UUID_KEY);
+            if (!uuid) {
+              uuid = crypto.randomUUID();
+              localStorage.setItem(VISITOR_UUID_KEY, uuid);
+            }
+            return uuid;
+          } catch (e) {
+            return crypto.randomUUID();
+          }
+        }
+
+        var visitorUuid = getOrCreateVisitorUuid();
+        var pageEnterTime = Date.now();
+
+        function track(event) {
+          try {
+            var blob = new Blob(
+              [JSON.stringify({ visitorUuid: visitorUuid, events: [event] })],
+              { type: 'application/json' }
+            );
+            navigator.sendBeacon('/api/track', blob);
+          } catch (e) {
+            // 静默失败
+          }
+        }
+
+        track({ type: 'page_view', path: window.location.pathname });
+
+        window.addEventListener('beforeunload', function () {
+          track({
+            type: 'page_duration',
+            path: window.location.pathname,
+            durationMs: Date.now() - pageEnterTime,
+          });
+        });
+
+        document.addEventListener('click', function (e) {
+          var link = e.target.closest('a');
+          if (!link) return;
+          var href = link.href || '';
+
+          if (href.indexOf('resume.pdf') !== -1 || link.hasAttribute('download')) {
+            track({ type: 'pdf_download', path: window.location.pathname, targetKind: 'pdf', targetId: 'resume.pdf' });
+          } else if (href.indexOf('/projects/') !== -1) {
+            var slug = href.split('/projects/')[1];
+            if (slug && slug !== '' && slug !== '/') {
+              track({ type: 'project_click', path: window.location.pathname, targetKind: 'project', targetId: slug.replace(/\/$/, '') });
+            }
+          } else if (href.indexOf('mailto:') === 0) {
+            track({ type: 'external_click', path: window.location.pathname, targetKind: 'email', targetId: href });
+          } else if (link.target === '_blank' || (href.indexOf('http') === 0 && href.indexOf(window.location.origin) === -1)) {
+            track({ type: 'external_click', path: window.location.pathname, targetKind: 'link', targetId: href });
+          }
+        }, true);
+      })();
+    </script>
   </body>
 </html>

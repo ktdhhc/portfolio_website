@@ -475,6 +475,36 @@ const projects = await getCollection('projects');
     let isProcessing = false;
     let jdMode = false;
 
+    // ── Visitor UUID + Agent Session + agent_open ──
+    const VISITOR_UUID_KEY = 'portfolio_visitor_uuid';
+
+    function getOrCreateVisitorUuid() {
+      try {
+        let uuid = localStorage.getItem(VISITOR_UUID_KEY);
+        if (!uuid) {
+          uuid = crypto.randomUUID();
+          localStorage.setItem(VISITOR_UUID_KEY, uuid);
+        }
+        return uuid;
+      } catch {
+        return crypto.randomUUID();
+      }
+    }
+
+    const visitorUuid = getOrCreateVisitorUuid();
+    const agentSessionId = crypto.randomUUID();
+
+    function track(event) {
+      try {
+        const blob = new Blob([JSON.stringify({ visitorUuid, events: [event] })], { type: 'application/json' });
+        navigator.sendBeacon('/api/track', blob);
+      } catch {
+        // 静默失败：记录不可用不影响页面
+      }
+    }
+
+    track({ type: 'agent_open', agentSessionId });
+
     function setBusy(busy) {
       isProcessing = busy;
       input.disabled = busy;
@@ -707,7 +737,7 @@ const projects = await getCollection('projects');
       return html.join('\n');
     }
 
-    async function sendMessage(value) {
+    async function sendMessage(value, turnType) {
       const text = (value ?? input.value).trim();
       if (!text || isProcessing) return;
 
@@ -721,6 +751,9 @@ const projects = await getCollection('projects');
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            visitorUuid,
+            agentSessionId,
+            turnType: turnType || 'chat',
             messages: [{ role: 'user', content: text }],
           }),
         });
@@ -809,7 +842,7 @@ const projects = await getCollection('projects');
         const jd = jdInput.value.trim();
         if (!jd || isProcessing) return;
         jdInput.value = '';
-        sendMessage(`请基于以下岗位描述分析候选人的匹配点、风险点和建议追问：\n\n${jd}`);
+        sendMessage(`请基于以下岗位描述分析候选人的匹配点、风险点和建议追问：\n\n${jd}`, 'jd_analysis');
       } else {
         sendMessage();
       }

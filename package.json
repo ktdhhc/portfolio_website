@@ -12,14 +12,16 @@
     "test:ui": "playwright test --ui",
     "test:schema": "tsx tests/schema-validation.ts",
     "test:lighthouse": "node scripts/lighthouse-check.mjs",
-    "test:agent-provider": "node scripts/generate-agent-materials.mjs && tsx scripts/verify-agent-provider.ts"
+    "test:agent-provider": "node scripts/generate-agent-materials.mjs && tsx scripts/verify-agent-provider.ts",
+    "test:stage3": "node scripts/generate-agent-materials.mjs && tsx scripts/verify-stage3-data-layer.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260625.1",
     "@playwright/test": "^1.49.0",
     "lighthouse": "^13.4.0",
     "tsx": "^4.19.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "wrangler": "^4.105.0"
   },
   "dependencies": {
     "astro": "^7.0.2"
