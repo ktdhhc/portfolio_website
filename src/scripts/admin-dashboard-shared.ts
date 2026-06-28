@@ -153,12 +153,6 @@ export function getRequiredElement<T extends Element>(root: Document | Element, 
   return element;
 }
 
-export function getRequiredElement<T extends Element>(root: Document | Element, selector: string): T {
-  const element = root.querySelector<T>(selector);
-  if (!element) throw new Error(`Missing element: ${selector}`);
-  return element;
-}
-
 export function formatMetricValue(key: MetricKey, value: number): string {
   if (key !== 'avgPageDurationMs') return new Intl.NumberFormat('zh-CN').format(value);
   if (value <= 0) return '0s';

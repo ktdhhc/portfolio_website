@@ -7,12 +7,14 @@ import { StoreUnavailableError } from './errors';
 export class FakeBehaviorEventStore implements BehaviorEventStore {
   records: BehaviorEventRecord[] = [];
   writeFailures: StoreWriteFailureRecord[] = [];
+  shouldFailList = false;
 
   async insertEvents(records: BehaviorEventRecord[]): Promise<void> {
     this.records.push(...records);
   }
 
   async listEvents(window: PeriodWindow): Promise<readonly BehaviorEventRecord[]> {
+    if (this.shouldFailList) throw new StoreUnavailableError();
     return this.records.filter((record) => record.createdAt >= window.startInclusive && record.createdAt < window.endExclusive);
   }
 
@@ -24,6 +26,8 @@ export class FakeBehaviorEventStore implements BehaviorEventStore {
 export class FakeAgentTurnStore implements AgentTurnStore {
   records: AgentTurnRecord[] = [];
   writeFailures: StoreWriteFailureRecord[] = [];
+  shouldFailDelete = false;
+  shouldFailList = false;
 
   private withIds(): readonly AgentTurnRecord[] {
     return this.records.map((record, index) => ({
@@ -44,6 +48,7 @@ export class FakeAgentTurnStore implements AgentTurnStore {
   }
 
   async listTurns(window: PeriodWindow): Promise<readonly AgentTurnRecord[]> {
+    if (this.shouldFailList) throw new StoreUnavailableError();
     return this.inWindow(window);
   }
 
@@ -68,6 +73,31 @@ export class FakeAgentTurnStore implements AgentTurnStore {
 
   async listWriteFailures(window: PeriodWindow): Promise<readonly StoreWriteFailureRecord[]> {
     return this.writeFailures.filter((record) => record.occurredAt >= window.startInclusive && record.occurredAt < window.endExclusive);
+  }
+
+  async deleteTurnById(id: string, window: PeriodWindow): Promise<number> {
+    if (this.shouldFailDelete) throw new StoreUnavailableError();
+    const index = this.records.findIndex((record) => {
+      const recordId = record.id ?? String(this.records.indexOf(record) + 1);
+      return recordId === id && record.createdAt >= window.startInclusive && record.createdAt < window.endExclusive;
+    });
+    if (index === -1) return 0;
+    this.records.splice(index, 1);
+    return 1;
+  }
+
+  async deleteTurnsByRange(window: PeriodWindow): Promise<number> {
+    if (this.shouldFailDelete) throw new StoreUnavailableError();
+    const before = this.records.length;
+    this.records = this.records.filter((record) => record.createdAt < window.startInclusive || record.createdAt >= window.endExclusive);
+    return before - this.records.length;
+  }
+
+  async deleteAllTurns(): Promise<number> {
+    if (this.shouldFailDelete) throw new StoreUnavailableError();
+    const count = this.records.length;
+    this.records = [];
+    return count;
   }
 }
 

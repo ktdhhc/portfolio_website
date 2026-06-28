@@ -2,7 +2,8 @@ import { createServer } from 'node:http';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 import { onRequestPost as adminAuth } from '../functions/api/admin/auth';
-import { onRequestGet as adminLogs } from '../functions/api/admin/logs';
+import { onRequestGet as adminLogs, onRequestDelete as adminLogsDelete } from '../functions/api/admin/logs';
+import { onRequestGet as adminLogsExport } from '../functions/api/admin/logs-export';
 import { onRequestGet as adminAgentSummary } from '../functions/api/admin/stats/agent-summary';
 import { onRequestGet as adminIssues } from '../functions/api/admin/stats/issues';
 import { onRequestGet as adminOverview } from '../functions/api/admin/stats/overview';
@@ -141,7 +142,29 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === 'DELETE') {
+      if (url.pathname === '/api/admin/logs') {
+        const request = new Request(url, {
+          method: 'DELETE',
+          headers: req.headers as HeadersInit,
+        });
+        const response = await adminLogsDelete({ request, env: process.env } as never);
+        await writeFetchResponse(res, response);
+        return;
+      }
+    }
+
     if (req.method === 'GET') {
+      if (url.pathname === '/api/admin/logs/export') {
+        const request = new Request(url, {
+          method: 'GET',
+          headers: req.headers as HeadersInit,
+        });
+        const response = await adminLogsExport({ request, env: process.env } as never);
+        await writeFetchResponse(res, response);
+        return;
+      }
+
       if (url.pathname === '/api/admin/logs') {
         const request = new Request(url, {
           method: 'GET',

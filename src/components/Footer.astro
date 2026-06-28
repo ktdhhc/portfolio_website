@@ -1,5 +1,5 @@
 ---
-const { github, homepage, email } = Astro.props;
+const { github, homepage, email, showAdmin } = Astro.props;
 ---
 
 <footer>
@@ -9,7 +9,10 @@ const { github, homepage, email } = Astro.props;
       {homepage && <a href={homepage} target="_blank">产品主页</a>}
       {email && <a href={`mailto:${email}`}>Email</a>}
     </div>
-    <p class="footer-copy">© 2025 Kaho</p>
+    <p class="footer-copy">
+      © 2025 Kaho
+      {showAdmin && <a href="/admin" class="admin-link">Admin</a>}
+    </p>
   </div>
 </footer>
 
@@ -41,5 +44,15 @@ const { github, homepage, email } = Astro.props;
   .footer-copy {
     font-size: 0.8rem;
     color: var(--fg-muted);
+  }
+  .admin-link {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: var(--transition);
+  }
+  .admin-link:hover {
+    color: var(--fg-secondary);
   }
 </style>

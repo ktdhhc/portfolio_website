@@ -27,7 +27,7 @@ function fetchAdminJson(path: string, token: string, period: AdminStatsPeriod, e
 }
 
 export function initAdminDashboard(): void {
-  document.addEventListener('DOMContentLoaded', () => {
+  const setup = () => {
     const loginView = getRequiredElement<HTMLElement>(document, '[data-view="login"]');
     const dashboardView = getRequiredElement<HTMLElement>(document, '[data-view="dashboard"]');
     const loginButton = getRequiredElement<HTMLButtonElement>(document, '#loginButton');
@@ -82,13 +82,13 @@ export function initAdminDashboard(): void {
     };
 
     const showLogin = (): void => {
-      loginView.hidden = false;
-      dashboardView.hidden = true;
+      loginView.style.display = '';
+      dashboardView.style.display = 'none';
     };
 
     const showDashboard = (): void => {
-      loginView.hidden = true;
-      dashboardView.hidden = false;
+      loginView.style.display = 'none';
+      dashboardView.style.display = '';
     };
 
     const updatePeriodButtons = (period: AdminStatsPeriod): void => {
@@ -356,5 +356,11 @@ export function initAdminDashboard(): void {
     tokenInput.value = storedToken;
     showDashboard();
     void refreshDashboard();
-  });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setup();
+  }
 }

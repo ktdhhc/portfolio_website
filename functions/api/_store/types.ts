@@ -57,6 +57,9 @@ export interface AgentTurnStore {
   listLogs(window: PeriodWindow, page: number, pageSize: number): Promise<AgentTurnLogPage>;
   getLogDetail(id: string, window: PeriodWindow): Promise<AgentTurnRecord | null>;
   listWriteFailures(window: PeriodWindow): Promise<readonly StoreWriteFailureRecord[]>;
+  deleteTurnById(id: string, window: PeriodWindow): Promise<number>;
+  deleteTurnsByRange(window: PeriodWindow): Promise<number>;
+  deleteAllTurns(): Promise<number>;
 }
 
 export interface StoreEnv {

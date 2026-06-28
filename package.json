@@ -13,7 +13,8 @@
     "test:schema": "tsx tests/schema-validation.ts",
     "test:lighthouse": "node scripts/lighthouse-check.mjs",
     "test:agent-provider": "node scripts/generate-agent-materials.mjs && tsx scripts/verify-agent-provider.ts",
-    "test:stage3": "node scripts/generate-agent-materials.mjs && tsx scripts/verify-stage3-data-layer.ts"
+    "test:stage3": "node scripts/generate-agent-materials.mjs && tsx scripts/verify-stage3-data-layer.ts",
+    "test:stage4": "node scripts/generate-agent-materials.mjs && tsx scripts/verify-stage4-admin-smoke.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260625.1",

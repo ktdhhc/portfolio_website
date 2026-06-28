@@ -141,3 +141,53 @@ export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
     throw error;
   }
 };
+
+type DeleteResponse = LogsFailureResponse | {
+  readonly ok: true;
+  readonly deleted: number;
+} | {
+  readonly ok: false;
+  readonly reason: 'confirm_required';
+};
+
+export const onRequestDelete: PagesFunction<AdminEnv> = async (context) => {
+  try {
+    const url = new URL(context.request.url);
+    const stores = resolveStores(context.env);
+
+    // 单条删除
+    const id = url.searchParams.get('id');
+    if (id) {
+      const window = { startInclusive: '2000-01-01T00:00:00.000Z', endExclusive: '2100-01-01T00:00:00.000Z' };
+      const deleted = await stores.agentTurnStore.deleteTurnById(id, window);
+      return toJsonResponse({ ok: true, deleted } satisfies DeleteResponse);
+    }
+
+    // 范围删除
+    const rangeStart = url.searchParams.get('rangeStart');
+    const rangeEnd = url.searchParams.get('rangeEnd');
+    if (rangeStart && rangeEnd) {
+      const window = { startInclusive: rangeStart, endExclusive: rangeEnd };
+      const deleted = await stores.agentTurnStore.deleteTurnsByRange(window);
+      return toJsonResponse({ ok: true, deleted } satisfies DeleteResponse);
+    }
+
+    // 全清
+    const all = url.searchParams.get('all');
+    if (all === 'true') {
+      const confirm = url.searchParams.get('confirm');
+      if (confirm !== 'DELETE') {
+        return toJsonResponse({ ok: false, reason: 'confirm_required' } satisfies DeleteResponse);
+      }
+      const deleted = await stores.agentTurnStore.deleteAllTurns();
+      return toJsonResponse({ ok: true, deleted } satisfies DeleteResponse);
+    }
+
+    return toJsonResponse({ ok: false, reason: 'confirm_required' } satisfies DeleteResponse);
+  } catch (error) {
+    if (error instanceof StoreUnavailableError) {
+      return toJsonResponse({ ok: false, reason: 'db_unavailable' } satisfies DeleteResponse);
+    }
+    throw error;
+  }
+};

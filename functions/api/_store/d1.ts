@@ -252,6 +252,41 @@ function createD1AgentTurnStore(db: D1Database): AgentTurnStore {
     async listWriteFailures(window: PeriodWindow): Promise<readonly StoreWriteFailureRecord[]> {
       return failureState.agentTurnFailures.filter((record) => isWithinWindow(record.occurredAt, window));
     },
+
+    async deleteTurnById(id: string, window: PeriodWindow): Promise<number> {
+      try {
+        const result = await db
+          .prepare(`DELETE FROM agent_turns WHERE id = ? AND created_at >= ? AND created_at < ?`)
+          .bind(id, window.startInclusive, window.endExclusive)
+          .run();
+        return result.meta?.changes ?? 0;
+      } catch (error) {
+        throw new StoreUnavailableError(undefined, { cause: error });
+      }
+    },
+
+    async deleteTurnsByRange(window: PeriodWindow): Promise<number> {
+      try {
+        const result = await db
+          .prepare(`DELETE FROM agent_turns WHERE created_at >= ? AND created_at < ?`)
+          .bind(window.startInclusive, window.endExclusive)
+          .run();
+        return result.meta?.changes ?? 0;
+      } catch (error) {
+        throw new StoreUnavailableError(undefined, { cause: error });
+      }
+    },
+
+    async deleteAllTurns(): Promise<number> {
+      try {
+        const countResult = await db.prepare(`SELECT COUNT(*) as count FROM agent_turns`).first() as { count: number } | null;
+        const count = Number(countResult?.count ?? 0);
+        await db.prepare(`DELETE FROM agent_turns`).run();
+        return count;
+      } catch (error) {
+        throw new StoreUnavailableError(undefined, { cause: error });
+      }
+    },
   };
 }
 
