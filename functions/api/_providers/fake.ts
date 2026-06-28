@@ -38,6 +38,10 @@ export const fakeProvider: Provider = {
       };
     }
 
+    if (text.includes('provider 超时')) {
+      throw new Error('Provider timeout');
+    }
+
     if (text.includes('薪资') || text.includes('私人住址')) {
       return {
         content: '不能替候选人承诺薪资、到岗时间或其他现实事项，也不披露私人敏感信息。建议直接联系候选人确认这些问题。',

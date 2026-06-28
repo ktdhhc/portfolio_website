@@ -1,6 +1,13 @@
 import { createServer } from 'node:http';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
+import { onRequestPost as adminAuth } from '../functions/api/admin/auth';
+import { onRequestGet as adminLogs } from '../functions/api/admin/logs';
+import { onRequestGet as adminAgentSummary } from '../functions/api/admin/stats/agent-summary';
+import { onRequestGet as adminIssues } from '../functions/api/admin/stats/issues';
+import { onRequestGet as adminOverview } from '../functions/api/admin/stats/overview';
+import { onRequestGet as adminPages } from '../functions/api/admin/stats/pages';
+import { onRequestGet as adminProjects } from '../functions/api/admin/stats/projects';
 import { onRequestPost as chat } from '../functions/api/chat';
 import { onRequestPost as track } from '../functions/api/track';
 
@@ -115,6 +122,53 @@ const server = createServer(async (req, res) => {
       const response = await track({ request, env: process.env } as never);
       await writeFetchResponse(res, response);
       return;
+    }
+
+    if (url.pathname === '/api/admin/auth' && req.method === 'POST') {
+      const body = await readRequestBody(req);
+      let requestBody: ArrayBuffer | undefined;
+      if (body) {
+        requestBody = new ArrayBuffer(body.byteLength);
+        new Uint8Array(requestBody).set(body);
+      }
+      const request = new Request(url, {
+        method: 'POST',
+        headers: req.headers as HeadersInit,
+        body: requestBody,
+      });
+      const response = await adminAuth({ request, env: process.env } as never);
+      await writeFetchResponse(res, response);
+      return;
+    }
+
+    if (req.method === 'GET') {
+      if (url.pathname === '/api/admin/logs') {
+        const request = new Request(url, {
+          method: 'GET',
+          headers: req.headers as HeadersInit,
+        });
+        const response = await adminLogs({ request, env: process.env } as never);
+        await writeFetchResponse(res, response);
+        return;
+      }
+
+      const adminStatsHandlers: Record<string, typeof adminOverview> = {
+        '/api/admin/stats/overview': adminOverview,
+        '/api/admin/stats/pages': adminPages,
+        '/api/admin/stats/projects': adminProjects,
+        '/api/admin/stats/agent-summary': adminAgentSummary,
+        '/api/admin/stats/issues': adminIssues,
+      };
+      const adminStatsHandler = adminStatsHandlers[url.pathname];
+      if (adminStatsHandler) {
+        const request = new Request(url, {
+          method: 'GET',
+          headers: req.headers as HeadersInit,
+        });
+        const response = await adminStatsHandler({ request, env: process.env } as never);
+        await writeFetchResponse(res, response);
+        return;
+      }
     }
 
     const filePath = resolveStaticFile(url.pathname);

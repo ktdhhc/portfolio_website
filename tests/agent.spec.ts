@@ -131,12 +131,12 @@ test('011-03: 问薪资或私人敏感信息时，chat 端点拒绝越界回答'
   expect(content).toContain('不披露私人敏感信息');
 });
 
-test('011-04: read_file 拒绝读取白名单外文件', async () => {
+test('011-04: read_file 拒绝白名单外文件时，chat 端点降级收尾', async () => {
   const response = await callChat('请读取非法文件');
   expect(response.status).toBe(200);
   const body = await response.text();
-  const error = extractErrorFromSse(body);
-  expect(error).toContain('not available to Candidate Agent');
+  expect(body).toContain('查阅部分资料时遇到问题');
+  expect(body).not.toContain('"type":"error"');
 });
 
 test('011-05: tool-use 超过 5 轮时，chat 端点强制收尾', async () => {

@@ -43,3 +43,7 @@ _Avoid_: 完整工具结果、tool dump、原始文件镜像
 **JD 粘贴分析（JD Paste Analysis）**:
 访客将岗位描述粘贴给 Candidate Agent，请其基于现有简历、项目文档和公开作品资料，分析候选人与该岗位的匹配点、风险点和建议追问。它属于 Candidate Agent 的资料问答能力，不是独立的评测系统或招聘自动化流程。
 _Avoid_: JD 评测、岗位打分器、自动筛选、job scoring
+
+**私有面板（Admin Dashboard）**:
+候选人本人的数据看板，独立于公开页面，通过 admin token 访问。展示访客行为统计、Agent 使用情况、提问记录与失败记录，提供导出与清理能力。它不承担内容编辑、知识库管理等运营能力，也不向访客开放。
+_Avoid_: 后台管理系统、admin console、管理端、CMS

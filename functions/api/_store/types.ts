@@ -13,24 +13,50 @@ export interface BehaviorEventRecord {
   createdAt: string;
 }
 
+export type PeriodWindow = {
+  readonly startInclusive: string;
+  readonly endExclusive: string;
+};
+
+export type StoreWriteFailureRecord = {
+  readonly occurredAt: string;
+};
+
 export interface BehaviorEventStore {
   insertEvents(records: BehaviorEventRecord[]): Promise<void>;
+  listEvents(window: PeriodWindow): Promise<readonly BehaviorEventRecord[]>;
+  listWriteFailures(window: PeriodWindow): Promise<readonly StoreWriteFailureRecord[]>;
 }
 
+export type AgentTurnStatus = 'success' | 'degraded' | 'failed';
+
 export interface AgentTurnRecord {
+  id?: string;
   visitorUuid: string;
   agentSessionId: string;
   turnType: string;
   userMessage: string;
   assistantAnswer: string;
-  answerStatus: string;
+  answerStatus: AgentTurnStatus;
   durationMs: number;
   toolTrace?: Record<string, unknown>;
   createdAt: string;
 }
 
+export type AgentTurnLogPage = {
+  readonly items: readonly AgentTurnRecord[];
+  readonly total: number;
+  readonly page: number;
+  readonly pageSize: number;
+  readonly totalPages: number;
+};
+
 export interface AgentTurnStore {
   insertTurn(record: AgentTurnRecord): Promise<void>;
+  listTurns(window: PeriodWindow): Promise<readonly AgentTurnRecord[]>;
+  listLogs(window: PeriodWindow, page: number, pageSize: number): Promise<AgentTurnLogPage>;
+  getLogDetail(id: string, window: PeriodWindow): Promise<AgentTurnRecord | null>;
+  listWriteFailures(window: PeriodWindow): Promise<readonly StoreWriteFailureRecord[]>;
 }
 
 export interface StoreEnv {
@@ -42,9 +68,12 @@ export interface StoreEnv {
 
 export interface RateLimitResult {
   allowed: boolean;
-  reason?: 'uuid_limit' | 'global_limit';
+  reason?: 'uuid_limit' | 'global_limit' | 'admin_rate_limit';
 }
 
 export interface RateLimitStore {
   checkAndIncrement(visitorUuid: string): Promise<RateLimitResult>;
+  checkAdminLoginRateLimit(ip: string): Promise<RateLimitResult>;
+  recordAdminLoginFailure(ip: string): Promise<RateLimitResult>;
+  resetAdminLoginFailures(ip: string): Promise<void>;
 }

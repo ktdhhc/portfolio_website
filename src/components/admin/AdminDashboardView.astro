@@ -1,0 +1,431 @@
+---
+const overviewCards = [
+  { key: 'pageViews', label: '页面访问' },
+  { key: 'pdfDownloads', label: '简历下载' },
+  { key: 'agentTurns', label: 'Agent 提问' },
+  { key: 'jdAnalyses', label: 'JD 分析' },
+  { key: 'avgPageDurationMs', label: '平均停留' },
+  { key: 'agentFailures', label: 'Agent 失败' },
+] as const;
+
+const moduleCards = [
+  { key: 'pages', tag: 'Pages', title: '热门页面' },
+  { key: 'projects', tag: 'Projects', title: '项目点击排行' },
+  { key: 'agentSummary', tag: 'Summary', title: '高频问题' },
+  { key: 'issues', tag: 'Issues', title: '失败与降级' },
+] as const;
+---
+
+<section class="dashboard-view" data-view="dashboard" hidden>
+  <nav class="admin-nav">
+    <div class="admin-nav-inner">
+      <a href="/" class="nav-logo">Kaho</a>
+      <div class="nav-actions">
+        <a href="/" target="_blank" rel="noreferrer">查看主页</a>
+        <button id="logoutButton" type="button" class="logout-button">退出</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <h2>数据面板</h2>
+        <p>了解访客行为、Agent 使用情况与页面表现</p>
+      </div>
+      <div class="period-selector" aria-label="时间窗口选择">
+        <button type="button" class="period-button" data-period="today">今日</button>
+        <button type="button" class="period-button active" data-period="week">本周</button>
+        <button type="button" class="period-button" data-period="month">本月</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="container module-section" data-module="overview">
+    <div class="section-header">
+      <div>
+        <span class="section-tag">Overview</span>
+        <h3>总览</h3>
+      </div>
+    </div>
+    <p class="module-unavailable" data-module-unavailable hidden>暂不可用</p>
+    <div class="stats-grid" data-overview-grid>
+      {overviewCards.map((card) => (
+        <article class="stat-card" data-metric-card={card.key}>
+          <div class="stat-label">{card.label}</div>
+          <div class="stat-value">—</div>
+          <div class="stat-change neutral">加载中…</div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="container module-grid">
+    {moduleCards.map((moduleCard) => (
+      <article class="module-card" data-module={moduleCard.key}>
+        <div class="section-header compact">
+          <div>
+            <span class="section-tag">{moduleCard.tag}</span>
+            <h3>{moduleCard.title}</h3>
+          </div>
+        </div>
+        <p class="module-copy" data-module-body>模块已连接，详情将在后续 issue 完成。</p>
+      </article>
+    ))}
+  </section>
+
+  <section class="container module-card logs-module" data-module="logs">
+    <div class="section-header compact">
+      <div>
+        <span class="section-tag">Logs</span>
+        <h3>提问记录</h3>
+        <p class="module-copy" data-logs-total>共 0 条记录</p>
+      </div>
+      <div class="logs-actions">
+        <button type="button" disabled>导出</button>
+        <button type="button" disabled>清理</button>
+      </div>
+    </div>
+
+    <p class="module-unavailable" data-logs-unavailable hidden>暂不可用</p>
+
+    <div data-logs-content>
+      <div class="logs-list" data-logs-list></div>
+      <div class="logs-pagination">
+        <button type="button" data-logs-prev>上一页</button>
+        <span data-logs-page-info>第 1 / 1 页</span>
+        <button type="button" data-logs-next>下一页</button>
+      </div>
+      <article class="log-detail" data-log-detail hidden>
+        <h4>记录详情</h4>
+        <dl data-log-detail-fields></dl>
+      </article>
+    </div>
+  </section>
+</section>
+
+<style>
+  .dashboard-view {
+    min-height: 100vh;
+  }
+
+  .admin-nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 100;
+    padding: 1.25rem 0;
+    background: rgba(250, 248, 245, 0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .admin-nav-inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--container-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .nav-logo {
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--fg-secondary);
+    font-size: 0.9rem;
+  }
+
+  .logout-button,
+  .period-button {
+    font: inherit;
+  }
+
+  .logout-button {
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-button);
+    background: transparent;
+    color: var(--fg-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .hero {
+    padding: 10rem 0 3rem;
+  }
+
+  .hero-inner,
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero h2 {
+    font-size: 2.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .hero p,
+  .module-copy {
+    color: var(--fg-secondary);
+    font-size: 0.95rem;
+  }
+
+  .period-selector {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.3rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-button);
+  }
+
+  .period-button {
+    padding: 0.45rem 0.9rem;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg-secondary);
+    cursor: pointer;
+  }
+
+  .period-button.active {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .period-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .module-section,
+  .module-grid {
+    margin-bottom: 3rem;
+  }
+
+  .logs-module {
+    margin-bottom: 3rem;
+  }
+
+  .section-tag {
+    display: inline-flex;
+    margin-bottom: 0.5rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-header h3 {
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .stats-grid,
+  .module-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .module-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .stat-card,
+  .module-card {
+    padding: 1.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+  }
+
+  .stat-label {
+    margin-bottom: 0.75rem;
+    color: var(--fg-muted);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    margin-bottom: 0.45rem;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .stat-change {
+    color: var(--fg-muted);
+    font-size: 0.85rem;
+  }
+
+  .stat-change.up {
+    color: var(--success);
+  }
+
+  .stat-change.down {
+    color: var(--accent-dark);
+  }
+
+  .module-copy,
+  .module-unavailable {
+    min-height: 1.7rem;
+  }
+
+  .logs-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .logs-actions button,
+  .logs-pagination button {
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-button);
+    background: transparent;
+    color: var(--fg-secondary);
+    font: inherit;
+  }
+
+  .logs-actions button:disabled,
+  .logs-pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .logs-list {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .log-row {
+    display: grid;
+    grid-template-columns: minmax(0, 180px) minmax(0, 1fr) auto auto;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-button);
+    background: var(--bg);
+    text-align: left;
+    font: inherit;
+    color: var(--fg);
+    cursor: pointer;
+  }
+
+  .log-row-meta,
+  .log-row-message {
+    font-size: 0.88rem;
+  }
+
+  .log-row-message {
+    color: var(--fg-secondary);
+  }
+
+  .log-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 5.5rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+    font-size: 0.8rem;
+  }
+
+  .log-chip.status-success {
+    background: var(--bg-muted);
+    color: var(--fg-secondary);
+  }
+
+  .log-chip.status-degraded,
+  .log-chip.status-failed {
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+  }
+
+  .logs-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .log-detail {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .log-detail h4 {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .log-detail dl {
+    display: grid;
+    grid-template-columns: minmax(120px, 180px) 1fr;
+    gap: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .log-detail dt {
+    color: var(--fg-muted);
+  }
+
+  .log-detail dd {
+    margin: 0;
+    white-space: pre-wrap;
+  }
+
+  .module-unavailable {
+    margin-bottom: 1rem;
+    color: var(--accent-dark);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 720px) {
+    .hero {
+      padding-top: 8rem;
+    }
+
+    .hero h2 {
+      font-size: 2rem;
+    }
+
+    .log-row {
+      grid-template-columns: 1fr;
+    }
+
+    .logs-pagination {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .log-detail dl {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

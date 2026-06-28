@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import AdminDashboardView from '../components/admin/AdminDashboardView.astro';
+import AdminLoginCard from '../components/admin/AdminLoginCard.astro';
+---
+
+<Base title="Admin Dashboard — Kaho" robots="noindex,nofollow">
+  <AdminLoginCard />
+  <AdminDashboardView />
+</Base>
+
+<script>
+  import { initAdminDashboard } from '../scripts/admin-dashboard';
+
+  initAdminDashboard();
+</script>

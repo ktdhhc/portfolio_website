@@ -36,6 +36,12 @@ function makeDb(): DatabaseSync {
       date_bucket TEXT NOT NULL,
       PRIMARY KEY (visitor_uuid, hour_bucket)
     );
+    CREATE TABLE admin_login_failures (
+      ip TEXT PRIMARY KEY,
+      failure_count INTEGER NOT NULL DEFAULT 0,
+      cooldown_until_ms INTEGER,
+      updated_at TEXT NOT NULL
+    );
   `);
   return db;
 }
@@ -79,8 +85,8 @@ async function withMockedNow<T>(iso: string, fn: () => Promise<T>): Promise<T> {
   const RealDate = Date;
   const fixed = new RealDate(iso);
   class MockDate extends RealDate {
-    constructor(...args: ConstructorParameters<typeof Date>) {
-      super(args.length === 0 ? fixed.toISOString() : (args[0] as string | number | Date));
+    constructor(value?: string | number | Date) {
+      super(value ?? fixed.toISOString());
     }
     static override now(): number {
       return fixed.getTime();
@@ -172,4 +178,78 @@ test('d1-06: D1 限频分桶使用人类可读月份（6月不是5月）', async
     expect(String(row.hour_bucket).startsWith('2026-6-')).toBe(true);
     expect(String(row.date_bucket).startsWith('2026-6-')).toBe(true);
   });
+});
+
+test('d1-07: D1 admin 登录失败超过阈值后拒绝', async () => {
+  const db = wrapAsD1(makeDb());
+  const stores = createD1Stores(db as never);
+  stores.rateLimitStore.setAdminFailureLimit(2);
+
+  let result = await stores.rateLimitStore.recordAdminLoginFailure('203.0.113.20');
+  expect(result.allowed).toBe(true);
+
+  result = await stores.rateLimitStore.recordAdminLoginFailure('203.0.113.20');
+  expect(result.allowed).toBe(false);
+  expect(result.reason).toBe('admin_rate_limit');
+});
+
+test('d1-08: D1 admin 登录冷却期后恢复', async () => {
+  const db = wrapAsD1(makeDb());
+  const stores = createD1Stores(db as never);
+  stores.rateLimitStore.setAdminFailureLimit(1);
+  stores.rateLimitStore.setAdminCooldownMs(60_000);
+
+  await withMockedNow('2026-06-27T04:00:00.000Z', async () => {
+    const result = await stores.rateLimitStore.recordAdminLoginFailure('203.0.113.21');
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toBe('admin_rate_limit');
+  });
+
+  await withMockedNow('2026-06-27T04:01:01.000Z', async () => {
+    const result = await stores.rateLimitStore.checkAdminLoginRateLimit('203.0.113.21');
+    expect(result.allowed).toBe(true);
+  });
+});
+
+test('d1-09: D1 agent_turns 支持分页 logs 与按 id 读取详情', async () => {
+  const db = wrapAsD1(makeDb());
+  const stores = createD1Stores(db as never);
+  await stores.agentTurnStore.insertTurn({
+    visitorUuid: 'uuid-1',
+    agentSessionId: 'session-1',
+    turnType: 'chat',
+    userMessage: '第一条',
+    assistantAnswer: '回答-1',
+    answerStatus: 'success',
+    durationMs: 101,
+    createdAt: '2026-06-28T10:00:00.000Z',
+  });
+  await stores.agentTurnStore.insertTurn({
+    visitorUuid: 'uuid-2',
+    agentSessionId: 'session-2',
+    turnType: 'jd_analysis',
+    userMessage: '第二条',
+    assistantAnswer: '回答-2',
+    answerStatus: 'degraded',
+    durationMs: 202,
+    toolTrace: { toolCalls: 1, files: ['resume.json'] },
+    createdAt: '2026-06-28T11:00:00.000Z',
+  });
+
+  const page = await stores.agentTurnStore.listLogs(
+    { startInclusive: '2026-06-28T09:00:00.000Z', endExclusive: '2026-06-28T12:00:00.000Z' },
+    1,
+    1,
+  );
+  expect(page.total).toBe(2);
+  expect(page.totalPages).toBe(2);
+  expect(page.items[0]?.id).toBe('2');
+  expect(page.items[0]?.userMessage).toBe('第二条');
+
+  const detail = await stores.agentTurnStore.getLogDetail('2', {
+    startInclusive: '2026-06-28T09:00:00.000Z',
+    endExclusive: '2026-06-28T12:00:00.000Z',
+  });
+  expect(detail?.assistantAnswer).toBe('回答-2');
+  expect(detail?.toolTrace).toEqual({ toolCalls: 1, files: ['resume.json'] });
 });

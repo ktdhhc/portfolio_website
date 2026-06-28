@@ -47,6 +47,12 @@ test('015-03: store 抛出异常时 /api/track 仍返回 200（D1 退化）', as
     async insertEvents() {
       throw new Error('D1 unavailable');
     },
+    async listEvents() {
+      return [];
+    },
+    async listWriteFailures() {
+      return [];
+    },
   };
   const response = await onRequestPost({
     request: new Request('http://localhost/api/track', {

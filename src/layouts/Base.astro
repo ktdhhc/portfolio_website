@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 
-const { title, children } = Astro.props;
+const { title, robots } = Astro.props;
 ---
 
 <html lang="zh-CN">
@@ -9,6 +9,7 @@ const { title, children } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    {robots && <meta name="robots" content={robots} />}
   </head>
   <body>
     <main>

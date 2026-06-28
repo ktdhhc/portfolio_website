@@ -4,7 +4,7 @@ import { getProvider, type ProviderEnv } from './_providers/index';
 import type { ChatMessage } from './_providers/types';
 import { readAgentFile, readFileTool } from './_tools/read-file';
 import { agentMaterials, readableAgentFileIds } from './_generated/agent-materials';
-import type { StoreEnv, AgentTurnRecord, RateLimitResult } from './_store/types';
+import type { StoreEnv, AgentTurnRecord, AgentTurnStatus, RateLimitResult } from './_store/types';
 import { resolveStores } from './_store/d1';
 
 interface ChatRequestBody {
@@ -89,17 +89,16 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
     return toJsonResponse({ error: 'messages is required' }, 400);
   }
 
-  try {
-    const provider = getProvider(context.env);
-    const messages = [...buildMainContext(), ...body.messages];
-    const userMessage = body.messages[body.messages.length - 1]?.content ?? '';
-    const visitorUuid = body.visitorUuid ?? 'anonymous';
-    const agentSessionId = body.agentSessionId ?? 'unknown';
-    const turnType = body.turnType ?? 'chat';
-    const stores = resolveStores(context.env);
-    const turnStore = stores.agentTurnStore;
-    const rateLimitStore = stores.rateLimitStore;
+  const requestMessages = body.messages;
+  const userMessage = requestMessages[requestMessages.length - 1]?.content ?? '';
+  const visitorUuid = body.visitorUuid ?? 'anonymous';
+  const agentSessionId = body.agentSessionId ?? 'unknown';
+  const turnType = body.turnType ?? 'chat';
+  const stores = resolveStores(context.env);
+  const turnStore = stores.agentTurnStore;
+  const rateLimitStore = stores.rateLimitStore;
 
+  try {
     // 限频检查（按 Agent Turn 计数，在 provider 调用前执行）
     let rateLimitResult: RateLimitResult = { allowed: true };
     try {
@@ -125,9 +124,12 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
         const startTime = Date.now();
         let finalAnswer = '';
         const toolFiles: string[] = [];
-        let status = 'success';
+        let status: AgentTurnStatus = 'success';
 
         try {
+          const provider = getProvider(context.env);
+          const messages = [...buildMainContext(), ...requestMessages];
+
           for (let round = 0; round < maxToolRounds; round += 1) {
             const response = await provider.chat({ messages, tools: [readFileTool] });
 
@@ -144,30 +146,39 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
               if (toolCall.function.name !== 'read_file') {
                 throw new Error(`Unknown tool: ${toolCall.function.name}`);
               }
-              const args = JSON.parse(toolCall.function.arguments) as { file?: string };
-              if (!args.file) throw new Error('read_file requires file');
+              try {
+                const args = JSON.parse(toolCall.function.arguments) as { file?: string };
+                if (!args.file) throw new Error('read_file requires file');
 
-              yield sseEvent({ type: 'status', content: `正在查阅 ${args.file}` });
+                yield sseEvent({ type: 'status', content: `正在查阅 ${args.file}` });
 
-              const fileContent = readAgentFile(args.file);
-              toolFiles.push(args.file);
+                const fileContent = readAgentFile(args.file);
+                toolFiles.push(args.file);
 
-              yield sseEvent({ type: 'tool_done', content: args.file });
+                yield sseEvent({ type: 'tool_done', content: args.file });
 
-              messages.push({
-                role: 'tool',
-                name: 'read_file',
-                tool_call_id: toolCall.id,
-                content: fileContent,
-              });
+                messages.push({
+                  role: 'tool',
+                  name: 'read_file',
+                  tool_call_id: toolCall.id,
+                  content: fileContent,
+                });
+              } catch {
+                status = 'degraded';
+                finalAnswer = '查阅部分资料时遇到问题，我会基于当前已读取的信息继续回答。';
+                yield sseEvent({ type: 'delta', content: finalAnswer });
+                yield sseEvent({ type: 'done' });
+                return;
+              }
             }
           }
 
+          status = 'degraded';
           finalAnswer = '已达到资料查阅上限，我会基于当前已读取的信息收尾回答。';
           yield sseEvent({ type: 'delta', content: finalAnswer });
           yield sseEvent({ type: 'done' });
         } catch (err) {
-          status = 'error';
+          status = 'failed';
           throw err;
         } finally {
           const record: AgentTurnRecord = {
