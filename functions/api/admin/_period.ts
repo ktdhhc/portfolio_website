@@ -59,6 +59,39 @@ export function parseAdminStatsPeriod(value: string | null): AdminStatsPeriod {
   return 'week';
 }
 
+export function getCustomWindow(startDate: string, endDate: string): ComparisonWindow {
+  const start = new Date(startDate + 'T00:00:00');
+  const end = new Date(endDate + 'T00:00:00');
+  if (start > end) {
+    throw new Error('startDate must be before or equal to endDate');
+  }
+  // end 加一天，使其成为 exclusive 上界（包含 endDate 当天）
+  const endExclusive = new Date(end.getTime() + 24 * 60 * 60 * 1000);
+  const durationMs = endExclusive.getTime() - start.getTime();
+  const previousEnd = start;
+  const previousStart = new Date(previousEnd.getTime() - durationMs);
+  return {
+    current: {
+      startInclusive: start.toISOString(),
+      endExclusive: endExclusive.toISOString(),
+    },
+    previous: {
+      startInclusive: previousStart.toISOString(),
+      endExclusive: previousEnd.toISOString(),
+    },
+  };
+}
+
+export function resolveWindow(url: URL): ComparisonWindow {
+  const startDate = url.searchParams.get('startDate');
+  const endDate = url.searchParams.get('endDate');
+  if (startDate && endDate) {
+    return getCustomWindow(startDate, endDate);
+  }
+  const period = parseAdminStatsPeriod(url.searchParams.get('period'));
+  return getComparisonWindow(period);
+}
+
 export function getComparisonWindow(period: AdminStatsPeriod, now = new Date()): ComparisonWindow {
   switch (period) {
     case 'today': {

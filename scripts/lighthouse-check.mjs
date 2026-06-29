@@ -12,7 +12,7 @@ const PAGES = [
   '/projects/',
   '/projects/aindexer/',
   '/projects/character-memory/',
-  '/projects/ai-prototype-rd/',
+  '/projects/human-like-agent/',
   '/projects/memory-system-testing/',
 ];
 

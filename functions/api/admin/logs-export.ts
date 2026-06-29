@@ -3,7 +3,7 @@
 import { resolveStores } from '../_store/d1';
 import { StoreUnavailableError } from '../_store/errors';
 import type { AgentTurnRecord } from '../_store/types';
-import { getComparisonWindow, parseAdminStatsPeriod } from './_period';
+import { resolveWindow } from './_period';
 import { type AdminEnv, toJsonResponse } from './_shared';
 
 type ExportFailureResponse = {
@@ -77,15 +77,19 @@ export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
     const stores = resolveStores(context.env);
 
     let records: readonly AgentTurnRecord[];
-    if (periodParam === 'all') {
+    const startDate = url.searchParams.get('startDate');
+    const endDate = url.searchParams.get('endDate');
+    if (startDate && endDate) {
+      const { current } = resolveWindow(url);
+      records = await stores.agentTurnStore.listTurns(current);
+    } else if (periodParam === 'all') {
       // 全量：用一个极大窗口
       records = await stores.agentTurnStore.listTurns({
         startInclusive: '2000-01-01T00:00:00.000Z',
         endExclusive: '2100-01-01T00:00:00.000Z',
       });
     } else {
-      const period = parseAdminStatsPeriod(periodParam);
-      const { current } = getComparisonWindow(period);
+      const { current } = resolveWindow(url);
       records = await stores.agentTurnStore.listTurns(current);
     }
 

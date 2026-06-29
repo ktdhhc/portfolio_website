@@ -3,7 +3,7 @@
 import { resolveStores } from '../_store/d1';
 import { StoreUnavailableError } from '../_store/errors';
 import type { AgentTurnRecord } from '../_store/types';
-import { getComparisonWindow, parseAdminStatsPeriod } from './_period';
+import { resolveWindow } from './_period';
 import { type AdminEnv, toJsonResponse } from './_shared';
 
 type LogsFailureResponse = {
@@ -104,8 +104,7 @@ function dbUnavailableResponse(): LogsFailureResponse {
 export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
   try {
     const url = new URL(context.request.url);
-    const period = parseAdminStatsPeriod(url.searchParams.get('period'));
-    const { current } = getComparisonWindow(period);
+    const { current } = resolveWindow(url);
     const stores = resolveStores(context.env);
     const logId = url.searchParams.get('id');
 

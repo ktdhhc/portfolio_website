@@ -37,6 +37,12 @@ const moduleCards = [
         <button type="button" class="period-button" data-period="today">今日</button>
         <button type="button" class="period-button active" data-period="week">本周</button>
         <button type="button" class="period-button" data-period="month">本月</button>
+        <button type="button" class="period-button" data-period="custom">自定义</button>
+      </div>
+      <div class="custom-date-range hidden" data-custom-range>
+        <input type="date" id="startDate" class="date-input" aria-label="开始日期" />
+        <span class="date-separator">至</span>
+        <input type="date" id="endDate" class="date-input" aria-label="结束日期" />
       </div>
     </div>
   </section>
@@ -208,6 +214,32 @@ const moduleCards = [
   .period-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .custom-date-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .custom-date-range.hidden {
+    display: none !important;
+  }
+
+  .date-input {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 0.85rem;
+    font-family: inherit;
+  }
+
+  .date-separator {
+    color: var(--fg-muted);
+    font-size: 0.85rem;
   }
 
   .module-section,

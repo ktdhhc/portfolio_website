@@ -19,9 +19,15 @@ import {
   type ModuleKey,
 } from './admin-dashboard-shared';
 
-function fetchAdminJson(path: string, token: string, period: AdminStatsPeriod, extraQuery = ''): Promise<Response> {
-  const query = [`period=${period}`, extraQuery].filter((value) => value !== '').join('&');
-  return fetch(`${path}?${query}`, {
+function fetchAdminJson(path: string, token: string, period: AdminStatsPeriod, extraQuery = '', customDates?: { start: string; end: string }): Promise<Response> {
+  const params: string[] = [];
+  if (customDates) {
+    params.push(`startDate=${customDates.start}`, `endDate=${customDates.end}`);
+  } else {
+    params.push(`period=${period}`);
+  }
+  if (extraQuery) params.push(extraQuery);
+  return fetch(`${path}?${params.join('&')}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
@@ -37,12 +43,17 @@ export function initAdminDashboard(): void {
     const periodButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-period]'));
     const logsPrevButton = getRequiredElement<HTMLButtonElement>(document, '[data-logs-prev]');
     const logsNextButton = getRequiredElement<HTMLButtonElement>(document, '[data-logs-next]');
+    const customRangeContainer = getRequiredElement<HTMLElement>(document, '[data-custom-range]');
+    const startDateInput = getRequiredElement<HTMLInputElement>(document, '#startDate');
+    const endDateInput = getRequiredElement<HTMLInputElement>(document, '#endDate');
     let activePeriod: AdminStatsPeriod = 'week';
     let activeToken = '';
     let isBusy = false;
     let activeLogsPage = 1;
     let activeLogDetailId: string | null = null;
     let logsTotalPages = 1;
+    let isCustomMode = false;
+    let customDates: { start: string; end: string } | undefined;
 
     const setLoginError = (reason: AdminAuthFailureReason | 'expired' | null): void => {
       if (reason === null) {
@@ -93,8 +104,35 @@ export function initAdminDashboard(): void {
 
     const updatePeriodButtons = (period: AdminStatsPeriod): void => {
       periodButtons.forEach((button) => {
-        button.classList.toggle('active', button.dataset.period === period);
+        if (button.dataset.period === 'custom') {
+          button.classList.toggle('active', isCustomMode);
+        } else {
+          button.classList.toggle('active', !isCustomMode && button.dataset.period === period);
+        }
       });
+    };
+
+    const showCustomRange = (): void => {
+      customRangeContainer.classList.remove('hidden');
+    };
+
+    const hideCustomRange = (): void => {
+      customRangeContainer.classList.add('hidden');
+      startDateInput.value = '';
+      endDateInput.value = '';
+      customDates = undefined;
+      isCustomMode = false;
+    };
+
+    const applyCustomDates = (): void => {
+      const start = startDateInput.value;
+      const end = endDateInput.value;
+      if (!start || !end || start > end) return;
+      customDates = { start, end };
+      isCustomMode = true;
+      resetLogsState();
+      updatePeriodButtons(activePeriod);
+      void refreshDashboard();
     };
 
     const renderOverviewFailure = (): void => {
@@ -201,7 +239,7 @@ export function initAdminDashboard(): void {
     };
 
     const loadLogDetail = async (id: string): Promise<void> => {
-      const response = await fetchAdminJson(moduleEndpoints.logs, activeToken, activePeriod, `id=${encodeURIComponent(id)}`);
+      const response = await fetchAdminJson(moduleEndpoints.logs, activeToken, activePeriod, `id=${encodeURIComponent(id)}`, customDates);
       if (response.status === 401) {
         handleUnauthorized();
         return;
@@ -220,7 +258,7 @@ export function initAdminDashboard(): void {
         const responses = await Promise.all(
           Object.entries(moduleEndpoints).map(async ([key, path]) => {
             const extraQuery = key === 'logs' ? `page=${activeLogsPage}&pageSize=20` : '';
-            return [key, await fetchAdminJson(path, activeToken, activePeriod, extraQuery)] as const;
+            return [key, await fetchAdminJson(path, activeToken, activePeriod, extraQuery, customDates)] as const;
           }),
         );
 
@@ -322,12 +360,23 @@ export function initAdminDashboard(): void {
       button.addEventListener('click', () => {
         const period = button.dataset.period;
         if (period === 'today' || period === 'week' || period === 'month') {
+          hideCustomRange();
           activePeriod = period;
           resetLogsState();
           updatePeriodButtons(period);
           void refreshDashboard();
+        } else if (period === 'custom') {
+          isCustomMode = true;
+          showCustomRange();
+          updatePeriodButtons(activePeriod);
         }
       });
+    });
+    startDateInput.addEventListener('change', () => {
+      if (startDateInput.value && endDateInput.value) applyCustomDates();
+    });
+    endDateInput.addEventListener('change', () => {
+      if (startDateInput.value && endDateInput.value) applyCustomDates();
     });
     logsPrevButton.addEventListener('click', () => {
       if (activeLogsPage <= 1) return;

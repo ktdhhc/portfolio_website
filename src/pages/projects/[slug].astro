@@ -104,6 +104,7 @@ const resumePdfAvailable = hasResumePdf();
   .project-links {
     display: flex;
     gap: 0.75rem;
+    flex-wrap: wrap;
   }
   .project-links a {
     padding: 0.4rem 0.9rem;
@@ -118,6 +119,8 @@ const resumePdfAvailable = hasResumePdf();
     color: var(--fg);
   }
   .project-body {
+    color: var(--fg);
+    font-size: 0.98rem;
     line-height: 1.7;
   }
   .project-body :global(h2) {
@@ -125,18 +128,128 @@ const resumePdfAvailable = hasResumePdf();
     font-weight: 700;
     margin-top: 2.5rem;
     margin-bottom: 1rem;
+    line-height: 1.25;
+  }
+  .project-body :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .project-body :global(h3) {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.35;
   }
   .project-body :global(p) {
     margin-bottom: 1rem;
-    color: var(--fg-secondary);
+  }
+  .project-body :global(strong) {
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .project-body :global(em) {
+    font-style: italic;
+  }
+  .project-body :global(a) {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 0.18em;
+    transition: var(--transition);
+  }
+  .project-body :global(a:hover) {
+    color: var(--fg);
+    text-decoration-color: var(--accent-dark);
   }
   .project-body :global(ul) {
-    margin-bottom: 1rem;
+    list-style: disc;
+    margin: 0 0 1rem;
+    padding-left: 1.5rem;
+  }
+  .project-body :global(ol) {
+    list-style: decimal;
+    margin: 0 0 1rem;
     padding-left: 1.5rem;
   }
   .project-body :global(li) {
     margin-bottom: 0.5rem;
+  }
+  .project-body :global(li > ul),
+  .project-body :global(li > ol) {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+  }
+  .project-body :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.25rem 0;
+  }
+  .project-body :global(blockquote) {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-bg);
     color: var(--fg-secondary);
+    border-radius: 0 var(--radius-button) var(--radius-button) 0;
+  }
+  .project-body :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+  .project-body :global(code) {
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-tag);
+    background: var(--bg-muted);
+    color: var(--fg);
+    font-size: 0.9em;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    word-break: break-word;
+  }
+  .project-body :global(pre) {
+    margin: 1.5rem 0;
+    padding: 1rem 1.125rem;
+    border-radius: var(--radius-button);
+    overflow-x: auto;
+    line-height: 1.7;
+  }
+  .project-body :global(pre.astro-code) {
+    border: 1px solid var(--border-hover);
+  }
+  .project-body :global(pre:not(.astro-code)) {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .project-body :global(pre code) {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: 0.875rem;
+    word-break: normal;
+  }
+  .project-body :global(table) {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background: var(--bg-elevated);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .project-body :global(th),
+  .project-body :global(td) {
+    border: 1px solid var(--border);
+    padding: 0.7rem 0.85rem;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: break-word;
+  }
+  .project-body :global(th) {
+    background: var(--bg-muted);
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .project-body :global(tbody tr:nth-child(even) td) {
+    background: var(--bg);
   }
   .back-link {
     margin-top: 3rem;
@@ -151,5 +264,23 @@ const resumePdfAvailable = hasResumePdf();
   }
   .back-link a:hover {
     color: var(--fg);
+  }
+  @media (max-width: 640px) {
+    .project-title {
+      font-size: 1.75rem;
+    }
+    .project-body {
+      font-size: 0.95rem;
+    }
+    .project-body :global(h2) {
+      font-size: 1.35rem;
+    }
+    .project-body :global(table) {
+      font-size: 0.85rem;
+    }
+    .project-body :global(th),
+    .project-body :global(td) {
+      padding: 0.6rem 0.7rem;
+    }
   }
 </style>

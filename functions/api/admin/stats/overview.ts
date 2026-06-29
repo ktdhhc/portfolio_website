@@ -2,7 +2,7 @@
 
 import { StoreUnavailableError } from '../../_store/errors';
 import { type AdminEnv, toJsonResponse } from '../_shared';
-import { getComparisonWindow, parseAdminStatsPeriod } from '../_period';
+import { resolveWindow } from '../_period';
 import { type ComparisonMetric, type StatsResponse, averageDuration, dbUnavailableResponse, getStoresSnapshot, okResponse } from './_shared';
 
 type OverviewStatsData = {
@@ -22,8 +22,8 @@ function comparisonMetric(current: number, previous: number): ComparisonMetric {
 
 export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
   try {
-    const period = parseAdminStatsPeriod(new URL(context.request.url).searchParams.get('period'));
-    const { current, previous } = getComparisonWindow(period);
+    const url = new URL(context.request.url);
+    const { current, previous } = resolveWindow(url);
     const snapshot = await getStoresSnapshot(context.env, current, previous);
 
     const currentPageDurations = snapshot.currentEvents.filter((event) => event.eventType === 'page_duration' && typeof event.durationMs === 'number');

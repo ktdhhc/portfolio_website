@@ -99,7 +99,7 @@ test.describe('构建完整性', () => {
   });
 
   test('4 个项目详情页全部返回 200', async ({ page }) => {
-    const slugs = ['aindexer', 'character-memory', 'ai-prototype-rd', 'memory-system-testing'];
+    const slugs = ['aindexer', 'character-memory', 'human-like-agent', 'memory-system-testing'];
     for (const slug of slugs) {
       const response = await page.goto(`/projects/${slug}/`);
       expect(response?.status(), `/projects/${slug}/ should return 200`).toBe(200);

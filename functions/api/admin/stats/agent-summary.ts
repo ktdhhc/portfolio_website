@@ -2,7 +2,7 @@
 
 import { StoreUnavailableError } from '../../_store/errors';
 import { type AdminEnv, toJsonResponse } from '../_shared';
-import { getComparisonWindow, parseAdminStatsPeriod } from '../_period';
+import { resolveWindow } from '../_period';
 import { type StatsResponse, dbUnavailableResponse, okResponse } from './_shared';
 import { resolveStores } from '../../_store/d1';
 
@@ -29,8 +29,8 @@ type AgentSummaryData = {
 
 export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
   try {
-    const period = parseAdminStatsPeriod(new URL(context.request.url).searchParams.get('period'));
-    const { current } = getComparisonWindow(period);
+    const url = new URL(context.request.url);
+    const { current } = resolveWindow(url);
     const stores = resolveStores(context.env);
     const turns = await stores.agentTurnStore.listTurns(current);
     const counts = new Map<string, number>();
