@@ -8,7 +8,6 @@ tags:
   - FastAPI
   - SQLite
   - React
-  - RAG
   - 文献管理
   - 文献阅读工作流
 links:

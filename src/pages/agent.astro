@@ -19,7 +19,7 @@ const projects = await getCollection('projects');
       </div>
       <h1>向 Agent 提问，<br><span class="accent">了解候选人</span></h1>
       <p class="hero-desc">
-        基于简历、项目文档与公开作品资料回答，不会替你确认未经验证的信息。
+        基于简历、项目文档与部分非公开资料回答，不会替本人确认未经验证的信息。
       </p>
       <p class="privacy-note">提问内容可能被记录，请勿输入敏感信息</p>
     </div>
@@ -544,9 +544,9 @@ const projects = await getCollection('projects');
       if (el) el.remove();
     }
 
-    function addToolChip(label) {
+    function addToolChip(label, row) {
       const file = label.replace(/^正在查阅\s*/, '');
-      const row = document.querySelector('.tool-row') || (() => {
+      const nextRow = row || (() => {
         const r = document.createElement('div');
         r.className = 'tool-row';
         messages.appendChild(r);
@@ -556,12 +556,14 @@ const projects = await getCollection('projects');
       chip.className = 'tool-chip';
       chip.dataset.file = file;
       chip.innerHTML = '<span class="dot"></span>' + label;
-      row.appendChild(chip);
+      nextRow.appendChild(chip);
       scroll();
+      return nextRow;
     }
 
-    function markToolDone(file) {
-      const chip = document.querySelector('.tool-chip[data-file="' + file + '"]');
+    function markToolDone(file, row) {
+      if (!row) return;
+      const chip = Array.from(row.querySelectorAll('.tool-chip')).find((item) => item.dataset.file === file);
       if (chip) chip.classList.add('done');
       scroll();
     }
@@ -772,6 +774,7 @@ const projects = await getCollection('projects');
         }
 
         let agentBubble = null;
+        let toolRow = null;
         let doneFiles = [];
         const decoder = new TextDecoder();
         const reader = res.body.getReader();
@@ -787,10 +790,10 @@ const projects = await getCollection('projects');
           const event = JSON.parse(data);
 
           if (event.type === 'status') {
-            addToolChip(event.content);
+            toolRow = addToolChip(event.content, toolRow);
           }
           if (event.type === 'tool_done') {
-            markToolDone(event.content);
+            markToolDone(event.content, toolRow);
             doneFiles.push(event.content);
           }
           if (event.type === 'delta') {

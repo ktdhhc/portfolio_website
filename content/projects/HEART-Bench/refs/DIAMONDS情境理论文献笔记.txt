@@ -1,0 +1,51 @@
+DIAMONDS情境八维度理论
+•（Rauthmann, J. F., Gallardo-Pujol, D., Guillaume, E. M., Todd, E., Nave, C. S., Sherman, R. A., ... & Funder, D. C. (2014). The Situational Eight DIAMONDS: a taxonomy of major dimensions of situation characteristics. Journal of personality and social psychology, 107(4), 677.）
+
+
+六个子研究
+
+study1：从因子分析中提取“情境特征维度”
+目的：建立跨文化、跨方法的情境心理学，并预测行为
+方法
+•数据采集
+￮情境回忆（n=1589）
+￮RSQ-3.15（89题）+Q-sort和Likert量表评分
+分析：探索性因素分析
+结果：8因素时解释62%总方差，根据内容命名为8个情境维度；每个维度取前4条最高且稳定的条目，形成精简版量表RSQ-8（32题）
+	
+study2：检验人们是否对情境维度有“共识”
+study3
+目的：探究每个维度对应的客观线索，并验证跨文化稳定性
+方法
+•数据采集
+￮532+810条日记文字描述
+￮RSQ-3.15（89题）+Q-sort和Likert量表评分
+•区分线索
+￮人/互动（7条）：Family, Friends, Mate, Alone, Colleagues, Strangers, Animal
+￮物/事件/活动（18条）：Working, Eating, TV, Exam, Sports, Commuting, Grooming, Reading, Bar/Café, Videogames, Phone, Music/Dance, Sleeping, Shopping, Preparing food, Waiting, Bathroom, Exam
+￮地点（6条）：At home, University, Bar/Café, In bathroom, In kitchen, In bed
+•盲法编码
+￮对每条文字描述对逐条线索打分（出现=1，未出现-0）
+分析：点二列相关
+结果
+
+▪31条线索与8维度相关性矩阵
+▪情境机制跨文化稳定
+study4：检验维度与“目标-动机-特质机会”是否系统对应
+study5
+目的
+•证明情境是当下行为的强预测源
+方法
+•数据采集
+￮分波次：确保覆盖足够广的生活情境，保证生态效度
+￮被试回忆情境
+￮RSQ-8（Likert法）→z分数
+￮RBQ-67（Likert法或Q-sort法）→z分数
+分析：多层次元回归分析
+•参数估计
+￮单场合回归 → Meta 合并
+•显著性检验
+￮置换检验
+￮Fisher z转换
+结果
+•67 × 8 β 矩阵（行为 × 维度）

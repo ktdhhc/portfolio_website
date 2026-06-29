@@ -256,6 +256,81 @@ test('013-03: SSE delta 前会显示思考过程折叠块', async ({ page }) => 
   await expect(page.locator('.chat-messages')).toContainText('基于资料的回答');
 });
 
+test('013-06: 连续两次提问时，每个 Agent Turn 各自显示自己的 tool chip', async ({ page }) => {
+  let turn = 0;
+  await page.route('**/api/chat', async (route) => {
+    turn += 1;
+    const body = turn === 1
+      ? [
+          'data: {"type":"status","content":"正在查阅 projects/aindexer/index.md"}\n\n',
+          'data: {"type":"tool_done","content":"projects/aindexer/index.md"}\n\n',
+          'data: {"type":"delta","content":"第一轮回答"}\n\n',
+          'data: {"type":"done"}\n\n',
+        ].join('')
+      : [
+          'data: {"type":"status","content":"正在查阅 resume.json"}\n\n',
+          'data: {"type":"tool_done","content":"resume.json"}\n\n',
+          'data: {"type":"delta","content":"第二轮回答"}\n\n',
+          'data: {"type":"done"}\n\n',
+        ].join('');
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'text/event-stream',
+      body,
+    });
+  });
+
+  await page.goto('/agent/');
+
+  await page.locator('.chat-input').fill('第一问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('第一轮回答');
+
+  await page.locator('.chat-input').fill('第二问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('第二轮回答');
+
+  const toolRows = page.locator('.tool-row');
+  await expect(toolRows).toHaveCount(2);
+  await expect(toolRows.nth(0)).toContainText('projects/aindexer/index.md');
+  await expect(toolRows.nth(0)).not.toContainText('resume.json');
+  await expect(toolRows.nth(1)).toContainText('resume.json');
+  await expect(toolRows.nth(1)).not.toContainText('projects/aindexer/index.md');
+});
+
+test('013-07: 连续两次提问读取同一文件时，每个 Agent Turn 都有自己的 done chip', async ({ page }) => {
+  await page.route('**/api/chat', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'text/event-stream',
+      body: [
+        'data: {"type":"status","content":"正在查阅 resume.json"}\n\n',
+        'data: {"type":"tool_done","content":"resume.json"}\n\n',
+        'data: {"type":"delta","content":"基于简历的回答"}\n\n',
+        'data: {"type":"done"}\n\n',
+      ].join(''),
+    });
+  });
+
+  await page.goto('/agent/');
+
+  await page.locator('.chat-input').fill('第一问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('基于简历的回答');
+
+  await page.locator('.chat-input').fill('第二问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('第二问');
+
+  const toolRows = page.locator('.tool-row');
+  await expect(toolRows).toHaveCount(2);
+  await expect(toolRows.nth(0).locator('.tool-chip.done')).toHaveCount(1);
+  await expect(toolRows.nth(1).locator('.tool-chip.done')).toHaveCount(1);
+  await expect(toolRows.nth(0)).toContainText('resume.json');
+  await expect(toolRows.nth(1)).toContainText('resume.json');
+});
+
 test('013-04: chat 端点始终返回 SSE 格式', async () => {
   const response = await callChat('你好');
   expect(response.status).toBe(200);
