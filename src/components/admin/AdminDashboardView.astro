@@ -44,6 +44,7 @@ const moduleCards = [
         <span class="date-separator">至</span>
         <input type="date" id="endDate" class="date-input" aria-label="结束日期" />
       </div>
+      <p class="custom-range-error" data-custom-range-error hidden></p>
     </div>
   </section>
 
@@ -88,8 +89,14 @@ const moduleCards = [
         <p class="module-copy" data-logs-total>共 0 条记录</p>
       </div>
       <div class="logs-actions">
-        <button type="button" disabled>导出</button>
-        <button type="button" disabled>清理</button>
+        <label class="export-all-toggle">
+          <input type="checkbox" data-export-all aria-label="导出全部数据" />
+          <span>全部</span>
+        </label>
+        <button type="button" data-export-format="csv">导出 CSV</button>
+        <button type="button" data-export-format="json">导出 JSON</button>
+        <button type="button" data-range-delete>按时间范围删除</button>
+        <button type="button" data-clear-all>清空全部</button>
       </div>
     </div>
 
@@ -242,6 +249,12 @@ const moduleCards = [
     font-size: 0.85rem;
   }
 
+  .custom-range-error {
+    margin-top: 0.5rem;
+    color: var(--accent-dark);
+    font-size: 0.85rem;
+  }
+
   .module-section,
   .module-grid {
     margin-bottom: 3rem;
@@ -326,6 +339,14 @@ const moduleCards = [
   .logs-actions {
     display: flex;
     gap: 0.75rem;
+  }
+
+  .export-all-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--fg-secondary);
+    font-size: 0.85rem;
   }
 
   .logs-actions button,

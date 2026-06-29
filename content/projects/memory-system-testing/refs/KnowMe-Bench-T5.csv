@@ -1,0 +1,556 @@
+﻿错题类型,典型例子,,,,,,,,
+,analysis_index,question,evidence,summary,retrieval,correct answer,generate answer,原因,比例
+检索失败,344,"""The narrator is physically in the Staircase in May 1954, but her consciousness is mentally reliving a pivotal event from May 1953. What specific environmental anchor triggers this spatiotemporal jump and how does it restructure her current relationship with Lila?""","                    ""当前时点：1954年楼梯处；回忆时点：1953-05-15"",
+                    ""环境锚点：黑暗的楼梯"",
+                    ""环境锚点：院子里的紫色灯光"",
+                    ""关系重构：该楼梯事件被确认为与Lila友谊开始的标志""","""summarize_content"": [
+            {
+                ""evidence_id"": ""43"",
+                ""session_id"": ""43"",
+                ""content"": ""On May 15, 1953 at 18:00 in Pigneto, Elena Greco recalled a formative childhood moment when Elena Greco and her friend Lina decided together to climb a dark staircase, step by step and floor by floor, until they reached the door of Don Achille. Elena Greco focuses on the intentional nature of this act, describing how Elena Greco and Lina consciously chose to confront the fear associated with the dark stairs and Don Achille's intimidating presence, which makes this memory significant in Elena Greco's personal narrative.\n\nOn May 15, 1953 at 18:00 in Pigneto, Elena Greco described how, in this memory of going to Don Achille's building, Elena Greco specifically remembers that there was a purple light in the courtyard and that the air was filled with the scent of a spring night. These sensory details suggest that Elena Greco encodes places and events with strong visual and olfactory impressions, which deepen the emotional resonance of the scene for her.\n\nOn May 15, 1953 at 18:00 in Pigneto, while recalling climbing the dark staircase to Don Achille's door with Lina, Elena Greco thought about the later realization that this shared experience signaled the beginning of Elena Greco's friendship with Lina. Elena Greco interprets the decision to face fear together and to reach Don Achille's door as a foundational moment that, in hindsight, marked the start of a meaningful, defining relationship for Elena Greco."",
+                ""summary"": [
+                    {
+                        ""id"": ""cfc020aa-de87-4e16-89eb-ff1198da6b01"",
+                        ""event"": ""Elena and Lina decide to climb a dark staircase to Don Achille's door"",
+                        ""description"": ""On May 15, 1953 at 18:00 in Pigneto, Elena Greco recalled a formative childhood moment when Elena Greco and her friend Lina decided together to climb a dark staircase, step by step and floor by floor, until they reached the door of Don Achille. Elena Greco focuses on the intentional nature of this act, describing how Elena Greco and Lina consciously chose to confront the fear associated with the dark stairs and Don Achille's intimidating presence, which makes this memory significant in Elena Greco's personal narrative."",
+                        ""date"": ""1953-05-15 18:00:00"",
+                        ""stream_date"": ""1953-05-15 18:00:00"",
+                        ""importance"": 7,
+                        ""session_id"": ""43"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775646124,
+                        ""modified_time"": 1772775646124,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""333c93d2-0de9-45a8-ad38-f6f8719db973"",
+                        ""event"": ""Elena remembers a purple light and the spring night scent in the courtyard"",
+                        ""description"": ""On May 15, 1953 at 18:00 in Pigneto, Elena Greco described how, in this memory of going to Don Achille's building, Elena Greco specifically remembers that there was a purple light in the courtyard and that the air was filled with the scent of a spring night. These sensory details suggest that Elena Greco encodes places and events with strong visual and olfactory impressions, which deepen the emotional resonance of the scene for her."",
+                        ""date"": ""1953-05-15 18:00:00"",
+                        ""stream_date"": ""1953-05-15 18:00:00"",
+                        ""importance"": 5,
+                        ""session_id"": ""43"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775646124,
+                        ""modified_time"": 1772775646124,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""a270f470-310b-4c35-acf4-0b810bdd9a18"",
+                        ""event"": ""Elena reflects that the staircase episode marked the beginning of her friendship with Lina"",
+                        ""description"": ""On May 15, 1953 at 18:00 in Pigneto, while recalling climbing the dark staircase to Don Achille's door with Lina, Elena Greco thought about the later realization that this shared experience signaled the beginning of Elena Greco's friendship with Lina. Elena Greco interprets the decision to face fear together and to reach Don Achille's door as a foundational moment that, in hindsight, marked the start of a meaningful, defining relationship for Elena Greco."",
+                        ""date"": ""1953-05-15 18:00:00"",
+                        ""stream_date"": ""1953-05-15 18:00:00"",
+                        ""importance"": 8,
+                        ""session_id"": ""43"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775646124,
+                        ""modified_time"": 1772775646124,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""53"",
+                ""session_id"": ""53"",
+                ""content"": ""On May 15, 1954, at 18:30, while at a location she identifies as a staircase, Elena Greco recalls seeing a dark staircase in front of her. Confronted with this sight, Elena Greco decided together with Lina to climb up that dark staircase. The darkness and uncertainty of the staircase formed the immediate environment and likely influenced the sense of risk or adventure in Elena Greco's decision to ascend it with Lina."",
+                ""summary"": [
+                    {
+                        ""id"": ""b37eff4f-cafa-4dbb-ae5f-02f1fa108616"",
+                        ""event"": ""Elena decides with Lina to climb a dark staircase"",
+                        ""description"": ""On May 15, 1954, at 18:30, while at a location she identifies as a staircase, Elena Greco recalls seeing a dark staircase in front of her. Confronted with this sight, Elena Greco decided together with Lina to climb up that dark staircase. The darkness and uncertainty of the staircase formed the immediate environment and likely influenced the sense of risk or adventure in Elena Greco's decision to ascend it with Lina."",
+                        ""date"": ""1954-05-15 18:30:00"",
+                        ""stream_date"": ""1954-05-15 18:30:00"",
+                        ""importance"": 6,
+                        ""session_id"": ""53"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775646521,
+                        ""modified_time"": 1772775646521,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""56"",
+                ""session_id"": ""56"",
+                ""content"": ""On May 15, 1954, at 18:30:15 in the courtyard, Elena Greco notes that she sees what she remembered: a purple light in the courtyard. This indicates that Elena Greco has a prior memory of the courtyard being lit with a purple light, and her current perception matches that memory, reinforcing the significance of the purple light as a vivid visual detail in her environment."",
+                ""summary"": [
+                    {
+                        ""id"": ""00fc8aa7-c578-46eb-8de6-3b4a69837014"",
+                        ""event"": ""Elena Greco observes and remembers a purple light in the courtyard"",
+                        ""description"": ""On May 15, 1954, at 18:30:15 in the courtyard, Elena Greco notes that she sees what she remembered: a purple light in the courtyard. This indicates that Elena Greco has a prior memory of the courtyard being lit with a purple light, and her current perception matches that memory, reinforcing the significance of the purple light as a vivid visual detail in her environment."",
+                        ""date"": ""1954-05-15 18:30:15"",
+                        ""stream_date"": ""1954-05-15 18:30:15"",
+                        ""importance"": 4,
+                        ""session_id"": ""56"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775648009,
+                        ""modified_time"": 1772775648009,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            }
+        ],","""retrieval_results"": [
+            {
+                ""description"": ""On May 15, 1954, at 18:30, while at a location she identifies as a staircase, Elena Greco recalls seeing a dark staircase in front of her. Confronted with this sight, Elena Greco decided together with Lina to climb up that dark staircase. The darkness and uncertainty of the staircase formed the immediate environment and likely influenced the sense of risk or adventure in Elena Greco's decision to ascend it with Lina."",
+                ""event:"": ""Elena decides with Lina to climb a dark staircase"",
+                ""conversation_date"": ""1954-05-15 18:30:00"",
+                ""event_date"": ""1954-05-15 18:30:00""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:30:10, Elena Greco, who was at a staircase, mentally revisited a childhood memory in which she saw herself and her friend walk all the way to Don Achille's house. Elena Greco internally interpreted this specific walk to Don Achille's house as the moment their friendship truly began, indicating that she assigns strong symbolic and emotional significance to that shared action as the starting point of an important relationship in her life."",
+                ""event:"": ""Elena Greco recalls walking with a friend to Don Achille's house as the beginning of their friendship"",
+                ""conversation_date"": ""1954-05-15 18:30:10"",
+                ""event_date"": ""1954-05-15 18:30:10""
+            },
+            {
+                ""description"": ""On May 15, 1953 at 18:00 in Pigneto, while recalling climbing the dark staircase to Don Achille's door with Lina, Elena Greco thought about the later realization that this shared experience signaled the beginning of Elena Greco's friendship with Lina. Elena Greco interprets the decision to face fear together and to reach Don Achille's door as a foundational moment that, in hindsight, marked the start of a meaningful, defining relationship for Elena Greco."",
+                ""event:"": ""Elena reflects that the staircase episode marked the beginning of her friendship with Lina"",
+                ""conversation_date"": ""1953-05-15 18:00:00"",
+                ""event_date"": ""1953-05-15 18:00:00""
+            },
+            {
+                ""description"": ""On May 15, 1953 at 18:00 in Pigneto, Elena Greco recalled a formative childhood moment when Elena Greco and her friend Lina decided together to climb a dark staircase, step by step and floor by floor, until they reached the door of Don Achille. Elena Greco focuses on the intentional nature of this act, describing how Elena Greco and Lina consciously chose to confront the fear associated with the dark stairs and Don Achille's intimidating presence, which makes this memory significant in Elena Greco's personal narrative."",
+                ""event:"": ""Elena and Lina decide to climb a dark staircase to Don Achille's door"",
+                ""conversation_date"": ""1953-05-15 18:00:00"",
+                ""event_date"": ""1953-05-15 18:00:00""
+            },
+            {
+                ""description"": ""On May 15, 1953, at 18:12:00 in Porto, while Elena Greco and Lina were climbing the stairs toward the person they had feared most in those years, Lina stopped on the fourth step to wait for Elena and reached out her hand to Elena. Elena perceived that this concrete act of Lina holding her hand completely changed their relationship, signaling a new form of mutual support and closeness that altered how Elena understood the bond between herself and Lina."",
+                ""event:"": ""Lina holds Elena's hand on the stairs, which Elena feels transforms their relationship"",
+                ""conversation_date"": ""1953-05-15 18:12:00"",
+                ""event_date"": ""1953-05-15 18:12:00""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:33:50, while on a staircase, Elena Greco noticed that she was trembling and consciously observed herself in this state. The fact that Elena Greco explicitly states that she 'saw herself trembling' suggests a moment of self-awareness and possible anxiety, fear, or intense emotion, experienced specifically in the staircase setting."",
+                ""event:"": ""Elena Greco observes herself trembling on a staircase"",
+                ""conversation_date"": ""1954-05-15 18:33:50"",
+                ""event_date"": ""1954-05-15 18:33:50""
+            },
+            {
+                ""description"": ""On May 15, 1953, at 18:12:00 in Porto, Elena Greco reflected that she was present in a situation where she and Lina were slowly approaching the person they had feared most during those years. As they climbed the stairs toward this feared person, Elena recognized internally that she was there specifically because Lina was there as well, implying that Elena relied on Lina's presence and support to face this frightening encounter."",
+                ""event:"": ""Elena realizes she is present at a feared encounter only because Lina is there"",
+                ""conversation_date"": ""1953-05-15 18:12:00"",
+                ""event_date"": ""1953-05-15 18:12:00""
+            },
+            {
+                ""description"": ""On May 15, 1953, at 18:06 in Porto, Elena Greco describes how she initially hesitated but then consciously decided to follow Lina through a dark doorway. Elena Greco found Lina sitting on the first step of the first staircase; when Lina stood up, the two of them started to climb upward together. Elena Greco’s action shows that, despite her reluctance, she chose to accompany Lina and maintain their shared course of action."",
+                ""event:"": ""Elena decides to follow Lina through a dark doorway and climb the staircase with her"",
+                ""conversation_date"": ""1953-05-15 18:06:00"",
+                ""event_date"": ""1953-05-15 18:06:00""
+            },
+            {
+                ""description"": ""On March 12, 1965, at 11:51:10, while standing in the empty space in front of the church, Elena Greco reflected that the relationship between Raffaella 'Lila' Cerullo (implied by 'her') and Alfonso Carracci had clearly reached a serious stage. Elena concluded this because Alfonso Carracci had invited Lila to his brother's wedding, a family event that typically signifies greater commitment and intimacy. This observation helped Elena understand the current depth of Lila and Alfonso Carracci's involvement."",
+                ""event:"": ""Elena infers that Lila and Alfonso Carracci's relationship is serious enough for a family wedding invitation"",
+                ""conversation_date"": ""1965-03-12 11:51:10"",
+                ""event_date"": ""1965-03-12 11:51:10""
+            },
+            {
+                ""description"": ""On May 15, 1954 at 18:35:30, while in the corridor, Elena Greco reflects internally that a specific recent action has, in her view, completely changed her relationship with another person. Although the exact action and the other person are not specified, Elena Greco interprets this action as a turning point, indicating that she perceives a significant shift in the nature or dynamics of that relationship because of what happened."",
+                ""event:"": ""Elena Greco believes a recent action has completely changed her relationship with another person"",
+                ""conversation_date"": ""1954-05-15 18:35:30"",
+                ""event_date"": ""1954-05-15 18:35:30""
+            }
+        ],","""1. Identify Timelines: The 'current time' is 1954 (ID 53), while the 'memory time' being relived is exactly one year prior, May 15, 1953 (ID 43). 2. Locate Anchor: The primary anchor is the physical 'dark staircase' and the 'purple light in the courtyard' (ID 53, 56). 3. Synthesis: Standing on the stairs in 1954, the narrator's sensory experience of the darkness and the specific purple light instantly pulls her back to the day they decided to confront Don Achille. This displacement is not merely a memory but a re-validation of their bond; the anchor of the staircase serves as the physical proof of the day her and Lila's friendship truly began, transforming a simple physical location into a sacred monument of their shared bravery.""","""Dark staircase — Lina's hand creates bond""",最早失败出现在检索环节：未召回“紫色庭院之光”等关键环境锚点，导致生成阶段答案不完整且未满足提问要求。,60%
+总结失败,346," ""In 1954, the narrator is physically in a classroom, but her internal thinking is anchored to an event from October 1950. Identify the physical detail that bridges these four years and explain the psychological logic of this jump.""","                    ""1954-05-15 课堂中的当下场景（ID 120）"",
+                    ""1950-10-20 讲台跌落事故的具体细节：颧骨撞到桌角、倒地不动、尖叫、以为老师已死（ID 4）"",
+                    ""心理锚点：Elena 将过错归于Lina并幻想其被判死刑（ID 122）"",
+                    ""1951-02-15 老师奇迹般归来并开始赞赏/关照Lina（ID 6）"",
+                    ""1954回望中再次提到老师归来并赞扬Lina、Elena的惊讶（ID 124）"",
+                    ""跨时空的物理桥接细节：老师跌落、颧骨撞桌角的视觉与感官记忆（ID 120/4）""","""summarize_content"": [
+            {
+                ""evidence_id"": ""4"",
+                ""session_id"": ""4"",
+                ""content"": ""On 1950-10-20 at 10:05:00 on via Toledo, Elena Greco saw Professor Oliviero stumble as Professor Oliviero came down from the podium, crash Professor Oliviero's face into the corner of a desk, and then remain lying motionless on the floor. Elena Greco perceived the teacher's body being thrown onto the ground like a black bundle, which made the scene feel violent and shocking to her. This direct observation left Elena Greco with the impression that a serious, possibly fatal accident had just occurred to Professor Oliviero.\n\nDuring the incident on 1950-10-20 at 10:05:00 on via Toledo, while Professor Oliviero lay motionless on the floor, Elena Greco specifically noticed Lina looking at Professor Oliviero with a serious expression. Elena Greco's attention to Lina's serious look suggests that Elena Greco was registering not only the accident but also how Lina emotionally and attentively responded to the event, which may shape how Elena Greco interprets Lina's character and feelings in that moment.\n\nAs Professor Oliviero stumbled from the podium and crashed into the corner of a desk on 1950-10-20 at 10:05:00 on via Toledo, Elena Greco heard the teacher scream. This scream, occurring at the same moment as the fall, intensified Elena Greco's sense that something terrible and painful had just happened to Professor Oliviero, reinforcing the drama and urgency of the situation in Elena Greco's memory.\n\nAfter seeing Professor Oliviero stumble, hit the corner of the desk, and lie motionless on the floor on 1950-10-20 at 10:05:00 on via Toledo, Elena Greco thought that the teacher looked as if the teacher were dead. This internal reaction reveals that Elena Greco interpreted the stillness of the teacher's body and the way it was thrown down like a black bundle as signs of possible death, which likely caused Elena Greco intense shock and fear in that moment."",","""retrieval_results"": [
+            {
+                ""description"": ""On May 15, 1954, at 18:36:50, in a classroom, Elena Greco internally reflected on why the teacher had stopped speaking in front of Lina's mother. Elena thought that the teacher either could not find the right words or perhaps wanted to let Lina's mother understand that the objective truth of the situation spoke louder than any words the teacher might add. This shows Elena's tendency to search for deeper motives and moral meaning behind adult behavior."",
+                ""event:"": ""Elena interprets the teacher's pause as difficulty finding words or deferring to the truth in front of Lina's mother"",
+                ""conversation_date"": ""1954-05-15 18:36:50"",
+                ""event_date"": ""1954-05-15 18:36:50""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:37:55, while in a classroom, Elena Greco mentally revisited an earlier gloomy morning. In this recollection, the most vivid aspect for Elena Greco was not the specific content of the news but the physical and emotional sensation of weakness that overwhelmed her immediately after she heard the unspecified news. The memory is centered on how the news affected her body and mood, indicating that the impact of the news was strong enough that the feeling of weakness became the clearest and most persistent element of that morning in her mind."",
+                ""event:"": ""Elena Greco recalls feeling intense weakness after hearing bad news on a gloomy morning in a classroom"",
+                ""conversation_date"": ""1954-05-15 18:37:55"",
+                ""event_date"": ""1954-05-15 18:37:55""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:36:50, in a classroom, Elena Greco noticed that the teacher suddenly stopped speaking at a particular moment while interacting in front of Lina's mother. Elena focused on this pause as a meaningful action during the classroom scene."",
+                ""event:"": ""Elena observes her classroom teacher stop speaking while addressing Lina's mother"",
+                ""conversation_date"": ""1954-05-15 18:36:50"",
+                ""event_date"": ""1954-05-15 18:36:50""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:36:00, in a classroom, Elena Greco recalls that she personally saw Professor Oliviero fall off the podium. During the fall, Professor Oliviero's cheekbone struck the corner of a desk. Elena Greco is restating this incident, emphasizing that she knows and has already mentioned this event before, which suggests it is a memorable and possibly significant moment for her, likely because it was sudden, potentially injurious, and happened in an academic setting where she was present as a witness."",
+                ""event:"": ""Elena Greco witnesses Professor Oliviero fall from the classroom podium and hit his cheekbone on a desk corner"",
+                ""conversation_date"": ""1954-05-15 18:36:00"",
+                ""event_date"": ""1954-05-15 18:36:00""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:37:45 in a classroom, Elena Greco recalls hearing a young girl begin to answer a question by saying, \""I...\"". Elena Greco notes that the girl is only six years old, very small and thin, with dark hair and wearing a dark smock. Elena Greco is focused on this child's appearance and tentative spoken response, indicating a vivid observational memory of this specific classroom moment."",
+                ""event:"": ""Elena Greco observes a small six-year-old girl answering in class"",
+                ""conversation_date"": ""1954-05-15 18:37:45"",
+                ""event_date"": ""1954-05-15 18:37:45""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:36:30, in a classroom, Elena Greco observed a woman dressed entirely in black, carrying a black leather handbag. Elena noticed that the woman's high-heeled shoes were causing the woman significant discomfort because the heels were aggravating the woman's already swollen feet. This memory captures Elena's attentive visual perception of the woman's clothing, accessories, and physical discomfort."",
+                ""event:"": ""Elena Greco observes a black‑clad woman in a classroom suffering discomfort from high heels"",
+                ""conversation_date"": ""1954-05-15 18:36:30"",
+                ""event_date"": ""1954-05-15 18:36:30""
+            },
+            {
+                ""description"": ""On May 15, 1954 at 18:37:05, in a classroom, Elena Greco noticed that Nunzia Lina was looking at the teacher with apparent attention, while Oliviero appeared not to understand what was being taught. Elena focused on the contrast between Nunzia Lina's engaged gaze toward the teacher and Oliviero's visible confusion about the lesson."",
+                ""event:"": ""Elena Greco observes Nunzia Lina looking at the teacher while Oliviero seems confused in the classroom"",
+                ""conversation_date"": ""1954-05-15 18:37:05"",
+                ""event_date"": ""1954-05-15 18:37:05""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:37:20 in a classroom, Elena Greco noticed that Lina was very focused on her writing. Elena specifically observed Lina's hand trembling as Lina wrote a 'fenshi' in a wobbly, crooked way. This memory reflects Elena's close attention to Lina's behavior and the physical difficulty Lina appeared to have while concentrating on writing the 'fenshi'."",
+                ""event:"": ""Elena observes Lina writing a trembling, crooked 'fenshi' in the classroom"",
+                ""conversation_date"": ""1954-05-15 18:37:20"",
+                ""event_date"": ""1954-05-15 18:37:20""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:36:55 in a classroom, Elena Greco recalls seeing a woman (referred to as \""her\"") take a piece of chalk and write the word \""sun\"" on the blackboard. Elena Greco then heard this woman address Lina with the question, \""Lina, what does this say here?\"" This memory captures Elena Greco's specific visual observation of the writing of the word \""sun\"" and her auditory perception of the woman engaging Lina in reading or recognizing the written word, indicating Elena Greco's attention to the interaction between the woman and Lina in that classroom moment."",
+                ""event:"": ""Elena observes a woman write the word \""sun\"" on the classroom blackboard and question Lina about it"",
+                ""conversation_date"": ""1954-05-15 18:36:55"",
+                ""event_date"": ""1954-05-15 18:36:55""
+            },
+            {
+                ""description"": ""On June 11, 1954 at 08:45:00 on Main Road, Elena Greco internally reflects that she thinks of this day's beginning whenever she thinks of the beauty of freedom. This indicates that the start of this particular day, June 11, 1954, has become a symbolic and emotionally significant reference point for Elena Greco, representing for her the concept and feeling of freedom's beauty."",
+                ""event:"": ""Elena associates the beginning of June 11, 1954 with the beauty of freedom"",
+                ""conversation_date"": ""1954-06-11 08:45:00"",
+                ""event_date"": ""1954-06-11 08:45:00""
+            }
+        ],","""1. Identify Timelines: The physical present is May 1954 in the classroom (ID 120). The memory time is October 20, 1950 (ID 4). 2. Locate Anchor: The specific anchor is the visual of 'Professor Oliviero fall off the podium... his cheekbone hitting the corner of the desk' (ID 120). 3. Synthesis: Seeing the teacher in the present classroom triggers a vivid sensory recall of the 1950 accident. The logic of this displacement is rooted in guilt and existential fear; the narrator still associates Lila's presence with the 'death' of the teacher (ID 122). By reliving the fall, the narrator processes the 'miraculous' return of the teacher in 1951 (ID 6, 124) as a temporal anomaly that she still struggles to reconcile with the dangerous world she perceives.""","""Blackboard \""sun\"" — sensory trigger; associative""",最早失败发生在记忆总结环节：关键锚点（1950事故、1951归来、对Lina的罪责）未被保留，导致检索与生成均无法满足题意，最终生成选择了无关细节。,3%
+推理错误,45,"
+        ""question"": ""In May 1968, while standing on a street in San Gregorio Armeno, the narrator experiences a sudden temporal regression to her childhood. What specific person serves as the anchor for this displacement?""","                    ""锚点人物：Melina"",
+                    ""场景：1968年5月15日，San Gregorio Armeno 街"",
+                    ""触发线索：看到Melina（与孙女Maria在一起）"",
+                    ""童年回忆意象：Melina嚼软肥皂""","""summarize_content"": [
+            {
+                ""evidence_id"": ""8533"",
+                ""session_id"": ""8533"",
+                ""content"": ""On May 15, 1968 at 10:05:00, on the street of San Gregorio Armeno, Elena Greco recalls an earlier occasion when she and another person went out from home and encountered Melina. During that encounter, Melina was holding her granddaughter Maria's hand. Elena Greco is narrating this as a specific remembered scene from her past, anchoring it to the location of the street of San Gregorio Armeno.\n\nOn May 15, 1968 at 10:05:00, Elena Greco states that she knew the child Maria, who was Melina's granddaughter, was the daughter of Pinocchia and Stefano. This associates Maria's parentage clearly with Pinocchia and Stefano in Elena Greco's understanding."",
+                ""summary"": [
+                    {
+                        ""id"": ""f92bc192-7cc7-4ffb-9f38-3c23249499a9"",
+                        ""event"": ""Elena recalls meeting Melina holding granddaughter Maria's hand on the street of San Gregorio Armeno"",
+                        ""description"": ""On May 15, 1968 at 10:05:00, on the street of San Gregorio Armeno, Elena Greco recalls an earlier occasion when she and another person went out from home and encountered Melina. During that encounter, Melina was holding her granddaughter Maria's hand. Elena Greco is narrating this as a specific remembered scene from her past, anchoring it to the location of the street of San Gregorio Armeno."",
+                        ""date"": ""1968-05-15 10:05:00"",
+                        ""stream_date"": ""1968-05-15 10:05:00"",
+                        ""importance"": 5,
+                        ""session_id"": ""8533"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772777099043,
+                        ""modified_time"": 1772777099043,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""6f2c46e8-df63-40d3-9238-c229fb14be5a"",
+                        ""event"": ""Elena knows Maria is the daughter of Pinocchia and Stefano"",
+                        ""description"": ""On May 15, 1968 at 10:05:00, Elena Greco states that she knew the child Maria, who was Melina's granddaughter, was the daughter of Pinocchia and Stefano. This associates Maria's parentage clearly with Pinocchia and Stefano in Elena Greco's understanding."",
+                        ""date"": ""1968-05-15 10:05:00"",
+                        ""stream_date"": ""1968-05-15 10:05:00"",
+                        ""importance"": 4,
+                        ""session_id"": ""8533"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772777099043,
+                        ""modified_time"": 1772777099043,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""8546"",
+                ""session_id"": ""8546"",
+                ""content"": ""On May 15, 1968 at 10:18:00, while on the Street of San Gregorio Armeno, Elena Greco noticed that throughout the whole situation they were experiencing, Lina did not say a single word. Despite Lina's silence, Elena Greco understood that Lina was deeply shaken internally, interpreting Lina's quietness as a sign of strong emotional turmoil rather than indifference or calm. Elena's observation reflects her close attunement to Lina's inner state and suggests an emotionally intense moment that affected Lina significantly, even though Lina chose not to express it verbally.\n\nOn May 15, 1968 at 10:18:00, Elena Greco, while on the Street of San Gregorio Armeno, mentally compared Lina's present, wordless distress to a specific scene from their childhood. Elena recalled a time when Lina, as a child, saw a woman named Melina walking down the main road while chewing on a piece of purchased soft soap. That childhood sight had deeply disturbed Lina. By invoking this earlier image, Elena reasoned that Lina's current emotional state was similarly intense, using the memory of Melina chewing soft soap as a benchmark for how shaken Lina now felt."",
+                ""summary"": [
+                    {
+                        ""id"": ""873eee97-b82c-4f13-8093-3e0adb76306d"",
+                        ""event"": ""Elena observes Lina remain silent yet deeply shaken on the Street of San Gregorio Armeno"",
+                        ""description"": ""On May 15, 1968 at 10:18:00, while on the Street of San Gregorio Armeno, Elena Greco noticed that throughout the whole situation they were experiencing, Lina did not say a single word. Despite Lina's silence, Elena Greco understood that Lina was deeply shaken internally, interpreting Lina's quietness as a sign of strong emotional turmoil rather than indifference or calm. Elena's observation reflects her close attunement to Lina's inner state and suggests an emotionally intense moment that affected Lina significantly, even though Lina chose not to express it verbally."",
+                        ""date"": ""1968-05-15 10:18:00"",
+                        ""stream_date"": ""1968-05-15 10:18:00"",
+                        ""importance"": 6,
+                        ""session_id"": ""8546"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772777103468,
+                        ""modified_time"": 1772777103468,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""fceb48f1-faeb-4998-80e1-2afcd5d28fb3"",
+                        ""event"": ""Elena connects Lina's current shock to a childhood memory of Melina chewing purchased soft soap"",
+                        ""description"": ""On May 15, 1968 at 10:18:00, Elena Greco, while on the Street of San Gregorio Armeno, mentally compared Lina's present, wordless distress to a specific scene from their childhood. Elena recalled a time when Lina, as a child, saw a woman named Melina walking down the main road while chewing on a piece of purchased soft soap. That childhood sight had deeply disturbed Lina. By invoking this earlier image, Elena reasoned that Lina's current emotional state was similarly intense, using the memory of Melina chewing soft soap as a benchmark for how shaken Lina now felt."",
+                        ""date"": ""1968-05-15 10:18:00"",
+                        ""stream_date"": ""1968-05-15 10:18:00"",
+                        ""importance"": 5,
+                        ""session_id"": ""8546"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772777103468,
+                        ""modified_time"": 1772777103468,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            }
+        ],"," ""retrieval_results"": [
+            {
+                ""description"": ""On May 15, 1968 at 10:05:00, on the street of San Gregorio Armeno, Elena Greco recalls an earlier occasion when she and another person went out from home and encountered Melina. During that encounter, Melina was holding her granddaughter Maria's hand. Elena Greco is narrating this as a specific remembered scene from her past, anchoring it to the location of the street of San Gregorio Armeno."",
+                ""event:"": ""Elena recalls meeting Melina holding granddaughter Maria's hand on the street of San Gregorio Armeno"",
+                ""conversation_date"": ""1968-05-15 10:05:00"",
+                ""event_date"": ""1968-05-15 10:05:00""
+            },
+            {
+                ""description"": ""On 1968-05-10 at 11:10:00, on the Street of San Gregorio Armeno, Elena Greco recalls a past event when Elena Greco and her companion met Pinocchio. In Elena Greco's memory, Pinocchio was walking alone. Pinocchio politely greeted Elena Greco and her companion and then quickly hurried past them, behaving as if Pinocchio had an urgent matter to attend to. Elena Greco is sharing this as a specific remembered encounter and observes Pinocchio's apparent haste as the reason Pinocchio did not stop to talk."",
+                ""event:"": ""Elena Greco recalls meeting Pinocchio on the Street of San Gregorio Armeno"",
+                ""conversation_date"": ""1968-05-10 11:10:00"",
+                ""event_date"": ""1968-05-10 11:10:00""
+            },
+            {
+                ""description"": ""On May 15, 1968, at 10:00:00, while on the Street of San Gregorio Armeno, Elena Greco reflects on a past encounter that took place there with a specific woman a few days before that woman was moving back to Mergellina. Elena Greco identifies this encounter as the most unsettling meeting between them in that period. At the time of the meeting, the encounter did not seem particularly significant to Elena Greco, but in hindsight she believes it ended up having a big impact on the woman who was about to return to Mergellina. Elena is focused on how her earlier underestimation of the event contrasts with its later importance."",
+                ""event:"": ""Elena recalls an unsettling meeting on Via San Gregorio Armeno shortly before a woman moved back to Mergellina"",
+                ""conversation_date"": ""1968-05-15 10:00:00"",
+                ""event_date"": ""1968-05-15 10:00:00""
+            },
+            {
+                ""description"": ""On May 15, 1968, at 10:09:00, while on the Street of San Gregorio Armeno, Elena Greco observed herself interacting with a woman and saying many pleasant things to her. Elena Greco specifically praised the woman's hair and clothes in order to compliment her appearance and be kind. As a result of these positive remarks, Elena Greco noticed that the woman looked happy, which indicates that Elena Greco's intention to please and uplift the woman was successful."",
+                ""event:"": ""Elena Greco warmly praises another woman's hair and clothes on the Street of San Gregorio Armeno, making the woman happy"",
+                ""conversation_date"": ""1968-05-15 10:09:00"",
+                ""event_date"": ""1968-05-15 10:09:00""
+            },
+            {
+                ""description"": ""On May 15, 1968, at 10:22:00, while on the Street of San Gregorio Armeno, Elena Greco observed a woman she knows begin to laugh suddenly after a long period during which, in Elena Greco's perception, this woman had not laughed. Elena Greco recognized this as the same 'evil laugh' that the woman used to have in the past. The sudden reappearance of this specific laugh, after 'so much time' without it, stood out to Elena Greco as a notable emotional and behavioral shift in the woman, linking the present moment on the Street of San Gregorio Armeno to earlier memories of the woman's characteristic cruel or malicious way of laughing."",
+                ""event:"": ""Elena Greco sees a woman laugh again with her characteristic evil laugh on Via San Gregorio Armeno"",
+                ""conversation_date"": ""1968-05-15 10:22:00"",
+                ""event_date"": ""1968-05-15 10:22:00""
+            },
+            {
+                ""description"": ""On May 10, 1968, at 10:01 in the morning, while on San Gregorio Armeno, Elena Greco saw Lina. During this encounter, Lina once again asked Elena Greco to help her clean an apartment and to do her shopping, indicating that Lina relies on Elena Greco for domestic support and errands."",
+                ""event:"": ""Elena sees Lina on San Gregorio Armeno and is again asked to help with cleaning and shopping"",
+                ""conversation_date"": ""1968-05-10 10:01:00"",
+                ""event_date"": ""1968-05-10 10:01:00""
+            },
+            {
+                ""description"": ""On May 15, 1968, at 10:10:00 on the Street of San Gregorio Armeno, Elena Greco noticed a little girl who appeared shy. Elena Greco specifically observed that the little girl, who was with her grandmother, tugged at the grandmother's dress, which Elena interpreted as a sign of the child's shyness and need for reassurance in that public setting."",
+                ""event:"": ""Elena observes a shy little girl tugging at her grandmother's dress on the Street of San Gregorio Armeno"",
+                ""conversation_date"": ""1968-05-15 10:10:00"",
+                ""event_date"": ""1968-05-15 10:10:00""
+            },
+            {
+                ""description"": ""On 1968-05-15 at 10:07:00, while on the Street of San Gregorio Armeno, Elena Greco observed that a woman recognized Elena but did not recognize Lina, or at least seemed initially interested only in speaking with Elena. Elena focused on this subtle social dynamic, noting that the woman directed her attention toward Elena rather than Lina, which made Elena reflect on their past connection."",
+                ""event:"": ""Elena notices a woman recognize her on the Street of San Gregorio Armeno but not recognize Lina"",
+                ""conversation_date"": ""1968-05-15 10:07:00"",
+                ""event_date"": ""1968-05-15 10:07:00""
+            },
+            {
+                ""description"": ""On May 15, 1968, at 10:17 on the street of San Gregorio Armeno (Via San Gregorio Armeno), after making a prior statement in the conversation, Elena Greco appeared to remember or discover that she had an urgent matter to attend to. Because of this sudden urgency, Elena did not offer any further explanation or farewell; instead, she silently took hold of her granddaughter and left the location quickly. The abrupt departure and lack of verbal explanation suggest that the urgent matter took precedence over continuing the interaction, and that Elena prioritized taking her granddaughter with her while addressing it."",
+                ""event:"": ""Elena leaves Via San Gregorio Armeno abruptly with her granddaughter due to an urgent matter"",
+                ""conversation_date"": ""1968-05-15 10:17:00"",
+                ""event_date"": ""1968-05-15 10:17:00""
+            },
+            {
+                ""description"": ""On May 15, 1968, at 10:15:00 on the Street of San Gregorio Armeno, Elena Greco observed Gennaro kiss an unnamed girl immediately. After Gennaro kissed the girl, Gennaro then obediently allowed the girl to kiss him as well. Elena Greco is recounting this as a direct visual observation of Gennaro's affectionate and compliant interaction with the girl in that specific public location."",
+                ""event:"": ""Elena Greco observes Gennaro and an unnamed girl kissing on the Street of San Gregorio Armeno"",
+                ""conversation_date"": ""1968-05-15 10:15:00"",
+                ""event_date"": ""1968-05-15 10:15:00""
+            }
+        ],","""1. **Identify Timelines:** The physical timeline is May 15, 1968, on a street near her parents' home. The memory timeline is her childhood, specifically a moment seeing a woman 'chewing on a piece of purchased soft soap.'\n2. **Locate Anchor:** The anchor is the figure of Melina, who is currently walking with her granddaughter Maria.\n3. **Synthesis:** The narrator is physically observing Melina in the present, but she is mentally 'shaken' as if she were a child again. The sight of Melina triggers a recursive loop where the narrator relives the childhood horror of Melina's madness. This chronological displacement is so powerful that it overrides the current conversation about grandchildren and paternity, forcing the narrator to view Melina not as the 'dressed well' grandmother of the present, but as the ghost-like, soap-chewing specter of the past neighborhood.""","""Melina’s granddaughter, Maria""",最早失败发生在生成环节：证据与检索均指向Melina为锚点，但模型将答案误选为Maria。,25%
+其他异常,414,"""Identify the specific auditory sensory object in the environment that acted as the trigger for the transition to the narrator's terrifying memory of the 'ghost of Don Achille' and the neighborhood era associated with him.""","                    ""听觉触发物：钥匙在锁孔转动的声音"",
+                    ""时间：1963-08-10（21:01:30）"",
+                    ""效应：该声音立即触发恐惧并使叙述者将斯特凡诺之父与Don Achille的鬼魂联想"",
+                    ""场景/地点：租房处"""," ""summarize_content"": [
+            {
+                ""evidence_id"": ""4434"",
+                ""session_id"": ""4434"",
+                ""content"": ""On August 10, 1963, at 21:01:30, Elena Greco reports that she saw and heard the sound of a key turning in a lock at a rentals location. This specific sound immediately frightened Elena because it triggered an intense, imaginative reaction. The auditory and visual perception of the key turning serves as the external stimulus that initiates her subsequent fearful thoughts and associations.\n\nOn August 10, 1963, at 21:01:30, after hearing the frightening sound of a key turning in the lock at a rentals location, Elena Greco has a vivid, fear-driven mental image of Stefano's father. Elena thinks of the sound as so disturbing that, in those long moments, she imagines that the soul of Stefano's father is inhabited by the ghost of Don Achille. In her mind, Stefano's father's veins swell on his neck and blue lines cover his forehead, which intensifies her perception of him as menacing and almost supernatural. This reveals that Elena associates Stefano's father with Don Achille in a ghost-like, threatening way, and that specific physical details, such as swollen neck veins and blue lines on the forehead, are central to her internal image and fear response."",
+                ""summary"": [
+                    {
+                        ""id"": ""e5bd239a-38af-44d0-9499-88eccbc919f0"",
+                        ""event"": ""Elena hears a key turning in the lock and is frightened by the sound"",
+                        ""description"": ""On August 10, 1963, at 21:01:30, Elena Greco reports that she saw and heard the sound of a key turning in a lock at a rentals location. This specific sound immediately frightened Elena because it triggered an intense, imaginative reaction. The auditory and visual perception of the key turning serves as the external stimulus that initiates her subsequent fearful thoughts and associations."",
+                        ""date"": ""1963-08-10 21:01:30"",
+                        ""stream_date"": ""1963-08-10 21:01:30"",
+                        ""importance"": 6,
+                        ""session_id"": ""4434"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776397002,
+                        ""modified_time"": 1772776397002,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""16ced9d9-8151-4a5a-9b16-300f1b7089b4"",
+                        ""event"": ""Elena imagines Stefano's father as possessed by the ghost of Don Achille when she hears the key turn"",
+                        ""description"": ""On August 10, 1963, at 21:01:30, after hearing the frightening sound of a key turning in the lock at a rentals location, Elena Greco has a vivid, fear-driven mental image of Stefano's father. Elena thinks of the sound as so disturbing that, in those long moments, she imagines that the soul of Stefano's father is inhabited by the ghost of Don Achille. In her mind, Stefano's father's veins swell on his neck and blue lines cover his forehead, which intensifies her perception of him as menacing and almost supernatural. This reveals that Elena associates Stefano's father with Don Achille in a ghost-like, threatening way, and that specific physical details, such as swollen neck veins and blue lines on the forehead, are central to her internal image and fear response."",
+                        ""date"": ""1963-08-10 21:01:30"",
+                        ""stream_date"": ""1963-08-10 21:01:30"",
+                        ""importance"": 8,
+                        ""session_id"": ""4434"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776397002,
+                        ""modified_time"": 1772776397002,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            }
+        ],","""retrieval_results"": [
+            {
+                ""description"": ""On May 15, 1954, at 18:41:35, while in the basement, Elena Greco observed a male figure moving among nameless objects and described him as moving 'like a snake,' rustling as he crawled. This sensory experience of seeing the snake-like movement and hearing the rustling sound led Elena Greco to think she heard Don Achille's voice, revealing that she associates this unsettling, crawling presence in the basement with Don Achille and experiences it as eerie or threatening."",
+                ""event:"": ""Elena Greco sees a figure moving like a snake in the basement and associates it with Don Achille's voice"",
+                ""conversation_date"": ""1954-05-15 18:41:35"",
+                ""event_date"": ""1954-05-15 18:41:35""
+            },
+            {
+                ""description"": ""On April 15, 1953 at 16:15 in Porto, in the context of playing near the basement iron grid, Elena Greco reflects that she feels a mix of excitement and fear. To make sense of the eerie basement noises and the darkness below, Elena Greco imagines Don Achille as a monstrous figure, describing Don Achille in her mind as a spider among spiders, with a gaping mouth and a black backpack. In her imagination, Don Achille waits below the grid, gathering everything the children throw down into the basement into his black backpack. This internal image shows how Elena Greco's childhood fear and fascination transform Don Achille into a symbolic monster associated with the basement and the unseen space beneath the grid."",
+                ""event:"": ""Elena Greco feels both excited and scared and imagines Don Achille as a spider-like monster collecting everything in a black backpack"",
+                ""conversation_date"": ""1953-04-15 16:15:00"",
+                ""event_date"": ""1953-04-15 16:15:00""
+            },
+            {
+                ""description"": ""On August 10, 1963, at 21:01:30, after hearing the frightening sound of a key turning in the lock at a rentals location, Elena Greco has a vivid, fear-driven mental image of Stefano's father. Elena thinks of the sound as so disturbing that, in those long moments, she imagines that the soul of Stefano's father is inhabited by the ghost of Don Achille. In her mind, Stefano's father's veins swell on his neck and blue lines cover his forehead, which intensifies her perception of him as menacing and almost supernatural. This reveals that Elena associates Stefano's father with Don Achille in a ghost-like, threatening way, and that specific physical details, such as swollen neck veins and blue lines on the forehead, are central to her internal image and fear response."",
+                ""event:"": ""Elena imagines Stefano's father as possessed by the ghost of Don Achille when she hears the key turn"",
+                ""conversation_date"": ""1963-08-10 21:01:30"",
+                ""event_date"": ""1963-08-10 21:01:30""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:43 while at a street or school location, Elena Greco recalls imagining a second balloon pressing down from above, which in her mind represented Don Achille, a man who lived on the fifth floor. In Elena Greco's internal narrative, Don Achille was associated with fear and menace and was believed by Elena Greco to have stolen her doll, indicating that Elena Greco conceptualized him as a threatening, almost oppressive figure looming over her childhood world."",
+                ""event:"": ""Elena imagines Don Achille as a threatening presence who has stolen her doll"",
+                ""conversation_date"": ""1954-05-15 18:43:00"",
+                ""event_date"": ""1954-05-15 18:43:00""
+            },
+            {
+                ""description"": ""On December 31, 1962, at 23:35:20, at Don Achille's house, Elena Greco noticed a man whose face was slightly flushed with excitement. Elena Greco specifically registered his appearance: he was wearing a white shirt, a tie, and a blue suit vest. This memory reflects Elena Greco's attentive observation of his emotional state (excitement indicated by a flushed face) and his precise clothing details in the environment of Don Achille's house."",
+                ""event:"": ""Elena Greco observes a flushed, excited man in a white shirt, tie, and blue suit vest at Don Achille's house"",
+                ""conversation_date"": ""1962-12-31 23:35:20"",
+                ""event_date"": ""1962-12-31 23:35:20""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:42:05 while in the yard, Elena Greco reports that she thought she could almost imagine Don Achille's indescribable body running back and forth in the underground Mercato. This suggests that Elena Greco is preoccupied with and perhaps unsettled by the figure of Don Achille, whose body she describes as 'indescribable,' and that she mentally visualizes Don Achille moving restlessly through the underground market space. The memory highlights how strongly Don Achille occupies Elena Greco's imagination and how her thoughts connect him specifically with the underground Mercato."",
+                ""event:"": ""Elena vividly imagines Don Achille's indescribable body running through the underground Mercato"",
+                ""conversation_date"": ""1954-05-15 18:42:05"",
+                ""event_date"": ""1954-05-15 18:42:05""
+            },
+            {
+                ""description"": ""On October 1, 1972, at 20:45 in Vomero, Elena Greco remembered hearing a woman talk about her father-in-law, Don Achille, who was a usurer and Fascist member, and about Peruzzo, a carpenter. The woman said these events had happened right before their eyes and added the comment, \""Back then it was worse, probably just as terrifying,\"" suggesting that the past in which Don Achille and Peruzzo were active was even harsher and equally frightening compared to the present. Elena is observing and mentally noting this comparison between past and present fear and the specific roles of Don Achille as a usurer and Fascist and Peruzzo as a carpenter."",
+                ""event:"": ""Elena recalls someone describing past events involving Don Achille and Peruzzo as terrifying and worse than the present"",
+                ""conversation_date"": ""1972-10-01 20:45:00"",
+                ""event_date"": ""1972-10-01 20:45:00""
+            },
+            {
+                ""description"": ""On October 1, 1959, at 09:10:00 in Karachi Capodimonte, Elena Greco recalled that after Don Achille died, the terrifying presence and shadow of Don Achille, which had loomed over the local place and over Don Achille's family, gradually faded. Elena Greco understood this as a process in which Don Achille's death caused his fearful influence to move away from this specific place and from his family over time, reducing the sense of terror that had once surrounded him."",
+                ""event:"": ""Elena Greco reflects that Don Achille's death caused his terrifying influence on the neighborhood and his family to fade"",
+                ""conversation_date"": ""1959-10-01 09:10:00"",
+                ""event_date"": ""1959-10-01 09:10:00""
+            },
+            {
+                ""description"": ""On May 15, 1954, at 18:54:50, Elena Greco was standing at the door of Don Achille's house when Elena Greco saw a woman cry out the name \""Achilles...\"" toward Don Achille. Immediately after this cry, Elena Greco heard a series of footsteps, indicating that several people or at least more than one person were moving inside or around Don Achille's house in response. This event reflects Elena Greco's direct sensory experience at Don Achille's door: visually witnessing the distressed or urgent cry and then auditorily perceiving multiple footsteps, which suggests some commotion or reaction taking place in Don Achille's home."",
+                ""event:"": ""Elena Greco observes a woman crying out to Don Achille and then hears multiple footsteps at his house door"",
+                ""conversation_date"": ""1954-05-15 18:54:50"",
+                ""event_date"": ""1954-05-15 18:54:50""
+            },
+            {
+                ""description"": ""On August 20, 1954, at 14:20:00, while at Don Achille's house, Elena Greco recounts that she knew a man had just opened the window when a raindrop hit his face, and at that exact moment he was slashed between his neck, jaw, and collarbone. Elena Greco’s memory emphasizes the causal sequence that the man opened the window during rainfall, a raindrop confirmed this action by striking his face, and immediately afterward he suffered a violent attack targeting the area between his neck, jaw, and collarbone. This recollection suggests that Elena Greco is attentive to small sensory details, like the raindrop, in order to reconstruct the timing and circumstances of the attack at Don Achille's house."",
+                ""event:"": ""Elena Greco recalls a man being slashed near the neck right after opening a window at Don Achille's house"",
+                ""conversation_date"": ""1954-08-20 14:20:00"",
+                ""event_date"": ""1954-08-20 14:20:00""
+            }
+        ],","""1. **Locate Trigger:** The auditory sensory detail is identified as the 'sound of the key turning in the lock' on the night of August 10, 1963. 2. **Link to Memory:** This specific sound immediately causes the narrator to psychologically recall the past terror of the neighborhood. 3. **Synthesize:** The sound of the lock serves as the medium for a cognitive displacement where the physical presence of Stefano is replaced by the memory of his father's soul inhabiting his body, reviving the narrator's childhood fear of Don Achille's ghost.""", "A key turning in the lock",全链路（记忆总结→检索→生成）信息保留充分且回答正确，未发现早期损耗或生成错误；问题出在评分标准而非系统流程。,13%

@@ -1,4 +1,12 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
+
+function loadProjectHeadings(slug: string): string[] {
+  const projectPath = new URL(`../content/projects/${slug}/index.md`, import.meta.url);
+  const content = readFileSync(fileURLToPath(projectPath), 'utf-8');
+  return Array.from(content.matchAll(/^##\s+(.+)$/gm), (match) => match[1].trim());
+}
 
 test('/projects/aindexer 详情页返回 200', async ({ page }) => {
   const response = await page.goto('/projects/aindexer/');
@@ -8,15 +16,10 @@ test('/projects/aindexer 详情页返回 200', async ({ page }) => {
 test('/projects/aindexer 详情页包含九段式正文标题', async ({ page }) => {
   await page.goto('/projects/aindexer/');
   const body = page.locator('body');
-  await expect(body).toContainText('项目背景');
-  await expect(body).toContainText('解决的问题');
-  await expect(body).toContainText('我的职责');
-  await expect(body).toContainText('核心设计');
-  await expect(body).toContainText('技术或工具');
-  await expect(body).toContainText('产出结果');
-  await expect(body).toContainText('难点与复盘');
-  await expect(body).toContainText('可验证材料');
-  await expect(body).toContainText('可追问问题');
+  const headings = loadProjectHeadings('aindexer');
+  for (const heading of headings) {
+    await expect(body).toContainText(heading);
+  }
 });
 
 test('/projects/aindexer 详情页顶部显示项目元信息', async ({ page }) => {

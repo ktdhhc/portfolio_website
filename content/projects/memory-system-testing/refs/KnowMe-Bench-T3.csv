@@ -1,0 +1,481 @@
+错题类型,典型例子,,,,,,,,
+,analysis_index,question,evidence,summary,retrieval,correct answer,generate answer,原因,比例
+检索失败,461," ""On New Year's Eve 1958, how much time passed between the start of the rooftop celebration and Lina's heart beginning to pound uncontrollably at the stroke of midnight?""","""evidence_id"": ""591"",
+                ""session_id"": ""591"",
+                ""content"": ""On December 31, 1958 at 23:45, Elena Greco recalls being on the roof of a building, where she and at least one other person were gathered specifically to celebrate the imminent arrival of the year 1959. The rooftop setting and shared purpose of welcoming the new year form a distinct memory of a communal celebration at night.\n\nOn December 31, 1958 at 23:45, while on the roof of a building celebrating the arrival of 1959, Elena Greco internally reflects that she has just understood that another person present with her has suddenly experienced a particular feeling for the first time in her life. This realization focuses on Elena Greco's awareness of the other person's emotional state and the novelty of that feeling for the other person, indicating Elena Greco's attentiveness to and interpretation of that person's inner experience."",
+""evidence_id"": ""610"",
+                ""session_id"": ""610"",
+                ""content"": ""On 1959-01-01 at the roof of the residential area, Elena Greco saw a girl (referred to by Elena as 'her') whose heart was pounding wildly and completely uncontrollably. Based on how violently the girl's heart was beating, Elena Greco thought the girl was going to suffocate. Elena's internal reaction shows she was alarmed and genuinely feared for the girl's physical safety because of the apparent intensity of the girl's distress or panic."",","""summary"": [
+                    {
+                        ""id"": ""921d3245-0489-436b-b5cd-014616b15403"",
+                        ""event"": ""Elena Greco celebrates the arrival of 1959 on a building rooftop"",
+                        ""description"": ""On December 31, 1958 at 23:45, Elena Greco recalls being on the roof of a building, where she and at least one other person were gathered specifically to celebrate the imminent arrival of the year 1959. The rooftop setting and shared purpose of welcoming the new year form a distinct memory of a communal celebration at night."",
+                        ""date"": ""1958-12-31 23:45:00""},
+{                        ""id"": ""9a840320-31ad-4d0f-996b-dc172fc950c0"",
+                        ""event"": ""Elena Greco realizes someone with her on the rooftop is feeling something new for the first time"",
+                        ""description"": ""On December 31, 1958 at 23:45, while on the roof of a building celebrating the arrival of 1959, Elena Greco internally reflects that she has just understood that another person present with her has suddenly experienced a particular feeling for the first time in her life. This realization focuses on Elena Greco's awareness of the other person's emotional state and the novelty of that feeling for the other person, indicating Elena Greco's attentiveness to and interpretation of that person's inner experience."",
+                        ""date"": ""1958-12-31 23:45:00"",},
+{
+                        ""id"": ""e3016308-1fc6-4ad8-a11b-ff4ddeac08a7"",
+                        ""event"": ""Elena Greco observes a girl on the residential roof whose heart is pounding so wildly she fears the girl will suffocate"",
+                        ""description"": ""On 1959-01-01 at the roof of the residential area, Elena Greco saw a girl (referred to by Elena as 'her') whose heart was pounding wildly and completely uncontrollably. Based on how violently the girl's heart was beating, Elena Greco thought the girl was going to suffocate. Elena's internal reaction shows she was alarmed and genuinely feared for the girl's physical safety because of the apparent intensity of the girl's distress or panic."",
+                        ""date"": ""1959-01-01 00:00:00"",},
+","            {
+                ""description"": ""On December 31, 1958 at 23:45, Elena Greco recalls being on the roof of a building, where she and at least one other person were gathered specifically to celebrate the imminent arrival of the year 1959. The rooftop setting and shared purpose of welcoming the new year form a distinct memory of a communal celebration at night."",
+                ""event:"": ""Elena Greco celebrates the arrival of 1959 on a building rooftop"",
+                ""conversation_date"": ""1958-12-31 23:45:00"",
+                ""event_date"": ""1958-12-31 23:45:00""
+            },
+            {
+                ""description"": ""On December 31, 1958, at 23:58:40, while on the roof of a residential area, Elena Greco observed a woman whose heart started to beat wildly and completely uncontrollably. Elena Greco focused on this physical reaction, noticing the intensity and lack of control in the woman's heartbeat, which suggested a strong emotional or physiological response in that moment."",
+                ""event:"": ""Elena Greco observes a woman's heartbeat becoming wildly uncontrollable on a residential roof"",
+                ""conversation_date"": ""1958-12-31 23:58:40"",
+                ""event_date"": ""1958-12-31 23:58:40""
+            },
+            {
+                ""description"": ""On December 31, 1958, at 23:55, Elena Greco was on the roof of her residential area and observed people lighting the fuses of firecrackers to celebrate the coming new year. This moment placed Elena physically above the residential area, watching the preparations for the new year's celebration unfold directly in front of her as the fuses were lit."",
+                ""event:"": ""Elena watches firecracker fuses being lit from the roof of her residential area just before the new year"",
+                ""conversation_date"": ""1958-12-31 23:55:00"",
+                ""event_date"": ""1958-12-31 23:55:00""
+            },
+            {
+                ""description"": ""On December 31, 1958 at 23:45, while on the roof of a building celebrating the arrival of 1959, Elena Greco internally reflects that she has just understood that another person present with her has suddenly experienced a particular feeling for the first time in her life. This realization focuses on Elena Greco's awareness of the other person's emotional state and the novelty of that feeling for the other person, indicating Elena Greco's attentiveness to and interpretation of that person's inner experience."",
+                ""event:"": ""Elena Greco realizes someone with her on the rooftop is feeling something new for the first time"",
+                ""conversation_date"": ""1958-12-31 23:45:00"",
+                ""event_date"": ""1958-12-31 23:45:00""
+            },
+            {
+                ""description"": ""On December 31, 1958 at 23:59, Elena Greco was on the roof of a residential area and saw people moving around on the rooftop. Elena Greco noticed their shouts and the sound of fireworks and firecrackers. To Elena Greco, these sights and sounds felt as if they came from another world that was following some new and unfamiliar rules, which suggests that Elena Greco experienced a sense of distance or alienation from the celebration happening around her."",
+                ""event:"": ""Elena observes people celebrating with fireworks on her residential rooftop as if in another world"",
+                ""conversation_date"": ""1958-12-31 23:59:00"",
+                ""event_date"": ""1958-12-31 23:59:00""
+            },
+            {
+                ""description"": ""In reflecting on the new year celebration on December 31, 1958, at 23:55, Elena Greco notes that her friend Lina later stated that Lina had gone to great lengths to organize or enable the firecracker ceremony Elena witnessed. This indicates that, from Elena's perspective, Lina considered the ceremony important enough to invest substantial effort, and Elena specifically remembers Lina's later claim about that effort as part of how she understands the event."",
+                ""event:"": ""Elena recalls that Lina later claimed she went to great lengths to arrange the firecracker ceremony"",
+                ""conversation_date"": ""1958-12-31 23:55:00"",
+                ""event_date"": ""1958-12-31 23:55:00""
+            },
+            {
+                ""description"": ""On December 31, 1958, at 23:50:15, while on the roof of the residential area, Elena Greco observed a group of men whom she perceived as cheerful and strong. She noticed their collective mood and physical presence, focusing on how they appeared in that moment from her vantage point on the roof."",
+                ""event:"": ""Elena Greco observes cheerful, strong men on the residential roof during a holiday"",
+                ""conversation_date"": ""1958-12-31 23:50:15"",
+                ""event_date"": ""1958-12-31 23:50:15""
+            },
+            {
+                ""description"": ""On January 1, 1959 at 00:05, while on the roof of the residential area and reflecting on the New Year's celebration night, Elena Greco recalls that during that night she felt for the first time that everything around her had become unfamiliar. Elena Greco perceived that the whole world had broken through its usual boundaries and revealed a terrifying nature, which caused her significant unease. This marks a pivotal moment in Elena Greco's perception of her surroundings, where a previously familiar world suddenly appeared strange and frightening, leading to strong discomfort and anxiety."",
+                ""event:"": ""Elena Greco feels the world become unfamiliar and terrifying during New Year's celebration night"",
+                ""conversation_date"": ""1959-01-01 00:05:00"",
+                ""event_date"": ""1959-01-01 00:05:00""
+            },
+            {
+                ""description"": ""On December 31, 1958, at 23:30:00, Elena Greco was on a rooftop and remembers that this was the first time she experienced what she calls a 'loss of boundaries.' Elena situates this event specifically in time and place, marking it as a significant psychological experience. She understands this moment as the beginning of a recurring feeling where her sense of self and its limits seemed to dissolve, which she later reflects on as an important turning point in her inner life."",
+                ""event:"": ""Elena Greco recalls first experiencing a 'loss of boundaries' on December 31, 1958 on a rooftop"",
+                ""conversation_date"": ""1958-12-31 23:30:00"",
+                ""event_date"": ""1958-12-31 23:30:00""
+            },
+            {
+                ""description"": ""On 1958-12-31 at 23:45:10, while on a rooftop, Elena Greco decided to conceal and suppress a disturbing matter instead of speaking about it. As soon as Elena Greco saw a girl who appeared to be very afraid, Elena Greco 'buried the matter in her heart,' meaning she chose to keep her perception and concerns to herself. Elena Greco believed that the girl's fear was linked to the girl's inability, in that moment, to find words to describe what she was experiencing, and this perception influenced Elena Greco's choice to internalize the situation rather than address it openly."",
+                ""event:"": ""Elena Greco silently buries a troubling matter in her heart upon seeing a very afraid girl on a rooftop"",
+                ""conversation_date"": ""1958-12-31 23:45:10"",
+                ""event_date"": ""1958-12-31 23:45:10""","""15 minutes (start time 23:45:00, end time 00:00:00)""", "13 minutes 40 seconds",最早错误发生在检索环节：未召回‘00:00:00 心跳’的关键证据，替换为23:58:40，导致后续计算得到13分40秒而非15分钟。,86%
+总结失败,531,"""Please arrange the following events in chronological order based on the content of the text:\nA. The narrator has an argument with her religious teacher.\nB. The narrator sees Lina throwing coal at Rino.\nC. The narrator asks to take Lina to Galiani's party.\nD. The narrator gets a grade of nine in Latin.""","                    ""A：与宗教老师就圣灵争论，发生于1960-06-20（ID 1017）"",
+                    ""C：请求（并同意）带莉娜参加加里亚尼的聚会，发生于1962-05-28（ID 1652）"",
+                    ""D：在高中考试中得了9分，发生于1962-12-05（ID 2341）"",
+                    ""B：目睹莉娜向里诺扔煤块，发生于1963-01-06（ID 2726）""","""summary"": [
+                    {
+                        ""id"": ""90e5056f-5a8c-445f-9206-5e7d90d70343"",
+                        ""event"": ""Elena Greco receives generous grading in chemistry likely due to Galiani's intervention"",
+                        ""description"": ""On June 20, 1960, at school, Elena Greco reflected that her chemistry teacher had been very generous in grading her, and Elena believed this change in attitude was perhaps because of something that Galiani had said to the chemistry teacher. As a result of this generosity, Elena Greco passed chemistry, which she implicitly connects to Galiani's intervention influencing the teacher."",
+                        ""date"": ""1960-06-20 10:00:00"",
+                        ""stream_date"": ""1960-06-20 10:00:00"",
+                        ""importance"": 7,
+                        ""session_id"": ""1017"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775823816,
+                        ""modified_time"": 1772775823816,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""bb650342-0b44-434e-bfab-bb3f5591adc4"",
+                        ""event"": ""Elena Greco records detailed exam results in humanities, sciences, religious philosophy, and ethics"",
+                        ""description"": ""On June 20, 1960, at school, Elena Greco reviewed her academic results: she received a score of seven in the humanities subjects, a score of six in the sciences, passed religious philosophy, and, for the first time, obtained a score of eight in ethics. The specific distribution of grades across humanities, sciences, religious philosophy, and ethics provides a concrete snapshot of her academic performance at that time."",
+                        ""date"": ""1960-06-20 10:00:00"",
+                        ""stream_date"": ""1960-06-20 10:00:00"",
+                        ""importance"": 6,
+                        ""session_id"": ""1017"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775823816,
+                        ""modified_time"": 1772775823816,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""3865ec5d-a5be-4c8a-9bf5-f941462e2313"",
+                        ""event"": ""Elena interprets her ethics grade as evidence that some teachers and the priest have not forgiven her"",
+                        ""description"": ""On June 20, 1960, Elena Greco reflected that, although she received an eight in ethics for the first time, she interpreted this grade as showing that the priest and several teachers had not truly forgiven her. The fact that ethics is graded by a priest and teachers made Elena see the eight not simply as academic success but as a sign that these authorities maintained a certain reservation or unresolved judgment toward her."",
+                        ""date"": ""1960-06-20 10:00:00"",
+                        ""stream_date"": ""1960-06-20 10:00:00"",
+                        ""importance"": 7,
+                        ""session_id"": ""1017"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775823816,
+                        ""modified_time"": 1772775823816,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""2f9dbd75-e907-4a87-9237-3a1c2b154b6b"",
+                        ""event"": ""Elena feels sad and judges herself as arrogant after an argument about the Holy Spirit"",
+                        ""description"": ""On June 20, 1960, Elena Greco thought about feeling sad because she had argued with her religious philosophy teacher about the role of the Holy Spirit. She interpreted this past argument as proof of her own arrogance, and this self-judgment made her very unhappy. The memory links a theological dispute in religious philosophy class about the Holy Spirit to a deeper, ongoing emotional struggle in which Elena sees herself as arrogant and feels distressed about that trait."",
+                        ""date"": ""1960-06-20 10:00:00"",
+                        ""stream_date"": ""1960-06-20 10:00:00"",
+                        ""importance"": 8,
+                        ""session_id"": ""1017"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775823816,
+                        ""modified_time"": 1772775823816,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]","""retrieval_results"": [
+            {
+                ""description"": ""On January 6, 1963, at Lina's house, Elena Greco witnessed what she perceived as the peak of the ongoing conflict between Lina and Rino. On the morning of Epiphany, when Lina woke up, she found a sock filled with coal placed by her bed. Lina immediately understood that this cruel gesture was done by Rino, which signaled to Elena that the tension and hostility between Lina and Rino had reached an extreme point."",
+                ""event:"": ""Elena observes Lina and Rino's conflict peak on Epiphany at Lina's house"",
+                ""conversation_date"": ""1963-01-06 08:00:00"",
+                ""event_date"": ""1963-01-06 08:00:00""
+            },
+            {
+                ""description"": ""On January 6, 1963, at 08:37:00, while at Lina's house and watching an argument between Elena Greco's mother and Elena Greco's daughter, Elena saw her brother suddenly appear in the scene. As soon as Elena Greco's brother appeared, Lina immediately reacted by throwing a piece of coal at him. Elena directly witnessed Lina's sudden and aggressive physical reaction toward Elena Greco's brother in the middle of an ongoing family dispute."",
+                ""event:"": ""Elena sees Lina throw a piece of coal at Elena's brother when he appears during the argument"",
+                ""conversation_date"": ""1963-01-06 08:37:00"",
+                ""event_date"": ""1963-01-06 08:37:00""
+            },
+            {
+                ""description"": ""On June 20, 1960, Elena Greco thought about feeling sad because she had argued with her religious philosophy teacher about the role of the Holy Spirit. She interpreted this past argument as proof of her own arrogance, and this self-judgment made her very unhappy. The memory links a theological dispute in religious philosophy class about the Holy Spirit to a deeper, ongoing emotional struggle in which Elena sees herself as arrogant and feels distressed about that trait."",
+                ""event:"": ""Elena feels sad and judges herself as arrogant after an argument about the Holy Spirit"",
+                ""conversation_date"": ""1960-06-20 10:00:00"",
+                ""event_date"": ""1960-06-20 10:00:00""
+            },
+            {
+                ""description"": ""On November 20, 1952, at 10:00:00, Elena Greco remembered an earlier incident involving Enzo, Lina, and Rino. Elena Greco recalled that Enzo and Lina had thrown stones, which led to Lina getting hurt on the head, bleeding noticeably. As a result of Lina’s injury, Enzo began crying, likely out of fear and guilt. Rino then reacted by hitting Enzo, apparently blaming Enzo for Lina’s injury. This sequence—stone throwing by Enzo and Lina causing Lina’s bleeding head wound, Enzo’s distressed crying, and Rino physically punishing Enzo—formed a vivid chain of cause and effect in Elena Greco’s memory."",
+                ""event:"": ""Elena recalls Enzo and Lina throwing stones, leading to Lina’s head wound, Enzo’s crying, and Rino hitting Enzo"",
+                ""conversation_date"": ""1952-11-20 10:00:00"",
+                ""event_date"": ""1952-11-20 10:00:00""
+            },
+            {
+                ""description"": ""After Elena Greco told the woman that Lina was helping to keep the books at her father and brother's shop, the woman responded by saying, \""Does she know you got a nine in Latin?\"" and made a scornful face as she asked. This reaction connected Elena's academic achievement of getting a nine in Latin to Lina's situation, and the scornful expression indicates the woman was belittling or mocking Elena in some way, which likely made the interaction emotionally charged and uncomfortable for Elena."",
+                ""event:"": ""The woman responds scornfully to Elena by asking if Lina knows Elena got a nine in Latin"",
+                ""conversation_date"": ""1962-08-05 15:18:00"",
+                ""event_date"": ""1962-08-05 15:18:00""
+            },
+            {
+                ""description"": ""During a conversation on August 15, 1962, at 13:15, Elena Greco stated that she has heard countless times that she received a grade of nine in Italian and a grade of nine in Latin at school. The repeated mention of these specific scores suggests that other people frequently highlight her academic achievement in Italian and Latin, which shapes how Elena Greco is perceived and may contribute to her sense of identity as a strong student in those subjects."",
+                ""event:"": ""Elena recounts that people repeatedly mention her scores of nine in Italian and Latin at school"",
+                ""conversation_date"": ""1962-08-15 13:15:00"",
+                ""event_date"": ""1962-08-15 13:15:00""
+            },
+            {
+                ""description"": ""On November 15, 1963, at 10:02:10 in the corridor, Elena Greco reflects that she once used words originally said by Lina when she challenged a religious teacher. Elena Greco recognizes that she made what she now considers a mistake by doing this, because she regarded Lina's opinion as highly authoritative. This sense of Lina's authority gave Elena Greco the emotional strength and confidence she needed at the time to confront the religious teacher, but in hindsight she judges the action as an error that stemmed from relying too heavily on Lina's viewpoint."",
+                ""event:"": ""Elena Greco recalls repeating Lina's authoritative opinion to challenge a religious teacher and later viewing it as a mistake"",
+                ""conversation_date"": ""1963-11-15 10:02:10"",
+                ""event_date"": ""1963-11-15 10:02:10""
+            },
+            {
+                ""description"": ""On 1968-04-06 at 18:11:00, while standing at Professor Galiani's doorstep, Elena Greco observed Lina press the doorbell. In response to Lina's action, Professor Galiani personally opened the door for Lina. Elena registered this concrete sequence of events—Lina ringing the bell and Professor Galiani himself opening the door—at the entrance of Professor Galiani's home."",
+                ""event:"": ""Elena sees Professor Galiani open the door after Lina rings the doorbell at Galiani's home"",
+                ""conversation_date"": ""1968-04-06 18:11:00"",
+                ""event_date"": ""1968-04-06 18:11:00""
+            },
+            {
+                ""description"": ""On June 30, 1954, at school, Elena Greco recalls Lina's results in the primary school graduation exams: Lina receives scores of nine in all subjects except arithmetic, where Lina receives an eight. Elena Greco mentally contrasts her own perfect tens with Lina's mix of nines and an eight, which contributes to Elena's sense that something astonishing has occurred in these exams."",
+                ""event:"": ""Elena Greco notes that Lina scores mostly nines and an eight in arithmetic on her primary school graduation exams"",
+                ""conversation_date"": ""1954-06-30 09:00:00"",
+                ""event_date"": ""1954-06-30 09:00:00""
+            },
+            {
+                ""description"": ""On March 7, 1965, at 10:30:20 in Posillipo, Elena Greco thought about how scared she was in relation to a situation involving religious authority and her friend Lina. Elena recognized that she was capable of publicly criticizing the 'Holy Spirit' and challenging the authority of a religious teacher, showing intellectual defiance and verbal courage against religious power. However, Elena concluded that if she had been in Lina's position, she definitely would not have had the courage to let everything fall apart, implying that Lina took a far more radical, life-disrupting action that Elena feels unable to match. This reflection reveals Elena's self-awareness of her limits, her fear of total upheaval, and an implicit admiration for Lina's greater courage."",
+                ""event:"": ""Elena reflects that she can criticize religious authority publicly but lacks Lina's courage to let everything fall apart"",
+                ""conversation_date"": ""1965-03-07 10:30:20"",
+                ""event_date"": ""1965-03-07 10:30:20""
+            }
+        ],", "A -> C -> D -> B. Event A occurs in June 1960 (ID 1017). Event C happens in May 1962 (ID 1652),"""A, D, B, C""",最早失败环节在记忆总结：遗漏C并扭曲D，随后检索也未召回C与D的准确证据，最终导致生成阶段按不充分证据给出错误顺序。,3%
+推理错误,460,"""On April 15, 1953, how much time elapsed between Lina throwing the narrator's doll into the cellar and the two girls giving up on finding Tina to leave through the broken door?""","                    ""1953-04-15 16:00:00 在Porto，另一名女孩将叙述者（Elena）的娃娃扔进地窖（起点事件）"",
+                    ""1953-04-15 16:40:00 在Mergellina，两人穿过破门后仍未找到娃娃并放弃（终点事件）""","""summary"": [
+                    {
+                        ""id"": ""b88834f6-18e8-4367-86b6-6daab6bcb6d4"",
+                        ""event"": ""Elena recalls a girl throwing Elena's doll into a cellar, forcing them to go down to search for it"",
+                        ""description"": ""On April 15, 1953, at 16:00:00 in Porto, Elena Greco recalls an incident where another girl took Elena Greco's doll and deliberately threw the doll into a cellar. Because of this action, Elena Greco and the other girl had to go down into the cellar together to look for the doll. The core factual sequence is that the other girl initiated the event by taking the doll and throwing it, which caused both of them to descend into the cellar in order to retrieve it."",
+                        ""date"": ""1953-04-15 16:00:00"",
+                        ""stream_date"": ""1953-04-15 16:00:00"",
+                        ""importance"": 7,
+                        ""session_id"": ""32"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775643046,
+                        ""modified_time"": 1772775643046,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""98e22d93-ae16-4748-bcec-818c7eaa76f0"",
+                        ""event"": ""Elena feels fear and blames the other girl for leading them toward fear when retrieving the doll from the cellar"",
+                        ""description"": ""On April 15, 1953, at 16:00:00 in Porto, while remembering the event of going into the cellar to retrieve her doll, Elena Greco reflects on her inner thoughts and emotions about the incident. Elena Greco believed in her mind that the situation was truly the other girl's fault because the other girl had taken and thrown the doll into the cellar. As Elena Greco considered the act of going down into the cellar and then having to go back up, she felt that both directions symbolically meant moving toward fear. This shows that Elena Greco experienced the cellar episode as frightening and associatively blamed the other girl for causing both of them to head toward fear."",
+                        ""date"": ""1953-04-15 16:00:00"",
+                        ""stream_date"": ""1953-04-15 16:00:00"",
+                        ""importance"": 8,
+                        ""session_id"": ""32"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775643046,
+                        ""modified_time"": 1772775643046,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]","""retrieval_results"": [
+            {
+                ""description"": ""On April 15, 1953, at 16:40 in Mergellina, Elena Greco reflected that she and Lina had been searching for the doll named Tina but had not found it. During the search, Elena Greco briefly thought she saw Tina, but what she saw turned out to be just a newspaper. Despite this disappointment, Elena Greco continued to follow Lina through a broken door as part of their attempt to recover the doll. After passing through the broken door and not finding Tina, Elena Greco ultimately gave up on finding the doll, which marked the end of this specific search effort."",
+                ""event:"": ""Elena Greco searches unsuccessfully for the doll Tina in Mergellina and follows Lina through a broken door before giving up"",
+                ""conversation_date"": ""1953-04-15 16:40:00"",
+                ""event_date"": ""1953-04-15 16:40:00""
+            },
+            {
+                ""description"": ""On April 15, 1953, at 16:20 in Porto, Elena Greco remembers that as soon as Lina received the doll Tina during their exchange, Lina immediately threw Tina out of a hole. Elena specifically notes seeing the doll Tina fall into darkness after Lina discarded her, emphasizing the suddenness of Lina's action and the physical loss of the doll."",
+                ""event:"": ""Lina throws the doll Tina into a dark hole immediately after receiving her"",
+                ""conversation_date"": ""1953-04-15 16:20:00"",
+                ""event_date"": ""1953-04-15 16:20:00""
+            },
+            {
+                ""description"": ""On April 15, 1953, at 16:30 in Mergellina, Elena Greco recalls entering a basement with Lina by squeezing through a dilapidated small door that was held up by only one hinge. Lina went in first, and Elena followed her down exactly five stone steps. The basement that Elena saw was damp and dark, with only a small hole letting in light, which contributed to the ominous atmosphere of the scene."",
+                ""event:"": ""Elena and Lina squeeze into a damp, dark basement in Mergellina through a dilapidated small door"",
+                ""conversation_date"": ""1953-04-15 16:30:00"",
+                ""event_date"": ""1953-04-15 16:30:00""
+            },
+            {
+                ""description"": ""On April 15, 1953, at 16:00:00 in Porto, Elena Greco recalls an incident where another girl took Elena Greco's doll and deliberately threw the doll into a cellar. Because of this action, Elena Greco and the other girl had to go down into the cellar together to look for the doll. The core factual sequence is that the other girl initiated the event by taking the doll and throwing it, which caused both of them to descend into the cellar in order to retrieve it."",
+                ""event:"": ""Elena recalls a girl throwing Elena's doll into a cellar, forcing them to go down to search for it"",
+                ""conversation_date"": ""1953-04-15 16:00:00"",
+                ""event_date"": ""1953-04-15 16:00:00""
+            },
+            {
+                ""description"": ""On April 15, 1953, at 16:20 in Porto, as Elena Greco watches the doll Tina fall into a dark space after Lina throws Tina out of a hole, Elena focuses on the image of the doll disappearing into darkness. This visual of Tina falling into darkness intensifies Elena's emotional reaction and connects to her fear, making the moment feel ominous and threatening to her."",
+                ""event:"": ""Elena feels strong fear as she watches the doll Tina fall into darkness"",
+                ""conversation_date"": ""1953-04-15 16:20:00"",
+                ""event_date"": ""1953-04-15 16:20:00""
+            },
+            {
+                ""description"": ""On April 15, 1953, at 16:30 in Mergellina, as Lina and Elena Greco squeezed into a dark basement through a dilapidated small door and descended five stone steps, Elena heard Lina say, \""If you pick up my doll too.\"" This indicates that Lina was concerned about retrieving her doll while they were entering the frightening, damp, and poorly lit space."",
+                ""event:"": ""Lina asks Elena to pick up her doll as they enter the basement"",
+                ""conversation_date"": ""1953-04-15 16:30:00"",
+                ""event_date"": ""1953-04-15 16:30:00""
+            },
+            {
+                ""description"": ""On April 15, 1953, at 16:30 in Mergellina, while following Lina through a dilapidated small door held up by only one hinge and down five stone steps into a damp, dark basement lit only by a small hole, Elena Greco reflects that they were filled with fear. The poor condition of the door, the darkness, and the damp environment all contributed to Elena's intense feeling of fear as she entered the basement."",
+                ""event:"": ""Elena feels filled with fear while entering the dark, dilapidated basement with Lina"",
+                ""conversation_date"": ""1953-04-15 16:30:00"",
+                ""event_date"": ""1953-04-15 16:30:00""
+            },
+            {
+                ""description"": ""On April 15, 1953, at 16:25 in Porto, Elena Greco recalls seeing Lina, without saying a single word, take Elena Greco's celluloid doll and throw the doll down. At that time, Elena Greco regarded the celluloid doll as her most precious possession, so witnessing Lina's action made Elena Greco feel intense pain and despair. This concrete moment of watching Lina throw the doll became a vivid and formative memory for Elena Greco."",
+                ""event:"": ""Elena Greco watches Lina silently throw her precious celluloid doll down"",
+                ""conversation_date"": ""1953-04-15 16:25:00"",
+                ""event_date"": ""1953-04-15 16:25:00""
+            },
+            {
+                ""description"": ""On April 15, 1953, at 16:20 in Porto, during the episode with the doll Tina being thrown into a dark hole, Elena Greco reflects that Lina knows Elena is very afraid. This belief shows that Elena not only experiences strong fear herself but also feels that Lina is consciously aware of how frightened Elena is in that moment, which may affect how Elena interprets Lina's actions and their relationship."",
+                ""event:"": ""Elena believes Lina is aware of Elena's intense fear in this situation"",
+                ""conversation_date"": ""1953-04-15 16:20:00"",
+                ""event_date"": ""1953-04-15 16:20:00""
+            },
+            {
+                ""description"": ""On April 15, 1953, at 16:20 in Porto, Elena Greco recalls that she and Lina wordlessly coordinated to exchange the doll named Tina. Elena describes seeing both herself and Lina using only their eyes and gestures to arrange this exchange, highlighting a nonverbal understanding and shared intention between Elena and Lina around the doll Tina."",
+                ""event:"": ""Elena silently coordinates with Lina to exchange the doll Tina using eye contact and gestures"",
+                ""conversation_date"": ""1953-04-15 16:20:00"",
+                ""event_date"": ""1953-04-15 16:20:00""
+            }
+        ],","""40 minutes (start time 16:00:00, end time 16:40:00)""", "20 minutes",最早失败在生成/推理环节：检索已覆盖正确起止时间，但模型被干扰时间戳误导，错误选用16:20作为起点，导致答案为20分钟而非40分钟。,7%
+其他,571,"""Arrange the following events from the wedding reception chronologically:\nA. The narrator speaks with Nino about his article on San Gregorio Armeno.\nB. The narrator sees the Solara brothers enter the restaurant.\nC. Antonio asks the narrator to dance, but she refuses citing her mother's disapproval.""","                    ""A：在餐厅于1965-03-12 13:30与Nino谈论其关于San Gregorio Armeno的文章（evidence_id=6172）"",
+                    ""C：在餐厅于1965-03-12 14:05:10低声说“我母亲不同意”，对应拒绝请求并以母亲不赞成为由（evidence_id=6200）"",
+                    ""B：在餐厅于1965-03-12 14:35看到Solara兄弟出现（evidence_id=6277）""","""summary"": [
+                    {
+                        ""id"": ""8d0731c9-4845-49bd-9ae2-6973334485e7"",
+                        ""event"": ""Elena deliberately stays alert at a restaurant and draws Nino into discussing his article on San Gregorio Armeno"",
+                        ""description"": ""On 1965-03-12 at 13:30:00, while at a restaurant, Elena Greco forced herself to stay mentally alert and intentionally pulled Nino into her ongoing conversation by asking Nino to talk about his article on the poverty and backwardness of San Gregorio Armeno. Elena Greco’s action was purposeful; she wanted Nino to speak about this specific article so she could later use his comments as a natural bridge to her own topic."",
+                        ""date"": ""1965-03-12 13:30:00"",
+                        ""stream_date"": ""1965-03-12 13:30:00"",
+                        ""importance"": 6,
+                        ""session_id"": ""6172"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776687160,
+                        ""modified_time"": 1772776687160,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""88afb288-4366-4cca-ba41-d838560d28c8"",
+                        ""event"": ""Elena plans to segue from Nino’s article to proposing the next magazine issue and her own short article"",
+                        ""description"": ""On 1965-03-12 at 13:30:00, Elena Greco reflected on her underlying purpose during the restaurant conversation with Nino. Elena Greco intended that after Nino finished speaking about his article on San Gregorio Armeno’s poverty and backwardness, she would naturally introduce the topic of the next issue of the magazine and bring up her own short article. This shows that Elena Greco was strategically guiding the conversation in order to discuss future magazine plans and her personal writing."",
+                        ""date"": ""1965-03-12 13:30:00"",
+                        ""stream_date"": ""1965-03-12 13:30:00"",
+                        ""importance"": 7,
+                        ""session_id"": ""6172"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776687160,
+                        ""modified_time"": 1772776687160,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""6200"",
+                ""session_id"": ""6200"",
+                ""content"": ""On 1965-03-12 at 14:05:10, while at a restaurant, Elena Greco reports that she heard herself whisper the sentence, \""My mother doesn't agree.\"" This indicates that in that restaurant context, Elena Greco was involved in or reflecting on a situation where there was disagreement from her mother, and she expressed this in a very quiet, almost internalized way, highlighting her awareness of her mother's disapproval and her subdued manner of voicing it."",
+                ""summary"": [
+                    {
+                        ""id"": ""4bb511fc-66a7-4b4e-9536-4a57b1fdf299"",
+                        ""event"": ""Elena quietly states that her mother does not agree with something while at a restaurant"",
+                        ""description"": ""On 1965-03-12 at 14:05:10, while at a restaurant, Elena Greco reports that she heard herself whisper the sentence, \""My mother doesn't agree.\"" This indicates that in that restaurant context, Elena Greco was involved in or reflecting on a situation where there was disagreement from her mother, and she expressed this in a very quiet, almost internalized way, highlighting her awareness of her mother's disapproval and her subdued manner of voicing it."",
+                        ""date"": ""1965-03-12 14:05:10"",
+                        ""stream_date"": ""1965-03-12 14:05:10"",
+                        ""importance"": 5,
+                        ""session_id"": ""6200"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776690587,
+                        ""modified_time"": 1772776690587,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]","""retrieval_results"": [
+            {
+                ""description"": ""On March 12, 1965, at 14:35 in a restaurant, Elena Greco noticed the Solara brothers appear. Elena Greco observed that both Solara brothers were handsome and well-dressed. This happened while everyone at the restaurant was eating cake and distributing wedding candies as part of a wedding celebration. In that instant, Elena Greco felt with certainty that something destined to happen was occurring, linking the appearance of the Solara brothers during the festive moment with a sense of fate and future significance for her."",
+                ""event:"": ""Elena Greco sees the well-dressed Solara brothers arrive at a restaurant wedding celebration and feels it is a destined moment"",
+                ""conversation_date"": ""1965-03-12 14:35:00"",
+                ""event_date"": ""1965-03-12 14:35:00""
+            },
+            {
+                ""description"": ""On 1965-03-12 at 13:30:00, while at a restaurant, Elena Greco forced herself to stay mentally alert and intentionally pulled Nino into her ongoing conversation by asking Nino to talk about his article on the poverty and backwardness of San Gregorio Armeno. Elena Greco’s action was purposeful; she wanted Nino to speak about this specific article so she could later use his comments as a natural bridge to her own topic."",
+                ""event:"": ""Elena deliberately stays alert at a restaurant and draws Nino into discussing his article on San Gregorio Armeno"",
+                ""conversation_date"": ""1965-03-12 13:30:00"",
+                ""event_date"": ""1965-03-12 13:30:00""
+            },
+            {
+                ""description"": ""On January 20, 1964, in Borgo, Elena Greco recalls that at a certain earlier stage in her life, Nino published an article about San Gregorio Armeno in the newspaper Il Messaggero. Elena notes that this publication made Nino somewhat famous within university circles. This memory highlights Elena's awareness of a concrete career milestone for Nino—authorship of a specific article in Il Messaggero on San Gregorio Armeno—and its impact on his reputation among university peers."",
+                ""event:"": ""Elena recalls that Nino published an article on San Gregorio Armeno in Il Messaggero and became somewhat famous at the university"",
+                ""conversation_date"": ""1964-01-20 10:00:00"",
+                ""event_date"": ""1964-01-20 10:00:00""
+            },
+            {
+                ""description"": ""On May 13, 1976 at 20:00:00 in Vomero, Elena Greco recalls that, from her perspective, everything began one evening during a dinner conversation between Pietro and Nino. During this dinner, Pietro talked to Nino about a professor from San Gregorio Armeno who was, at that time, a very prominent figure. Elena frames this exchange as the starting point of an important sequence of events, indicating that she views this particular conversation as a significant origin moment."",
+                ""event:"": ""Elena observes Pietro speaking to Nino at dinner about a prominent San Gregorio Armeno professor"",
+                ""conversation_date"": ""1976-05-13 20:00:00"",
+                ""event_date"": ""1976-05-13 20:00:00""
+            },
+            {
+                ""description"": ""On 1965-03-12 at 13:30:00, Elena Greco reflected on her underlying purpose during the restaurant conversation with Nino. Elena Greco intended that after Nino finished speaking about his article on San Gregorio Armeno’s poverty and backwardness, she would naturally introduce the topic of the next issue of the magazine and bring up her own short article. This shows that Elena Greco was strategically guiding the conversation in order to discuss future magazine plans and her personal writing."",
+                ""event:"": ""Elena plans to segue from Nino’s article to proposing the next magazine issue and her own short article"",
+                ""conversation_date"": ""1965-03-12 13:30:00"",
+                ""event_date"": ""1965-03-12 13:30:00""
+            },
+            {
+                ""description"": ""On November 11, 1974, at 18:21 while being at San Gregorio Armeno, Elena Greco mentally reflected on the role that the Solara brothers played in placing Antonio somewhere or into some position, and on what subsequently happened to Antonio afterward. Elena Greco is actively trying to connect the Solara brothers' actions regarding Antonio's placement with the later consequences for Antonio, indicating a reflective and analytical concern about Antonio's fate and the Solara brothers' influence over his life trajectory."",
+                ""event:"": ""Elena Greco reflects on how the Solara brothers placed Antonio and his later fate while at San Gregorio Armeno"",
+                ""conversation_date"": ""1974-11-11 18:21:00"",
+                ""event_date"": ""1974-11-11 18:21:00""
+            },
+            {
+                ""description"": ""On 1969-08-15 at 10:00:30, while being at or thinking about the location San Gregorio Armeno, Elena Greco reflected on the idea of returning there. When Elena Greco thought about going back to San Gregorio Armeno, her mind focused intensely on Nino and on their past meetings in that place, which she judged as having 'led to nothing.' This shows that San Gregorio Armeno is strongly linked in Elena Greco's mind to her relationship with Nino and to a sense of disappointment or lack of outcome from those encounters."",
+                ""event:"": ""Elena Greco associates returning to San Gregorio Armeno with unfulfilled meetings with Nino"",
+                ""conversation_date"": ""1969-08-15 10:00:30"",
+                ""event_date"": ""1969-08-15 10:00:30""
+            },
+            {
+                ""description"": ""On March 12, 1965, at 12:21:20, while riding in Pasquale's car, Elena Greco reflects on and regrets several missed actions. Elena thinks about why she did not stop and let Nino stay for the wedding feast, why she did not ask Nino when the magazine containing her article would be published, and why she did not take the opportunity to talk to Nino more. She specifically wishes she had created a space for herself with Nino, away from Pasquale's driving and vulgarity, away from Camilla and Enzo's rude remarks, and away from Antonio's vulgar and violent nature. This reflection shows that Elena feels discomfort and aversion toward Pasquale, Camilla, Enzo, and Antonio, and that she values both Nino's company and the importance of the magazine that will publish her article. Her thoughts reveal regret, a desire for intellectual and emotional connection with Nino, and a wish to distance herself from an environment she experiences as coarse and hostile."",
+                ""event:"": ""Elena Greco regrets not asking Nino about the publication date of the magazine with her article and not creating distance from unpleasant company in Pasquale's car"",
+                ""conversation_date"": ""1965-03-12 12:21:20"",
+                ""event_date"": ""1965-03-12 12:21:20""
+            },
+            {
+                ""description"": ""On May 15, 1976, at 15:00 in Vomero, Elena Greco reflects that, in the timeline of past events she is narrating, a few days before Nino returned to San Gregorio Armeno, two particularly uncomfortable things happened. She does not specify in this snippet what the two uncomfortable events were, but she marks them as significant negative occurrences directly linked in time to Nino's return to San Gregorio Armeno, indicating that she views that period as tense or problematic."",
+                ""event:"": ""Elena notes that two especially uncomfortable events occurred shortly before Nino returned to San Gregorio Armeno"",
+                ""conversation_date"": ""1976-05-15 15:00:00"",
+                ""event_date"": ""1976-05-15 15:00:00""
+            },
+            {
+                ""description"": ""On 10 April 1969 at 20:34 in Restaurant Porto, Elena Greco reflects that she understood a situation to mean that during the coming autumn of 1969, or at the latest by the spring of the following year, she and her partner would get married. Because of this expected marriage timeframe, Elena Greco anticipated that she would leave the place called San Gregorio Armeno. This thought reveals Elena Greco's concrete plan and emotional expectation that marriage would soon allow her to move away from San Gregorio Armeno within roughly a year."",
+                ""event:"": ""Elena expects to marry within months and leave San Gregorio Armeno"",
+                ""conversation_date"": ""1969-04-10 20:34:00"",
+                ""event_date"": ""1969-04-10 20:34:00""
+            }
+        ],", "A -> B -> C", "A then C then B",时间显示A(13:30)→C(14:05:10)→B(14:35)，模型回答与证据一致；参考答案A→B→C可能标注错误，给0分存在误判。,2%

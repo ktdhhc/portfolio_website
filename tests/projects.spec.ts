@@ -1,4 +1,17 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { test, expect } from '@playwright/test';
+
+function loadProjectNames(): string[] {
+  const projectsRoot = join(process.cwd(), 'content', 'projects');
+  return readdirSync(projectsRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => {
+      const content = readFileSync(join(projectsRoot, entry.name, 'index.md'), 'utf-8');
+      const match = content.match(/^name:\s*(.+)$/m);
+      return match ? match[1].trim().replace(/^['"]|['"]$/g, '') : entry.name;
+    });
+}
 
 test('/projects 页面返回 200', async ({ page }) => {
   const response = await page.goto('/projects/');
@@ -8,10 +21,9 @@ test('/projects 页面返回 200', async ({ page }) => {
 test('/projects 页面展示全部 4 个项目名称', async ({ page }) => {
   await page.goto('/projects/');
   const body = page.locator('body');
-  await expect(body).toContainText('Aindexer');
-  await expect(body).toContainText('角色记忆情境数据构建平台');
-  await expect(body).toContainText('认知科学驱动的 AI 原型研发');
-  await expect(body).toContainText('记忆系统测试与数据异常分析');
+  for (const projectName of loadProjectNames()) {
+    await expect(body).toContainText(projectName);
+  }
 });
 
 test('/projects 页面 ProjectCard 显示项目类型', async ({ page }) => {

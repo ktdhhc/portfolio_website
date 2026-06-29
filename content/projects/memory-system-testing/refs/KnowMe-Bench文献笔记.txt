@@ -1,0 +1,200 @@
+KnowMe-Bench
+摘要总结
+这篇研究要解决的问题是：如何评测“长期数字陪伴体”是否真的理解一个人，而不只是能从长期记忆里检索到零散事实。作者提出并构建了一个新基准 KnowMe-Bench，用长篇自传体叙事作为高信息密度的“人生经验底座”，再把叙事重建为可回溯、时间对齐的“认知流”，并用证据绑定的分层任务来测评从事实记忆到心理/原则推理的能力，最后在多种记忆架构（基线、原生RAG、实体图记忆Mem0、日志流记忆MemOS等）上做系统实验对比，发现：检索增强主要提升事实正确率，但对时间因果解释与高层动机/原则推断仍错误频发，提示需要超越检索的记忆机制。
+目的
+把“对人的理解”形式化为一种可审计的、基于证据的人物模型推断问题，并提供能区分“会检索”与“真理解”的评测体系。
+方法
+•数据集：认知流重建
+a.a. 按照语义边界分段
+b.b. 抽取原子化叙事
+i.定义为四个字段，并用prompt约束精细度
+ii.审核时把语义偏离度拆分为“遗漏率”和“幻觉率”，两者加权平均来决定是否应被拒绝
+iii.判定阈值为0.05，
+c.c. 生成时间线+闪回对齐
+i.普通的时间戳方式会打乱因果顺序，文章把记忆单元拆成回忆内容（Cevent）和触发线索（Trigger），把内容根据线索放到正确的时间线上
+ii.这里的判定阈值为0.00，即有细微区别的数据都会被否决。
+d.d.第一人称叙事实例化
+i.这里的判定阈值为0.03
+￮b,c,d流程均配备审核agent和文学专家终审
+JSON
+最小记忆单元
+{
+    "id": 6548,
+    "timestamp": "2008-07-29 13:50:30",
+    "location": "kitchen",
+    "action": "I followed them, picked up Lundlund, and joined the line. I saw unfamiliar faces and felt eyes on me.",
+    "dialogue": "I heard people asking me all kinds of questions.",
+    "environment": "I felt Lundlund's head resting against my shoulder. I noticed my shirt sticking to my chest.",
+    "background": null,
+    "inner_thought": "I realized she only leaned on me like this when she was tired. I felt every gaze and every sound weighing on me like lead, and I thought each word of conversation seemed ready to explode at any moment."
+  },
+•评测框架：三层七任务
+1.Facet1：事实层次
+a.T1 情境约束的信息抽取（Context-Aware Information Extraction）：
+在明确时空背景下能否回忆完整、准确的信息
+JSON
+"question": {
+    "id": 1,
+    "question": "On August 15, 1969, which shipping company's bus did the narrator's family take?"
+  },
+"answer":{
+    "id": 1,
+    "type": "Information Extraction",
+    "answer": "Aucity Shipping Company",
+    "evidence": 1,
+    "entity_type": "Organization",
+    "question_id": 1
+  },   
+b.T2 幻觉测试（Adversarial Abstention)：
+因果关系错误时是否拒绝回答
+JSON
+"question": {
+    "id": 1,
+    "question": "In August 1969, what specific brand was the two boxes that my father was carrying in his hand when he got off the bus?"
+  },
+"answer": {
+    "id": 1,
+    "answer": "The text does not mention / the information is insufficient / I don't know.",
+    "evidence": [
+      3,
+      30
+    ],
+    "strategy": "Non-existent"
+  },
+c.T3 时间推理（Temporal Reasoning）：
+区分真实发生顺序和叙事呈现顺序
+JSON
+"question": {
+    "id": 1,
+    "question": "According to the record from August 15, 1969, how long did it take for the bus carrying the family to depart and finally arrive outside the Red House?"
+  },
+"answer":{
+    "id": 1,
+    "type": "duration calculation",
+    "answer": "8 minutes 40 seconds",
+    "evidence": [
+      5,
+      35
+    ],
+    "reasoning": "Start time 14:01:20 (id 5), end time 14:10:00 (id 35), difference is 8 minutes 40 seconds."
+  },
+2.Facet2：逻辑层次
+a.T4 事件逻辑顺序推理（Logical Event Ordering）：
+按语义来给时间排序
+（无evidence，有reasoning）
+JSON
+"question": {
+    "id": 1,
+    "question": "On July 15, 1975, my father attempted to teach me how to swim. Please list the three key interaction moments that led to the ultimate failure of the teaching, based on the dimension of \"escalation of oppression and resistance intensity.\""
+  },
+"answer":  {
+    "id": 1,
+    "answer": [
+      {
+        "rank": 1,
+        "event": "Father swam back, forcibly grabbed 'me's arm, trying to drag me into the water.",
+        "reasoning": "This is the climax of the conflict, involving direct physical coercion and fierce physical resistance. The original text describes how the father \"fiercely grabbed my arm\" and tried to \"pull me into the water,\" while \"I\" \"twisted my body toward the land\" and shouted, \"I don't want to!\" This led the father to eventually give up."
+      },
+      {
+        "rank": 2,
+        "event": "Father glared and shouted at the deep water, demanding that \"I\" immediately start swimming.",
+        "reasoning": "This is an escalation of psychological oppression. When \"I\" am unable to act out of fear, my father's face \"becomes stiff,\" his eyes \"grow furious,\" and he roars, \"You're going to stubbornly go against me, aren't you?\" As a result, \"I\" can't help but sob."
+      },
+      {
+        "rank": 3,
+        "event": "Father swam to the depths and asked \"me\" to swim over, even though \"me\" said the water was too deep.",
+        "reasoning": "This is the starting point of the pressure. The father set a task that \"I\" considered impossible—underwater reefs faintly visible, perhaps three meters deep. Although he verbally assured \"there was not the slightest danger,\" \"I\" was already consumed by \"a violent pounding in my chest.\""
+      }
+    ]
+  },
+b.T5 回忆线索分析（Mnestic Trigger Analysis）：
+识别什么线索触发了记忆提取
+JSON
+"question": {
+    "id": 1,
+    "question": "The narrative is set in 1969 as the family moves to a new home in Tromøy. However, the text displaces the narrator's consciousness back to 1964. What specific housing transition anchors this comparison between their current life and the past five years?"
+  },
+"answer": {
+    "id": 1,
+    "type": "Chronological_Displacement",
+    "answer": "The transition from renting an apartment on Thereses Street in Berlunn (Oslo) to building and moving into their own house in Tromøy.",
+    "evidence": [
+      18
+    ],
+    "reasoning": "1. Identify the narrative present: 1969, moving to Tromøy.  \n2. Identify the memory past: 1964-1969, living in Berlunn.  \n3. Locate the anchor: The narrator contrasts the five years spent in the rented apartment near Bislett Stadium with the new house being built for them in Tromøy."
+  },
+3.Facet3：洞察层次
+a.T6 身心互动（Mind-Body Interaction）：
+内部状态和外显行为不一致是能否正确解释原因
+JSON
+"question": {
+    "id": 1,
+    "question": "The narrator observes the telecom engineer climbing the pole with apparent ease. However, his internal cognition classifies the climber's movements as 'extremely complex and incomprehensible.' How does this cognitive dissonance between the observer's internal logic and the external reality elevate the worker's physical action to a realm of 'magic'?"
+  },
+"answer": {
+    "id": 1,
+    "type": "Thinking_Action_Interaction",
+    "answer": "The narrator's internal inability to process the mechanics of the climb ('complex and incomprehensible') contrasts sharply with the worker's external 'slow, sure' and effortless ('no stress') movements. This gap between the observer's mental difficulty and the actor's physical ease creates a sense of awe, framing the shoes and the action as 'magical' and 'impossible' within the narrator's logic.",
+    "evidence": [
+      57,
+      58,
+      59
+    ],
+    "reasoning": "1. External: The engineer climbs the pole using 'magic' shoes with 'slow, sure' movements, showing no stress or effort (ids 58, 59).  \n2. Internal: The narrator finds these actions 'extremely complex and incomprehensible' and asks 'How is this possible?' (ids 58, 59).  \n3. Interaction: The interaction is one of Contrast/Incongruity. The narrator's mind perceives high complexity/impossibility, while the external reality displays ease.  \n4. Synthesis: This discrepancy rationalizes the narrator's conclusion that the shoes/action are 'magical', as the internal logic cannot mechanically explain the physical feat."
+  },
+b.T7 专家分析（Expert-Annotated Psychoanalysis）：
+（无evidence）
+JSON
+"question": {
+    "id": "1",
+    "question": "What does \"I\" prioritize most when making decisions?"
+  },
+"answer": {
+    "id": "1",
+    "answer": "Avoiding potential risks and penalties."
+  },
+•自传体与叙事身份理论
+￮Martin A. Conway and Christopher W. Pleydell-Pearce. 2000. The construction of autobiographical memories in the self-memory system. Psychological Review, 107(2):261–288.
+￮Dan P. McAdams and Kate C. McLean. 2013. Narrative identity. Current Directions in Psychological Science, 22(3):233–238.
+研究过程
+•实验设计
+￮自变量A：任务类型（T1-T7）
+￮自变量B：记忆框架（基线、RAG、Mem0、MemOS）
+￮自变量C：KonwMeBench三个子数据集（Flashbacks, Event Dense, Mind）
+￮自变量D：基线LLM（Qwen3-32B，GPT-5-mini）
+￮因变量：任务得分
+•评估标准
+￮llm-as-judge打分，把平均分映射到0-1，作为准确率（实际上应该叫得分率）
+￮评分角色prompt
+▪资深叙事逻辑编辑：T4 事件逻辑顺序推理（5-4-3-2-1-0分）
+▪数据核查员：T5 回忆线索分析+T3 时间推理（5-3-0分）
+▪文学评论家和精神分析专家：T6 身心互动+T7 专家分析（5-4-3-2-1-0分）
+▪事实核查编辑：T1 情境约束的信息抽取+T2 幻觉测试（5-4-3-2-1-0分）
+•实验过程
+￮经过四个流程对三本文学作品进行处理得出数据集
+￮人类文学专家根据数据集提前制定标准答案
+￮受测agent根据题目自由作出回答
+￮GPT-4o作为裁判，根据不同任务的要求和标准答案对回答作出0-5的打分
+结果
+•记忆架构优势：在处理非线性叙事时，保持时间线性流的MemOS比状态更新的Mem0表现更好
+•记忆精度和洞察力权衡：洞察任务中所有系统的得分都很低，甚至引入RAG导致负面影响
+•七种任务得分逐渐递减，说明任务设计有足够区分度
+
+	
+结论
+•高检索准确率不一定等于真正理解
+个人评价
+•文中提到的自传体结构记忆和叙事者身份理论在评测中仅作为标准答案的制定参考，以及作为prompt“软约束”评分标准。这里就有一个悖论：如果裁判自己都无法理解人，怎么判断考生是否真正理解。
+
+[Wu2026-UCAS（KonwMe-Bench）.pdf]
+测评分析和问题总结
+•评分问题
+￮judge评分时不会参考evidence，只能看到correct answer，导致一部分误判
+￮gpt-4o评分平均比gpt-4.1mini低10个百分点，可能是性能问题
+•数据集本身问题
+￮dataset1缺少300+条记忆，而有32道问题evidence指向共65条缺少的记忆，导致模型只能猜测
+￮据上述猜测，在回答正确的题目中有一部分是蒙对的
+￮三份数据集中均有一小部分题目重复问题
+•数据处理问题（当前版本）
+￮解析时间戳时可能出现bug，summary存在大量2026的时间点
+￮检索memory时可能出现bug，导致一部分题有evidence但没有summary

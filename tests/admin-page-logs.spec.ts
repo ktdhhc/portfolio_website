@@ -58,8 +58,10 @@ test('024-05: logs 模块渲染列表字段、记录总数与预留按钮', asyn
   await expect(page.locator('[data-log-row="2"]')).toContainText('jd_analysis');
   await expect(page.locator('[data-log-row="2"]')).toContainText('degraded');
   await expect(page.locator('[data-log-row="2"]')).not.toContainText('assistantAnswer');
-  await expect(page.getByRole('button', { name: '导出' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: '清理' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '导出 CSV' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '导出 JSON' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '按时间范围删除' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '清空全部' })).toBeVisible();
 });
 
 test('024-06: logs 分页与当前 period 同步，切换 period 时回到第一页', async ({ page }) => {

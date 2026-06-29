@@ -124,10 +124,34 @@ export function initAdminDashboard(): void {
       isCustomMode = false;
     };
 
+    const customRangeError = getRequiredElement<HTMLParagraphElement>(document, '[data-custom-range-error]');
+
+    const setCustomRangeError = (message: string | null): void => {
+      if (message === null) {
+        customRangeError.hidden = true;
+        customRangeError.textContent = '';
+        startDateInput.removeAttribute('aria-invalid');
+        endDateInput.removeAttribute('aria-invalid');
+        return;
+      }
+      customRangeError.hidden = false;
+      customRangeError.textContent = message;
+      startDateInput.setAttribute('aria-invalid', 'true');
+      endDateInput.setAttribute('aria-invalid', 'true');
+    };
+
     const applyCustomDates = (): void => {
       const start = startDateInput.value;
       const end = endDateInput.value;
-      if (!start || !end || start > end) return;
+      if (!start || !end) {
+        setCustomRangeError(null);
+        return;
+      }
+      if (start > end) {
+        setCustomRangeError('开始日期不能晚于结束日期');
+        return;
+      }
+      setCustomRangeError(null);
       customDates = { start, end };
       isCustomMode = true;
       resetLogsState();
@@ -372,12 +396,8 @@ export function initAdminDashboard(): void {
         }
       });
     });
-    startDateInput.addEventListener('change', () => {
-      if (startDateInput.value && endDateInput.value) applyCustomDates();
-    });
-    endDateInput.addEventListener('change', () => {
-      if (startDateInput.value && endDateInput.value) applyCustomDates();
-    });
+    startDateInput.addEventListener('change', () => applyCustomDates());
+    endDateInput.addEventListener('change', () => applyCustomDates());
     logsPrevButton.addEventListener('click', () => {
       if (activeLogsPage <= 1) return;
       activeLogsPage -= 1;

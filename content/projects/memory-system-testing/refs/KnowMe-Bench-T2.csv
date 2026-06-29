@@ -1,0 +1,671 @@
+﻿错题类型,典型例子,,,,,,,,
+,analysis_index,question,evidence,summary,retrieval,correct answer,generate answer,原因,比例
+检索失败,44,"""Why did Elena choose to speak in Italian instead of dialect while watching Adele Airota iron clothes on the kitchen table in November 1967?""","                    ""1967-11-20 11:55 在家：Elena坐在厨房桌前，母亲在同一张桌子上熨衣（熨斗使桌面震动）"",
+                    ""1967-11-20 12:05 在家：Elena读到小说将出版的来信；为确认这是真的，她轻声用意大利语对母亲说‘妈妈，信上说他们要出版我写的小说’（动机：自我确认）"",
+                    ""1968-04-17 21:30 在父母家：Elena给Adele Airota打电话；因想起对方曾帮助而克服尴尬""","""summarize_content"": [
+            {
+                ""evidence_id"": ""7419"",
+                ""session_id"": ""7419"",
+                ""content"": ""On November 20, 1967, at 11:55:00, Elena Greco describes a memory of being at home, seeing herself sitting in front of the kitchen table while her mother irons clothes on that same table. Elena Greco focuses on the domestic scene: her mother is actively ironing clothes on the kitchen table where Elena Greco is resting her elbow, emphasizing the shared use of the table for both work and sitting. This indicates Elena Greco's attention to specific, everyday family details and her observational stance toward her mother’s household labor.\n\nOn November 20, 1967, at 11:55:00, while at home, Elena Greco recalls in detail how her mother’s old iron pressed firmly over fabric on the kitchen table, causing the wooden table to tremble under Elena Greco’s elbow. Elena Greco emphasizes the physical sensations and sounds of the old iron and the trembling wooden table, highlighting her strong sensory memory of the domestic environment and her close physical proximity to her mother’s work."",
+                ""summary"": [
+                    {
+                        ""id"": ""caea7557-ee12-4414-b367-ab771dfae79e"",
+                        ""event"": ""Elena Greco recalls sitting at her kitchen table while her mother irons clothes on it"",
+                        ""description"": ""On November 20, 1967, at 11:55:00, Elena Greco describes a memory of being at home, seeing herself sitting in front of the kitchen table while her mother irons clothes on that same table. Elena Greco focuses on the domestic scene: her mother is actively ironing clothes on the kitchen table where Elena Greco is resting her elbow, emphasizing the shared use of the table for both work and sitting. This indicates Elena Greco's attention to specific, everyday family details and her observational stance toward her mother’s household labor."",
+                        ""date"": ""1967-11-20 11:55:00"",
+                        ""stream_date"": ""1967-11-20 11:55:00"",
+                        ""importance"": 6,
+                        ""session_id"": ""7419"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776900691,
+                        ""modified_time"": 1772776900691,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""8103e17c-5916-4f6a-9bb5-04a39a57facb"",
+                        ""event"": ""Elena Greco vividly observes her mother’s old iron shaking the wooden kitchen table"",
+                        ""description"": ""On November 20, 1967, at 11:55:00, while at home, Elena Greco recalls in detail how her mother’s old iron pressed firmly over fabric on the kitchen table, causing the wooden table to tremble under Elena Greco’s elbow. Elena Greco emphasizes the physical sensations and sounds of the old iron and the trembling wooden table, highlighting her strong sensory memory of the domestic environment and her close physical proximity to her mother’s work."",
+                        ""date"": ""1967-11-20 11:55:00"",
+                        ""stream_date"": ""1967-11-20 11:55:00"",
+                        ""importance"": 5,
+                        ""session_id"": ""7419"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776900691,
+                        ""modified_time"": 1772776900691,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""7421"",
+                ""session_id"": ""7421"",
+                ""content"": ""On 1967-11-20 at 12:05:00, while at home, Elena Greco read a letter whose content stated that a novel she wrote was going to be published. To convince herself that this event was really happening, Elena Greco spoke softly in Italian and heard herself say, \""Mom, the letter says they're going to publish a novel I wrote.\"" This moment reflects Elena Greco's surprise and need for self-reassurance about the significant news that her novel would be published."",
+                ""summary"": [
+                    {
+                        ""id"": ""992af8ed-e2bc-48db-834e-9ac663ab2e24"",
+                        ""event"": ""Elena Greco learns from a letter at home that a novel she wrote will be published"",
+                        ""description"": ""On 1967-11-20 at 12:05:00, while at home, Elena Greco read a letter whose content stated that a novel she wrote was going to be published. To convince herself that this event was really happening, Elena Greco spoke softly in Italian and heard herself say, \""Mom, the letter says they're going to publish a novel I wrote.\"" This moment reflects Elena Greco's surprise and need for self-reassurance about the significant news that her novel would be published."",
+                        ""date"": ""1967-11-20 12:05:00"",
+                        ""stream_date"": ""1967-11-20 12:05:00"",
+                        ""importance"": 9,
+                        ""session_id"": ""7421"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776899367,
+                        ""modified_time"": 1772776899367,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""8310"",
+                ""session_id"": ""8310"",
+                ""content"": ""On 1968-04-17 at 21:30:00, while at her parents' home, Elena Greco decided to call Adele Airota. Before making the call, Elena Greco felt a bit embarrassed for reasons she does not specify, which initially made her hesitant. She then consciously remembered what Adele Airota had done to help with Elena Greco's book and with the house of Mergellina. Because of this gratitude and recognition of Adele Airota's past support, Elena Greco was able to overcome and forget her embarrassment and proceeded to make the phone call."",
+                ""summary"": [
+                    {
+                        ""id"": ""594c582b-a608-4c32-a579-7ee15961b68f"",
+                        ""event"": ""Elena Greco calls Adele Airota from her parents' home despite initial embarrassment"",
+                        ""description"": ""On 1968-04-17 at 21:30:00, while at her parents' home, Elena Greco decided to call Adele Airota. Before making the call, Elena Greco felt a bit embarrassed for reasons she does not specify, which initially made her hesitant. She then consciously remembered what Adele Airota had done to help with Elena Greco's book and with the house of Mergellina. Because of this gratitude and recognition of Adele Airota's past support, Elena Greco was able to overcome and forget her embarrassment and proceeded to make the phone call."",
+                        ""date"": ""1968-04-17 21:30:00"",
+                        ""stream_date"": ""1968-04-17 21:30:00"",
+                        ""importance"": 6,
+                        ""session_id"": ""8310"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772777057634,
+                        ""modified_time"": 1772777057634,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            }
+        ],","""retrieval_results"": [
+            {
+                ""description"": ""On 1964-09-01 at 20:01:00, while at her home, Elena Greco observed herself speaking firmly in Italian. She consciously chose to speak standard Italian rather than the local dialect because she believed that using dialect would make her words feel less meaningful. Elena also thought that if she spoke in dialect, her father, her mother, and her younger brother and sister should not, and could not, fully understand what she was doing, indicating that she was intentionally creating emotional and linguistic distance from her family and assigning greater seriousness and significance to Italian in that moment."",
+                ""event:"": ""Elena Greco deliberately speaks in Italian instead of dialect so her family will not fully understand her words"",
+                ""conversation_date"": ""1964-09-01 20:01:00"",
+                ""event_date"": ""1964-09-01 20:01:00""
+            },
+            {
+                ""description"": ""On 1963-07-15 at the beach, Elena Greco observed that a woman she was watching was almost always speaking in dialect rather than in standard Italian. Elena mentally interpreted this linguistic choice as the woman trying to show humility and modesty. Elena framed it in her mind as, 'I don't pretend, I speak with my own words,' attributing to this woman an intention to appear unpretentious and genuine through her use of dialect."",
+                ""event:"": ""Elena notices a woman almost always speaking in dialect at the beach and interprets it as humility"",
+                ""conversation_date"": ""1963-07-15 15:11:05"",
+                ""event_date"": ""1963-07-15 15:11:05""
+            },
+            {
+                ""description"": ""On July 14, 1963, at 16:50 in the Town Center, Elena Greco saw an unspecified man talking about very important issues. In response, Elena Greco and this man immediately began speaking in very formal, elegant, and passionate Italian. Elena Greco consciously chose this formal and expressive register of the Italian language because she believed that by using formal, elegant, and passionate Italian they could express what they wanted to say more effectively about those very important issues."",
+                ""event:"": ""Elena Greco switches to formal, elegant, passionate Italian to discuss important issues more effectively"",
+                ""conversation_date"": ""1963-07-14 16:50:00"",
+                ""event_date"": ""1963-07-14 16:50:00""
+            },
+            {
+                ""description"": ""On 1969-05-13 at 17:10:00, while at home, Elena Greco recalls seeing her fiancé, Pietro, ask Elena's father about her father's job at the city hall. Because Elena's father spoke Italian awkwardly, Pietro encouraged Elena's father to switch to the local dialect in order to communicate more comfortably and clearly. Elena notes this interaction as an example of how Pietro adjusted to Elena's father's language abilities to keep the conversation flowing."",
+                ""event:"": ""Elena observes her fiancé helping her father speak in the local dialect while asking about her father's job at city hall"",
+                ""conversation_date"": ""1969-05-13 17:10:00"",
+                ""event_date"": ""1969-05-13 17:10:00""
+            },
+            {
+                ""description"": ""At the tailor's shop on Rettifilo Street on June 4, 1960, at 16:30, Elena Greco heard herself speaking confidently in Italian to a man, telling him that she would do her best to help him and make them happy. Elena consciously chose reassuring words in Italian to offer help and to contribute to the happiness of the people involved, indicating both her willingness to assist and her sense of responsibility toward their well-being."",
+                ""event:"": ""Elena confidently promises in Italian to do her best to help and make them happy"",
+                ""conversation_date"": ""1960-06-04 16:30:00"",
+                ""event_date"": ""1960-06-04 16:30:00""
+            },
+            {
+                ""description"": ""On June 5, 1962, at 20:20 in a dance hall, Elena Greco began chatting with others and chose to speak in a refined Italian. Internally, Elena Greco did not perceive anything unnatural about using refined Italian, because she identified it as the language she used at school. This shows that Elena Greco associates refined Italian with her educated identity and feels it is a natural register for her, even in casual social situations like a dance hall."",
+                ""event:"": ""Elena Greco deliberately speaks refined Italian at the dance hall because it is her school language"",
+                ""conversation_date"": ""1962-06-05 20:20:00"",
+                ""event_date"": ""1962-06-05 20:20:00""
+            },
+            {
+                ""description"": ""On 1963-08-10 at 02:30:00, while reflecting on the way home, Elena Greco thought about the tone she had used when threatening a man and was surprised by herself. Elena Greco had previously been used to saying such threatening things only in dialect, but in this situation she realized she could now formulate and express those threats in Italian as well, and that using Italian worked very well. This realization marked a shift in Elena Greco's sense of linguistic capability and the power of her Italian speech."",
+                ""event:"": ""Elena Greco notices she can now deliver effective threats in Italian instead of only in dialect"",
+                ""conversation_date"": ""1963-08-10 02:30:00"",
+                ""event_date"": ""1963-08-10 02:30:00""
+            },
+            {
+                ""description"": ""On January 1, 1965, at her home, Elena Greco reflected that, despite feeling embarrassed by her brother and sister's difficulties speaking Italian and their self-consciousness, she consciously decided to act as she always had when she was with them. Elena Greco did this in order to avoid making the situation more awkward and to help her brother and sister feel more comfortable. As a result of Elena Greco maintaining her usual behavior, her brother and sister gradually got used to speaking Italian with her and became less self-conscious over time."",
+                ""event:"": ""Elena deliberately behaves as usual so her siblings can gradually get used to speaking Italian with her"",
+                ""conversation_date"": ""1965-01-01 13:00:00"",
+                ""event_date"": ""1965-01-01 13:00:00""
+            },
+            {
+                ""description"": ""On November 20, 1967, at 11:55:00, Elena Greco describes a memory of being at home, seeing herself sitting in front of the kitchen table while her mother irons clothes on that same table. Elena Greco focuses on the domestic scene: her mother is actively ironing clothes on the kitchen table where Elena Greco is resting her elbow, emphasizing the shared use of the table for both work and sitting. This indicates Elena Greco's attention to specific, everyday family details and her observational stance toward her mother’s household labor."",
+                ""event:"": ""Elena Greco recalls sitting at her kitchen table while her mother irons clothes on it"",
+                ""conversation_date"": ""1967-11-20 11:55:00"",
+                ""event_date"": ""1967-11-20 11:55:00""
+            },
+            {
+                ""description"": ""On August 20, 1970, at 10:00:00 in Vomero, Elena Greco reflects that, in a particular situation, she believed the refined words spoken by her mother-in-law, Adele Airota, were not intended to create a meaningful exchange or genuine dialogue with Elena. Instead, Elena interprets Adele Airota’s behavior as strategically planning to rescue Elena from the social position of being perceived as an incapable mother, suggesting Elena feels judged in her maternal role and views Adele’s intervention as protective but not truly communicative."",
+                ""event:"": ""Elena interprets Adele Airota’s refined words as an attempt to rescue her from being seen as an incapable mother"",
+                ""conversation_date"": ""1970-08-20 10:00:00"",
+                ""event_date"": ""1970-08-20 10:00:00""
+            }
+        ],","""unable to answer""","""To give her words greater seriousness.""",记忆总结阶段保留了“1967年用意大利语为自我确认、且熨衣者为母亲”的要点，但检索未召回关键证据[7421]，反而提供了1964年的泛化理由，导致生成阶段误用他处理由作答。,23%
+总结失败,19,"""Did Elena and Lina visit Professor Galiani's house on May 2, 1969, specifically because Giggia had called them earlier to warn them about Nadia and Pasquale being there?""","                    ""1969-05-01：有一通来自未具名女性的电话，邀请Elena次日五点来访，并说可带Lina（非强制）"",
+                    ""电话内容未提及Giggia，也未提及对Nadia与Pasquale在场的‘警告’"",
+                    ""1969-05-02 17:10:10：在Galiani家客厅，Elena被问‘你在这里做什么？’并大声惊呼，Lina无惊讶"""," ""summarize_content"": [
+            {
+                ""evidence_id"": ""9098"",
+                ""session_id"": ""9098"",
+                ""content"": ""On May 1, 1969, at 10:06:00 in San Gregorio Armeno, Elena Greco recounted a phone interaction with an unnamed woman. Elena Greco observed that this woman did not show any surprise or happiness at speaking with Elena Greco; instead, the woman sounded merely polite. Before hanging up, the woman instructed Elena Greco to come see the woman at five o'clock the next afternoon, setting a specific meeting time. Elena Greco was attentive to the woman's lack of emotional warmth, which led Elena Greco to interpret the tone as detached but formally courteous.\n\nDuring the same phone conversation Elena Greco described on May 1, 1969, at 10:06:00 in San Gregorio Armeno, Elena Greco heard the woman on the phone say, \""Take your friend Lina, if she's willing to come.\"" This indicates that for the scheduled visit at five o'clock the next afternoon, on May 2, 1969, at approximately 17:00:00, the woman explicitly invited Elena Greco to bring Elena Greco's friend Lina along, contingent on Lina's willingness. Elena Greco thus understood that Lina's attendance was welcomed but not mandatory, creating a conditional plan that depends on Lina's consent."",
+                ""summary"": [
+                    {
+                        ""id"": ""fadae663-8f50-4f15-8d0a-5e009d11a916"",
+                        ""event"": ""Elena notes that a woman invited her to visit at five the next afternoon while remaining only politely indifferent"",
+                        ""description"": ""On May 1, 1969, at 10:06:00 in San Gregorio Armeno, Elena Greco recounted a phone interaction with an unnamed woman. Elena Greco observed that this woman did not show any surprise or happiness at speaking with Elena Greco; instead, the woman sounded merely polite. Before hanging up, the woman instructed Elena Greco to come see the woman at five o'clock the next afternoon, setting a specific meeting time. Elena Greco was attentive to the woman's lack of emotional warmth, which led Elena Greco to interpret the tone as detached but formally courteous."",
+                        ""date"": ""1969-05-01 10:06:00"",
+                        ""stream_date"": ""1969-05-01 10:06:00"",
+                        ""importance"": 5,
+                        ""session_id"": ""9098"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772777204571,
+                        ""modified_time"": 1772777204571,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""d0d25f2b-f639-41ac-9cad-13cdf05b4747"",
+                        ""event"": ""Elena is asked to bring her friend Lina to the five o'clock meeting if Lina is willing"",
+                        ""description"": ""During the same phone conversation Elena Greco described on May 1, 1969, at 10:06:00 in San Gregorio Armeno, Elena Greco heard the woman on the phone say, \""Take your friend Lina, if she's willing to come.\"" This indicates that for the scheduled visit at five o'clock the next afternoon, on May 2, 1969, at approximately 17:00:00, the woman explicitly invited Elena Greco to bring Elena Greco's friend Lina along, contingent on Lina's willingness. Elena Greco thus understood that Lina's attendance was welcomed but not mandatory, creating a conditional plan that depends on Lina's consent."",
+                        ""date"": ""1969-05-01 10:06:00"",
+                        ""stream_date"": ""1969-05-02 17:00:00"",
+                        ""importance"": 4,
+                        ""session_id"": ""9098"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772777204571,
+                        ""modified_time"": 1772777204571,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""9108"",
+                ""session_id"": ""9108"",
+                ""content"": ""On May 2, 1969, at 17:10:00, in Elena Greco's living room, Elena Greco recalls that she had been waiting for approximately five minutes when she finally heard footsteps in the hallway. After this brief wait, Pasquale appeared in the hallway and entered, and Elena Greco specifically noticed that Pasquale's hair was a bit disheveled, which suggests he may have arrived in a hurry or from some exertion. This captures Elena Greco's perspective of the short waiting period, the sound of footsteps as a cue that he was arriving, and her visual observation of Pasquale's slightly disordered appearance."",
+                ""summary"": [
+                    {
+                        ""id"": ""701e775a-e6d1-4dfd-ab26-b72cf7c48263"",
+                        ""event"": ""Elena Greco waits in her living room for about five minutes before Pasquale arrives disheveled"",
+                        ""description"": ""On May 2, 1969, at 17:10:00, in Elena Greco's living room, Elena Greco recalls that she had been waiting for approximately five minutes when she finally heard footsteps in the hallway. After this brief wait, Pasquale appeared in the hallway and entered, and Elena Greco specifically noticed that Pasquale's hair was a bit disheveled, which suggests he may have arrived in a hurry or from some exertion. This captures Elena Greco's perspective of the short waiting period, the sound of footsteps as a cue that he was arriving, and her visual observation of Pasquale's slightly disordered appearance."",
+                        ""date"": ""1969-05-02 17:10:00"",
+                        ""stream_date"": ""1969-05-02 17:10:00"",
+                        ""importance"": 3,
+                        ""session_id"": ""9108"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772777204001,
+                        ""modified_time"": 1772777204001,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""9109"",
+                ""session_id"": ""9109"",
+                ""content"": ""On May 2, 1969, at 17:10:10, in the living room of the Galiani family, Elena Greco described how she reacted with a shout of great surprise when someone asked her, \""What are you doing here?\"" Elena Greco was startled by the question and expressed this by shouting. At the same time, Elena Greco noticed that Lina, who was present, showed no sign of astonishment at all, which highlighted to Elena Greco a striking contrast between her own emotional reaction and Lina's calm or indifferent demeanor."",
+                ""summary"": [
+                    {
+                        ""id"": ""9e5e9dab-98e4-4c82-8277-aea3ef8c25d4"",
+                        ""event"": ""Elena Greco shouts in surprise in the Galiani family living room when questioned about her presence"",
+                        ""description"": ""On May 2, 1969, at 17:10:10, in the living room of the Galiani family, Elena Greco described how she reacted with a shout of great surprise when someone asked her, \""What are you doing here?\"" Elena Greco was startled by the question and expressed this by shouting. At the same time, Elena Greco noticed that Lina, who was present, showed no sign of astonishment at all, which highlighted to Elena Greco a striking contrast between her own emotional reaction and Lina's calm or indifferent demeanor."",
+                        ""date"": ""1969-05-02 17:10:10"",
+                        ""stream_date"": ""1969-05-02 17:10:10"",
+                        ""importance"": 6,
+                        ""session_id"": ""9109"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772777203711,
+                        ""modified_time"": 1772777203711,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            }
+        ],","""retrieval_results"": [
+            {
+                ""description"": ""On 1969-05-02 at 17:20:10, in the living room of the Galiani family, Elena Greco noticed that Lina was also looking at Nadia and Pasquale with a mocking expression. This observation signaled to Elena that Lina shared Elena's critical view of Nadia sitting on Pasquale's lap and their apparent pretense. Seeing Lina's mocking look likely confirmed for Elena that the situation was socially awkward and that Elena was not alone in judging Nadia and Pasquale's behavior as ridiculous or insincere."",
+                ""event:"": ""Elena observes Lina looking at Nadia and Pasquale with a mocking expression"",
+                ""conversation_date"": ""1969-05-02 17:20:10"",
+                ""event_date"": ""1969-05-02 17:20:10""
+            },
+            {
+                ""description"": ""On May 2, 1969, at 17:00:00, Elena Greco arrived at Galiani's doorstep and observed that she and her companions had reached Galiani's house exactly on time. In order to announce their arrival, Elena Greco rang the doorbell. When Elena Greco looked inside, she perceived a profound silence in the house, which emphasized the stillness of the environment at the moment she called at the door."",
+                ""event:"": ""Elena arrives punctually at Galiani's house and rings the doorbell, noticing silence inside"",
+                ""conversation_date"": ""1969-05-02 17:00:00"",
+                ""event_date"": ""1969-05-02 17:00:00""
+            },
+            {
+                ""description"": ""On May 2, 1969, at 17:27:30 in Galiani's Study, Elena Greco observed that an unnamed woman was looking at Lina with the intention or desire that Lina should join the ongoing conversation. Elena registered this gaze as an indication that the woman wanted Lina to become part of their discussion, which shaped Elena's understanding of the social dynamics in Galiani's Study at that moment."",
+                ""event:"": ""Elena notices a woman looking at Lina, wanting Lina to join their conversation in Galiani's Study"",
+                ""conversation_date"": ""1969-05-02 17:27:30"",
+                ""event_date"": ""1969-05-02 17:27:30""
+            },
+            {
+                ""description"": ""On 1969-05-02 at 17:20:10, in the living room of the Galiani family, Elena Greco internally reflected that she hoped the teacher had not heard her cry, indicating that Elena felt self-conscious and possibly ashamed about having cried. Elena Greco also waited for Nadia to quickly get off Pasquale's lap and sit on the sofa, because Elena expected that Nadia and Pasquale would realize how inappropriate or artificial their behavior appeared. Elena Greco further hoped to see both Nadia and Pasquale become embarrassed about what she perceived as their pretense, revealing her desire for their behavior to be exposed as insincere and for social norms to be restored in the Galiani family's living room."",
+                ""event:"": ""Elena hopes the teacher did not hear her cry and anticipates Nadia and Pasquale feeling embarrassed"",
+                ""conversation_date"": ""1969-05-02 17:20:10"",
+                ""event_date"": ""1969-05-02 17:20:10""
+            },
+            {
+                ""description"": ""On May 2, 1969, at 17:20:20 in Elena Greco's living room, Elena Greco observed Nadia standing with her arm around Pasquale's neck, holding him as if Nadia were afraid she might fall. While in that position, Nadia spoke to her mother, who had appeared at the door, and told her, \""Next time you have a guest, let me know in advance.\"" Elena Greco is focusing on the physical closeness between Nadia and Pasquale and the assertive tone Nadia used with her mother about being informed in advance when a guest is present."",
+                ""event:"": ""Elena observes Nadia holding onto Pasquale's neck while speaking sharply to her mother about guests"",
+                ""conversation_date"": ""1969-05-02 17:20:20"",
+                ""event_date"": ""1969-05-02 17:20:20""
+            },
+            {
+                ""description"": ""On May 2, 1969, at 17:01, Elena Greco was standing at Galiani's front door when Elena saw herself and her companions ring the doorbell a second time. In response, Nadia opened the door. Elena observed that Nadia looked hurried and disheveled and that Nadia was not as polite as Nadia usually was. Elena interpreted these visual and behavioral cues as evidence that ringing the bell again had disturbed not only Nadia's physical appearance but also Nadia's sense of proper upbringing and manners."",
+                ""event:"": ""Elena notices Nadia open Galiani's front door hurriedly and impolitely after Elena rings the doorbell again"",
+                ""conversation_date"": ""1969-05-02 17:01:00"",
+                ""event_date"": ""1969-05-02 17:01:00""
+            },
+            {
+                ""description"": ""On May 2, 1969, at 17:50:00, after being at the Galiani family's home, Elena Greco left Teacher Galiani's house and experienced a strong negative reaction. Elena Greco thought to herself that she really should have pulled away, implying that she believed she should have distanced herself earlier or removed herself from the situation sooner. As a result of whatever occurred at Teacher Galiani's house, Elena Greco felt very bitter emotionally, and she also noticed a physical symptom of distress, describing her mouth as dry. This links her internal judgment about not pulling away to her subsequent emotional bitterness and bodily discomfort."",
+                ""event:"": ""Elena Greco leaves Teacher Galiani's house feeling bitter and physically distressed"",
+                ""conversation_date"": ""1969-05-02 17:50:00"",
+                ""event_date"": ""1969-05-02 17:50:00""
+            },
+            {
+                ""description"": ""On May 2, 1969, at 17:37 in Galiani's Study, Elena Greco explained that Nadia had randomly left some manuscripts at home. Because Nadia left them unattended, Elena Greco decided to take a look at them. After reading the manuscripts, Elena Greco judged that the work was full of courage, very original, and written well. She felt the quality and boldness of Nadia's writing were significant enough that she specifically wanted to talk about the manuscripts when she next saw the other person, indicating that the discovery had a strong intellectual impact on her and motivated her to initiate a conversation about Nadia's work."",
+                ""event:"": ""Elena Greco reads Nadia's manuscripts left at home and finds them courageous, original, and well written"",
+                ""conversation_date"": ""1969-05-02 17:37:00"",
+                ""event_date"": ""1969-05-02 17:37:00""
+            },
+            {
+                ""description"": ""On May 2, 1969 at 17:32:30, in Galiani's Study, Elena Greco observed that Teacher Galiani was examining Elena very carefully. Elena focused on Teacher Galiani's scrutinizing gaze and the setting of Galiani's Study, registering that Teacher Galiani was paying close, evaluative attention to her in that moment."",
+                ""event:"": ""Elena notices Teacher Galiani examining her closely in Galiani's study"",
+                ""conversation_date"": ""1969-05-02 17:32:30"",
+                ""event_date"": ""1969-05-02 17:32:30""
+            },
+            {
+                ""description"": ""On May 2, 1969, at 18:02:00, while at the stairs of the Galiani family, Elena Greco recalls that Nadia and Pasquale never showed up again, meaning that Elena Greco will likely never see Nadia and Pasquale in that context in the future. Because Nadia and Pasquale have effectively disappeared from Elena Greco's life, Elena Greco believes she has lost the chance to vent the anger she has been holding inside toward them. Elena Greco questions whether it was wrong for her to help a friend, emphasizing that she had also put herself out there personally for this friend. Elena Greco feels criticized by others for what she did, and she struggles to understand how people could condemn her actions when she believed she was acting in loyal support of a friend."",
+                ""event:"": ""Elena Greco reflects on never seeing Nadia and Pasquale again and feeling unable to vent her anger"",
+                ""conversation_date"": ""1969-05-02 18:02:00"",
+                ""event_date"": ""1969-05-02 18:02:00""
+            }
+        ],","""not mentioned in the text""","""No — memories don't mention Giggia.""",最早失败发生在记忆总结环节：未保留5月1日电话邀请及‘未提及Giggia/未见警告’的关键锚点，导致后续检索缺失并最终在生成时以缺失当否定。,1%
+推理错误,1," ""On July 27, 1963, while at the rentals, what did Stefano Carracci say to Pinocchia when he presented her with a small box containing a gold chain with a heart-shaped pendant?""","                    ""1963-07-27 16:40 于“Apartment for Rent/租屋处”，Stefano 从口袋取出小盒递给一位女性；盒内是金链与心形吊坠"",
+                    ""该女性喜悦呼喊，但文段未记录 Stefano 在递礼当下说了什么"",
+                    ""受礼者在该时刻未被明确指认为 Pinocchia"",
+                    ""另有 1963-08-03 16:40 的类似送礼情景，同样无记录 Stefano 当时说话内容""","""summarize_content"": [
+            {
+                ""evidence_id"": ""3608"",
+                ""session_id"": ""3608"",
+                ""content"": ""On July 27, 1963, at 16:40 in the 'Apartment for Rent' setting, Elena Greco observed Stefano take a small box from his pocket and present it to a woman. When the woman opened the box and discovered a gold chain with a heart-shaped pendant inside, she cried out with joy, indicating that the gift caused a strong positive emotional reaction. Elena is recalling this specific moment as something she personally saw, emphasizing both Stefano's action of giving the jewelry and the recipient's joyful response."",
+                ""summary"": [
+                    {
+                        ""id"": ""88f1f198-1bae-469d-b673-c2b88dc4f615"",
+                        ""event"": ""Elena witnesses Stefano give a gold heart-shaped pendant on a chain that causes joyful surprise"",
+                        ""description"": ""On July 27, 1963, at 16:40 in the 'Apartment for Rent' setting, Elena Greco observed Stefano take a small box from his pocket and present it to a woman. When the woman opened the box and discovered a gold chain with a heart-shaped pendant inside, she cried out with joy, indicating that the gift caused a strong positive emotional reaction. Elena is recalling this specific moment as something she personally saw, emphasizing both Stefano's action of giving the jewelry and the recipient's joyful response."",
+                        ""date"": ""1963-07-27 16:40:00"",
+                        ""stream_date"": ""1963-07-27 16:40:00"",
+                        ""importance"": 7,
+                        ""session_id"": ""3608"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776258692,
+                        ""modified_time"": 1772776258692,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""3982"",
+                ""session_id"": ""3982"",
+                ""content"": ""On August 3, 1963 at 16:40, at a place referred to as Rentals, Elena Greco observed Stefano take a small box out of Stefano's pocket and present it to a woman. When the woman opened the box and saw a gold chain with a heart-shaped pendant inside, the woman let out a joyful cry, indicating strong happiness and surprise at receiving the gift. Elena is primarily in the role of an observer, noticing both Stefano's action of giving the jewelry and the woman's emotional reaction, which may signal affection or a significant relationship between Stefano and the woman."",
+                ""summary"": [
+                    {
+                        ""id"": ""657fd8e0-8de4-438a-af55-baeb582ea258"",
+                        ""event"": ""Elena witnesses Stefano gifting a gold heart-shaped pendant to a woman at the rentals location"",
+                        ""description"": ""On August 3, 1963 at 16:40, at a place referred to as Rentals, Elena Greco observed Stefano take a small box out of Stefano's pocket and present it to a woman. When the woman opened the box and saw a gold chain with a heart-shaped pendant inside, the woman let out a joyful cry, indicating strong happiness and surprise at receiving the gift. Elena is primarily in the role of an observer, noticing both Stefano's action of giving the jewelry and the woman's emotional reaction, which may signal affection or a significant relationship between Stefano and the woman."",
+                        ""date"": ""1963-08-03 16:40:00"",
+                        ""stream_date"": ""1963-08-03 16:40:00"",
+                        ""importance"": 6,
+                        ""session_id"": ""3982"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772776320746,
+                        ""modified_time"": 1772776320746,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            }
+        ],","""retrieval_results"": [
+            {
+                ""description"": ""On July 27, 1963, at 16:40 in the 'Apartment for Rent' setting, Elena Greco observed Stefano take a small box from his pocket and present it to a woman. When the woman opened the box and discovered a gold chain with a heart-shaped pendant inside, she cried out with joy, indicating that the gift caused a strong positive emotional reaction. Elena is recalling this specific moment as something she personally saw, emphasizing both Stefano's action of giving the jewelry and the recipient's joyful response."",
+                ""event:"": ""Elena witnesses Stefano give a gold heart-shaped pendant on a chain that causes joyful surprise"",
+                ""conversation_date"": ""1963-07-27 16:40:00"",
+                ""event_date"": ""1963-07-27 16:40:00""
+            },
+            {
+                ""description"": ""On July 27, 1963, at 17:20:00, while renting a house, Elena Greco saw Pinocchia come out with swollen eyes, which indicated to Elena Greco that Pinocchia had likely been crying. After Stefano saw Pinocchia in this state, Stefano made a lighthearted joke in order to ease the mood and comfort her. Stefano hugged his sister Pinocchia and, with a sigh, said, \""Ah, my dear little sister, you women really drive us crazy.\"" Elena Greco is observing both Pinocchia's apparent distress and Stefano's use of humor and physical affection as his way of responding to his sister's emotional state."",
+                ""event:"": ""Elena sees Pinocchia with swollen eyes and observes Stefano comforting her with a joking remark"",
+                ""conversation_date"": ""1963-07-27 17:20:00"",
+                ""event_date"": ""1963-07-27 17:20:00""
+            },
+            {
+                ""description"": ""On August 3, 1963 at 16:40, at a place referred to as Rentals, Elena Greco observed Stefano take a small box out of Stefano's pocket and present it to a woman. When the woman opened the box and saw a gold chain with a heart-shaped pendant inside, the woman let out a joyful cry, indicating strong happiness and surprise at receiving the gift. Elena is primarily in the role of an observer, noticing both Stefano's action of giving the jewelry and the woman's emotional reaction, which may signal affection or a significant relationship between Stefano and the woman."",
+                ""event:"": ""Elena witnesses Stefano gifting a gold heart-shaped pendant to a woman at the rentals location"",
+                ""conversation_date"": ""1963-08-03 16:40:00"",
+                ""event_date"": ""1963-08-03 16:40:00""
+            },
+            {
+                ""description"": ""On 1963-08-03 at 17:20:00 in the Rentals location, Elena Greco saw Pinocchia coming out with puffy eyes, which indicated to Elena Greco that Pinocchia had likely been crying. After noticing Pinocchia's emotional state, Stefano attempted to ease the mood by hugging his sister Pinocchia and making a lighthearted joke. Elena Greco heard Stefano say, \""Ah, my dear little sister, you women really drive us crazy,\"" using humor and physical affection in order to comfort Pinocchia and diffuse the tension. This event shows how Stefano responds to Pinocchia's distress with teasing affection, as observed by Elena Greco."",
+                ""event:"": ""Elena Greco observes Stefano comforting his sister Pinocchia with a joking remark about women"",
+                ""conversation_date"": ""1963-08-03 17:20:00"",
+                ""event_date"": ""1963-08-03 17:20:00""
+            },
+            {
+                ""description"": ""On July 27, 1963, at 16:50:00, in an apartment for rent, Elena Greco noticed that Rino had brought a small gift specifically for Pinocchia. Elena Greco observed that Pinocchia tried hard to act as excited about the gift as Lina, performing enthusiasm in order to match Lina's visible reaction. This scene stood out to Elena Greco because it revealed the social dynamics between Rino, Pinocchia, and Lina within the apartment setting."",
+                ""event:"": ""Elena observes Rino bringing a small gift for Pinocchia and Pinocchia feigning excitement"",
+                ""conversation_date"": ""1963-07-27 16:50:00"",
+                ""event_date"": ""1963-07-27 16:50:00""
+            },
+            {
+                ""description"": ""On July 27, 1963, at 16:50:00, in an apartment for rent, Elena Greco reflected on Pinocchia's behavior after seeing Rino give Pinocchia a small gift. Although Pinocchia tried to act as excited as Lina, Elena Greco thought of Pinocchia and recognized that Pinocchia could not truly hide her pain and vulnerability. Elena Greco interpreted Pinocchia's exaggerated excitement as a mask covering deeper emotional suffering, which led Elena Greco to perceive Pinocchia as emotionally fragile in that moment."",
+                ""event:"": ""Elena perceives Pinocchia's hidden pain and vulnerability beneath her excited act"",
+                ""conversation_date"": ""1963-07-27 16:50:00"",
+                ""event_date"": ""1963-07-27 16:50:00""
+            },
+            {
+                ""description"": ""On July 27, 1963, at 16:30, while at a place identified as 'Rentals', Elena Greco reports that she saw Stefano and Rino burst in immediately. This indicates that Elena Greco was physically present at the rentals location at that time and witnessed Stefano and Rino entering suddenly and energetically, an action notable enough for her to describe explicitly."",
+                ""event:"": ""Elena Greco observes Stefano and Rino burst into the rentals location"",
+                ""conversation_date"": ""1963-07-27 16:30:00"",
+                ""event_date"": ""1963-07-27 16:30:00""
+            },
+            {
+                ""description"": ""On July 22, 1963, at 18:50:00, Elena Greco was at a place referred to as Rentals when Elena noticed that Nunzia had already, without saying anything, prepared dinner. Elena then saw Nunzia whisper to Pinocchia, and Elena heard Nunzia say, \""What's wrong with you? Girl, aren't you going to change clothes?\"" Pinocchia did not respond to Nunzia's question, which Elena specifically notes, indicating that Elena is attentively observing the quiet domestic dynamics and unspoken tensions around Nunzia, Pinocchia, and the expectation that Pinocchia should change her clothes before dinner."",
+                ""event:"": ""Elena observes Nunzia silently preparing dinner and whispering to Pinocchia about changing clothes"",
+                ""conversation_date"": ""1963-07-22 18:50:00"",
+                ""event_date"": ""1963-07-22 18:50:00""
+            },
+            {
+                ""description"": ""On July 27, 1963, at 16:05:00, Elena Greco was at a location referred to as 'Rentals' when Elena Greco noticed that Pinocchia was looking at another girl. Elena Greco specifically registered that the girl whom Pinocchia looked at showed no reaction to Pinocchia's gaze. This external observation of the interaction, or lack thereof, between Pinocchia and the other girl formed the basis for Elena Greco's subsequent emotional and interpretive reflection."",
+                ""event:"": ""Elena Greco observes Pinocchia looking at another girl who does not react"",
+                ""conversation_date"": ""1963-07-27 16:05:00"",
+                ""event_date"": ""1963-07-27 16:05:00""
+            },
+            {
+                ""description"": ""On July 27, 1963, at 14:00, Elena Greco was in a place she identifies as 'Rentals' and saw Pinocchia actively packing a suitcase as if preparing to leave. Nunzia was present and tried to calm Pinocchia down, but Nunzia's attempts were unsuccessful. Elena's awareness of Pinocchia seriously packing and Nunzia's inability to calm her contributed to Elena's sense that the afternoon was terrible and that the overall situation was worsening."",
+                ""event:"": ""Elena observes Pinocchia packing a suitcase while Nunzia fails to calm her"",
+                ""conversation_date"": ""1963-07-27 14:00:00"",
+                ""event_date"": ""1963-07-27 14:00:00""
+            }
+        ],
+        ""generated_answer"": ""\""You women re","""unable to answer""","""\""You women really drive us crazy.\""""",最早失败发生在生成阶段：检索已提供7月27日送礼场景且无当下台词记录，但模型误用17:20的台词作答，导致错误。,47%
+其他异常,29,"""Was the red ink dedication 'These poems are for her' written on the enlarged photo of Lina that was displayed as a one-eyed goddess in the shoe store at Martiri Square?""","                    ""红色墨水句子“These poems are for her”出现于一本书的扉页，位于“To Melina”上方（证据id=1931），时间地点：1962-08-05 20:41 在家"",
+                    ""同日更早时刻观察到红墨水信息（证据id=1927）"",
+                    ""鞋店Martiri广场高处悬挂的Lina放大照片，被Elena感知为“一只眼的女神”（证据id=1353），时间：1960-10-01 15:35""","""summarize_content"": [
+            {
+                ""evidence_id"": ""1353"",
+                ""session_id"": ""1353"",
+                ""content"": ""On 1960-10-01 at 15:35:00 in Elena's Shoe Store at Martiri Square, Elena Greco noticed an enlarged photo of Lina displayed high up in the hall. Elena observed the people passing by: some people stopped and watched the image with interest, some people cast doubtful glances at the photo, and some people even laughed at it. Elena attentively registered these varied public reactions to Lina's image, which highlighted for Elena the mixture of fascination, skepticism, and ridicule that the photo provoked.\n\nOn 1960-10-01 at 15:35:00 in Elena's Shoe Store at Martiri Square, Elena Greco fixated on an enlarged photo of Lina hanging high in the hall and found that she could not take her eyes off it. As Elena stared, she felt that the image was no longer recognizable as Lina herself; instead, in Elena's perception, the photo transformed into a terrifying and seductive figure. Elena mentally described this figure as a 'one-eyed goddess,' with the body stretching a foot wearing beautiful shoes toward the center of the hall. This internal reaction shows Elena's complex emotional response and imaginative reinterpretation of Lina's image as something both frightening and alluring, reshaped by the context of the shoe display and her own feelings."",
+                ""summary"": [
+                    {
+                        ""id"": ""e4d3fd6d-8485-44ed-afd9-e87beebfb1ab"",
+                        ""event"": ""Elena observes public reactions to Lina's enlarged photo in her shoe store at Martiri Square"",
+                        ""description"": ""On 1960-10-01 at 15:35:00 in Elena's Shoe Store at Martiri Square, Elena Greco noticed an enlarged photo of Lina displayed high up in the hall. Elena observed the people passing by: some people stopped and watched the image with interest, some people cast doubtful glances at the photo, and some people even laughed at it. Elena attentively registered these varied public reactions to Lina's image, which highlighted for Elena the mixture of fascination, skepticism, and ridicule that the photo provoked."",
+                        ""date"": ""1960-10-01 15:35:00"",
+                        ""stream_date"": ""1960-10-01 15:35:00"",
+                        ""importance"": 7,
+                        ""session_id"": ""1353"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775884530,
+                        ""modified_time"": 1772775884530,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""bf661b01-79c0-420a-a38b-feae4a81e3e3"",
+                        ""event"": ""Elena interprets Lina's enlarged photo as a terrifying and seductive one-eyed goddess"",
+                        ""description"": ""On 1960-10-01 at 15:35:00 in Elena's Shoe Store at Martiri Square, Elena Greco fixated on an enlarged photo of Lina hanging high in the hall and found that she could not take her eyes off it. As Elena stared, she felt that the image was no longer recognizable as Lina herself; instead, in Elena's perception, the photo transformed into a terrifying and seductive figure. Elena mentally described this figure as a 'one-eyed goddess,' with the body stretching a foot wearing beautiful shoes toward the center of the hall. This internal reaction shows Elena's complex emotional response and imaginative reinterpretation of Lina's image as something both frightening and alluring, reshaped by the context of the shoe display and her own feelings."",
+                        ""date"": ""1960-10-01 15:35:00"",
+                        ""stream_date"": ""1960-10-01 15:35:00"",
+                        ""importance"": 8,
+                        ""session_id"": ""1353"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775884530,
+                        ""modified_time"": 1772775884530,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""1927"",
+                ""session_id"": ""1927"",
+                ""content"": ""On 1962-08-05 at 20:28:00, while Elena Greco was at home, Elena Greco observed a message written in red ink that read verbatim: 'These poems are for her.' Elena Greco is focused on the specific phrasing and the fact that it is written in red ink, which suggests to Elena Greco that someone has dedicated a set of poems to an unnamed female person referred to only as 'her.' This detail appears significant to Elena Greco because the wording and the red-ink presentation imply an intentional and possibly intimate dedication."",
+                ""summary"": [
+                    {
+                        ""id"": ""1318e235-23ea-4fcb-8ac3-243e66b46b8c"",
+                        ""event"": ""Elena Greco notices a red-ink inscription stating 'These poems are for her'"",
+                        ""description"": ""On 1962-08-05 at 20:28:00, while Elena Greco was at home, Elena Greco observed a message written in red ink that read verbatim: 'These poems are for her.' Elena Greco is focused on the specific phrasing and the fact that it is written in red ink, which suggests to Elena Greco that someone has dedicated a set of poems to an unnamed female person referred to only as 'her.' This detail appears significant to Elena Greco because the wording and the red-ink presentation imply an intentional and possibly intimate dedication."",
+                        ""date"": ""1962-08-05 20:28:00"",
+                        ""stream_date"": ""1962-08-05 20:28:00"",
+                        ""importance"": 6,
+                        ""session_id"": ""1927"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775985388,
+                        ""modified_time"": 1772775985388,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            },
+            {
+                ""evidence_id"": ""1931"",
+                ""session_id"": ""1931"",
+                ""content"": ""On August 5, 1962, at 20:41 at home, Elena Greco noticed the name \""Donato Nino\"" on the cover of a book. When Elena Greco opened the book to the first page, she saw a handwritten dedication in pen that read: \""To Melina,\"" and above that, written in red ink, the sentence: \""These poems are for her.\"" This led Elena Greco to register that Donato Nino had explicitly dedicated the poems in the book to Melina in a personal and emphatic way.\n\nOn August 5, 1962, Elena Greco reflected that Melina never went beyond the second grade in school and has never read a single book in her life. Elena Greco contrasts this fact with the presence of a book dedicated \""To Melina,\"" implying a tension between the symbolic gesture of dedicating poems to Melina and Melina's lack of formal education and reading experience."",
+                ""summary"": [
+                    {
+                        ""id"": ""9aa0bed5-95a7-4498-be34-6d08880299ce"",
+                        ""event"": ""Elena sees a book by Donato Nino dedicated to Melina with a personal note about poems"",
+                        ""description"": ""On August 5, 1962, at 20:41 at home, Elena Greco noticed the name \""Donato Nino\"" on the cover of a book. When Elena Greco opened the book to the first page, she saw a handwritten dedication in pen that read: \""To Melina,\"" and above that, written in red ink, the sentence: \""These poems are for her.\"" This led Elena Greco to register that Donato Nino had explicitly dedicated the poems in the book to Melina in a personal and emphatic way."",
+                        ""date"": ""1962-08-05 20:41:00"",
+                        ""stream_date"": ""1962-08-05 20:41:00"",
+                        ""importance"": 6,
+                        ""session_id"": ""1931"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775987671,
+                        ""modified_time"": 1772775987671,
+                        ""score"": null,
+                        ""custom_params"": null
+                    },
+                    {
+                        ""id"": ""f364fa70-2475-4e55-9a8c-8ef9bcb7ff77"",
+                        ""event"": ""Elena notes that Melina never advanced beyond second grade and has never read a book"",
+                        ""description"": ""On August 5, 1962, Elena Greco reflected that Melina never went beyond the second grade in school and has never read a single book in her life. Elena Greco contrasts this fact with the presence of a book dedicated \""To Melina,\"" implying a tension between the symbolic gesture of dedicating poems to Melina and Melina's lack of formal education and reading experience."",
+                        ""date"": ""1962-08-05 20:41:00"",
+                        ""stream_date"": ""1962-08-05 20:41:00"",
+                        ""importance"": 7,
+                        ""session_id"": ""1931"",
+                        ""user_id"": ""Elena Greco"",
+                        ""agent_id"": """",
+                        ""user_ids"": [
+                            ""Elena Greco""
+                        ],
+                        ""agent_ids"": [],
+                        ""actor"": ""user"",
+                        ""scenario"": ""knowme_03_06_2"",
+                        ""episodic_memory_type"": ""specific"",
+                        ""created_time"": 1772775987671,
+                        ""modified_time"": 1772775987671,
+                        ""score"": null,
+                        ""custom_params"": null
+                    }
+                ]
+            }
+        ],","""retrieval_results"": [
+            {
+                ""description"": ""On 1960-10-01 at 15:35:00 in Elena's Shoe Store at Martiri Square, Elena Greco fixated on an enlarged photo of Lina hanging high in the hall and found that she could not take her eyes off it. As Elena stared, she felt that the image was no longer recognizable as Lina herself; instead, in Elena's perception, the photo transformed into a terrifying and seductive figure. Elena mentally described this figure as a 'one-eyed goddess,' with the body stretching a foot wearing beautiful shoes toward the center of the hall. This internal reaction shows Elena's complex emotional response and imaginative reinterpretation of Lina's image as something both frightening and alluring, reshaped by the context of the shoe display and her own feelings."",
+                ""event:"": ""Elena interprets Lina's enlarged photo as a terrifying and seductive one-eyed goddess"",
+                ""conversation_date"": ""1960-10-01 15:35:00"",
+                ""event_date"": ""1960-10-01 15:35:00""
+            },
+            {
+                ""description"": ""On 1960-10-01 at 15:35:00 in Elena's Shoe Store at Martiri Square, Elena Greco noticed an enlarged photo of Lina displayed high up in the hall. Elena observed the people passing by: some people stopped and watched the image with interest, some people cast doubtful glances at the photo, and some people even laughed at it. Elena attentively registered these varied public reactions to Lina's image, which highlighted for Elena the mixture of fascination, skepticism, and ridicule that the photo provoked."",
+                ""event:"": ""Elena observes public reactions to Lina's enlarged photo in her shoe store at Martiri Square"",
+                ""conversation_date"": ""1960-10-01 15:35:00"",
+                ""event_date"": ""1960-10-01 15:35:00""
+            },
+            {
+                ""description"": ""On August 5, 1962, at 20:41 at home, Elena Greco noticed the name \""Donato Nino\"" on the cover of a book. When Elena Greco opened the book to the first page, she saw a handwritten dedication in pen that read: \""To Melina,\"" and above that, written in red ink, the sentence: \""These poems are for her.\"" This led Elena Greco to register that Donato Nino had explicitly dedicated the poems in the book to Melina in a personal and emphatic way."",
+                ""event:"": ""Elena sees a book by Donato Nino dedicated to Melina with a personal note about poems"",
+                ""conversation_date"": ""1962-08-05 20:41:00"",
+                ""event_date"": ""1962-08-05 20:41:00""
+            },
+            {
+                ""description"": ""On 1960-09-28 at 20:30:00, while in Elena's Shoe Store at Piazza Martiri, Elena Greco notes that a large photo of Lina in Lina's wedding dress is placed against the wall of the store. The prominently displayed wedding photograph suggests that Lina is important to Elena, and Elena has chosen to feature Lina's image as part of the store's interior, making it a visible and likely meaningful element of the shop's presentation."",
+                ""event:"": ""Elena displays a large wedding photo of Lina on the wall of her shoe store"",
+                ""conversation_date"": ""1960-09-28 20:30:00"",
+                ""event_date"": ""1960-09-28 20:30:00""
+            },
+            {
+                ""description"": ""On 1960-09-28 at 20:41:00, at Elena's Shoe Store at Martiri Square, Elena Greco watched the Solara brothers place a photo on the floor. As Elena Greco observed, Lina frowned and circled around the picture with her eyes narrowed to a slit, indicating tension or displeasure. The scene took place inside Elena Greco's own shoe store, making it personally relevant to her as she witnessed both the Solara brothers' action and Lina's wary, critical reaction to the photo being placed on the floor."",
+                ""event:"": ""Elena observes Lina reacting tensely as the Solara brothers place an expensive photo on the floor at Elena's Shoe Store"",
+                ""conversation_date"": ""1960-09-28 20:41:00"",
+                ""event_date"": ""1960-09-28 20:41:00""
+            },
+            {
+                ""description"": ""On 1962-08-05 at 20:28:00, while Elena Greco was at home, Elena Greco observed a message written in red ink that read verbatim: 'These poems are for her.' Elena Greco is focused on the specific phrasing and the fact that it is written in red ink, which suggests to Elena Greco that someone has dedicated a set of poems to an unnamed female person referred to only as 'her.' This detail appears significant to Elena Greco because the wording and the red-ink presentation imply an intentional and possibly intimate dedication."",
+                ""event:"": ""Elena Greco notices a red-ink inscription stating 'These poems are for her'"",
+                ""conversation_date"": ""1962-08-05 20:28:00"",
+                ""event_date"": ""1962-08-05 20:28:00""
+            },
+            {
+                ""description"": ""On September 28, 1960, at 21:01:00, in Elena Greco's Shoe Store at Martiri Square, Elena Greco saw Lina represented in a wedding dress in a way that appeared cruelly mutilated. From Elena Greco's perspective, Lina's body looked as if it had been severed: most of Lina's head was gone, Lina's stomach was missing, and only specific parts remained visible—one of Lina's eyes, one of Lina's hands resting on Lina's chin, and Lina's two bright red lips. Elena Greco also noticed Lina's body tilted sideways, the distinct lines of Lina's crossed legs, and Lina's shoes. The fragmented and disjointed visual of Lina in the wedding dress struck Elena Greco as cruel and shocking, emphasizing a sense of violence or dismemberment in the presentation of Lina's body, which likely intensified Elena Greco's emotional response to the scene."",
+                ""event:"": ""Elena perceives Lina's mutilated body image in a wedding dress inside Elena's Shoe Store at Martiri Square"",
+                ""conversation_date"": ""1960-09-28 21:01:00"",
+                ""event_date"": ""1960-09-28 21:01:00""
+            },
+            {
+                ""description"": ""On September 28, 1960, at around 20:40 in Elena's Shoe Store at Martiri Square, Elena Greco noticed that Lina had placed a photo against the wall. Wanting the photo repositioned, Elena Greco instructed someone in the store to move the photo from where Lina had put it against the wall down onto the floor. This action reflects Elena Greco's active control over how items, specifically Lina's photo, were displayed or positioned in her shop environment."",
+                ""event:"": ""Elena orders Lina's photo moved from the wall to the floor in her shoe store"",
+                ""conversation_date"": ""1960-09-28 20:40:00"",
+                ""event_date"": ""1960-09-28 20:40:00""
+            },
+            {
+                ""description"": ""On August 10, 1960, at 10:37:00 at Lina's house, Elena Greco listened as Lina told her very seriously that Rino, Marcello, and Michele had sent Stefano to Piazza Martiri to inspect the display of their shop. According to Lina's account, Rino, Marcello, and Michele were standing among sacks of cement, paint cans, and brushes inside the shop and showed Stefano a wall facing the entrance. They told Stefano that they wanted to put up a large photograph of Lina in her wedding dress on that wall, using it as a prominent decorative and advertising element for the shop. Elena is receiving this information second-hand from Lina and is thus aware of both the men's commercial plan and the personal significance of using Lina's wedding image in a public, visible position in the shop at Piazza Martiri."",
+                ""event:"": ""Elena learns that Rino, Marcello, and Michele plan to display a large wedding photo of her friend in their shop"",
+                ""conversation_date"": ""1960-08-10 10:37:00"",
+                ""event_date"": ""1960-08-10 10:37:00""
+            },
+            {
+                ""description"": ""During her reflection on May 1, 1961, at Elena's Shoe Store at Martiri Square, Elena Greco observes that, although the two women running the store are divided over who deserves credit for the business's success, they are united in one opinion: they both consider a photo of Lina displayed in relation to the store to be a disgrace. This shared judgment about Lina's photo stands in contrast to their disagreement over business credit and highlights a specific point of alignment in their otherwise conflicted relationship."",
+                ""event:"": ""Elena notes that both store owners are united in considering Lina's photo a disgrace"",
+                ""conversation_date"": ""1961-05-01 12:00:00"",
+                ""event_date"": ""1961-05-01 12:00:00""
+            }
+        ],","""not mentioned in the text""","""No — written in a book.""",记忆总结与检索均完整，生成与证据一致，无链路失败；偏差来自评分标准与证据不一致而非RAG链路信息损耗。金证据明确记载红字句出现在书的扉页（而非照片），模型回答与证据一致；评分以参考答案“未提及”为依据判错，得分偏低，存在误判。,28%

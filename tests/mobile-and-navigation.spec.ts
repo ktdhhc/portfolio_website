@@ -24,7 +24,7 @@ test.describe('移动端视口 (375px)', () => {
   test('/projects/aindexer 详情页移动端可浏览', async ({ page }) => {
     const response = await page.goto('/projects/aindexer/');
     expect(response?.status()).toBe(200);
-    await expect(page.locator('body')).toContainText('项目背景');
+    await expect(page.locator('body')).toContainText('Aindexer');
   });
 });
 

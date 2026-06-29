@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
 const profilePath = new URL('../content/profile.json', import.meta.url);
 const resumePath = new URL('../content/resume.json', import.meta.url);
@@ -11,6 +12,17 @@ function loadJSON(path: URL) {
 
 const profile = loadJSON(profilePath);
 const resume = loadJSON(resumePath);
+
+function loadProjectNames(): string[] {
+  const projectsRoot = join(process.cwd(), 'content', 'projects');
+  return readdirSync(projectsRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => {
+      const content = readFileSync(join(projectsRoot, entry.name, 'index.md'), 'utf-8');
+      const match = content.match(/^name:\s*(.+)$/m);
+      return match ? match[1].trim().replace(/^['"]|['"]$/g, '') : entry.name;
+    });
+}
 
 // ─────────────────────────────
 // P0: Build & Basic Rendering
@@ -32,7 +44,7 @@ test('P0-02: 首页包含核心区块', async ({ page }) => {
 
 test('P0-03: Hero 区按钮文本正确', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('body')).toContainText('PDF 简历待补充');
+  await expect(page.locator('body')).toContainText('下载简历 (PDF)');
   await expect(page.locator('body')).toContainText('与 Agent 对话');
 });
 
@@ -103,21 +115,15 @@ test('P0-11: 实习经历来自 resume.json (/resume)', async ({ page }) => {
 // P0: Projects (/projects 页面)
 // ─────────────────────────────
 
-test('P0-12: /projects 渲染 4 个项目卡片', async ({ page }) => {
+test('P0-12: /projects 渲染全部项目卡片', async ({ page }) => {
   await page.goto('/projects/');
   const cards = page.locator('.project-card');
-  await expect(cards).toHaveCount(4);
+  await expect(cards).toHaveCount(loadProjectNames().length);
 });
 
-test('P0-13: /projects 4 个项目名称正确', async ({ page }) => {
+test('P0-13: /projects 项目名称与 content 一致', async ({ page }) => {
   await page.goto('/projects/');
-  const expectedNames = [
-    'Aindexer',
-    '角色记忆情境数据构建平台',
-    '认知科学驱动的 AI 原型研发',
-    '记忆系统测试与数据异常分析',
-  ];
-  for (const name of expectedNames) {
+  for (const name of loadProjectNames()) {
     await expect(page.locator('body')).toContainText(name);
   }
 });
@@ -237,11 +243,9 @@ test('P1-08: Agent CTA 使用 accent 背景色', async ({ page }) => {
   expect(bgColor).toBe('rgb(254, 246, 238)');
 });
 
-test('P1-09: 强调文字使用 accent-dark 色', async ({ page }) => {
+test('P1-09: Hero 简历主按钮在 PDF 可用时可见', async ({ page }) => {
   await page.goto('/');
-  const accent = page.locator('section.hero .accent');
-  const color = await accent.evaluate((el) => getComputedStyle(el).color);
-  expect(color).toBe('rgb(184, 137, 90)');
+  await expect(page.locator('section.hero a[href="/resume.pdf"]')).toBeVisible();
 });
 
 test('P1-10: /projects 实习公司名使用 accent-dark 色', async ({ page }) => {

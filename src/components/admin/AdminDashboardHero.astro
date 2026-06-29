@@ -1,0 +1,115 @@
+<section class="hero">
+  <div class="container hero-inner">
+    <div>
+      <h2>数据面板</h2>
+      <p>了解访客行为、Agent 使用情况与页面表现</p>
+    </div>
+    <div class="period-selector" aria-label="时间窗口选择">
+      <button type="button" class="period-button" data-period="today">今日</button>
+      <button type="button" class="period-button active" data-period="week">本周</button>
+      <button type="button" class="period-button" data-period="month">本月</button>
+      <button type="button" class="period-button" data-period="custom">自定义</button>
+    </div>
+    <div class="custom-date-range hidden" data-custom-range>
+      <input type="date" id="startDate" class="date-input" aria-label="开始日期" />
+      <span class="date-separator">至</span>
+      <input type="date" id="endDate" class="date-input" aria-label="结束日期" />
+    </div>
+    <p class="custom-range-error" data-custom-range-error hidden></p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: 10rem 0 3rem;
+  }
+
+  .hero-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero h2 {
+    font-size: 2.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .hero p {
+    color: var(--fg-secondary);
+    font-size: 0.95rem;
+  }
+
+  .period-selector {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.3rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-button);
+  }
+
+  .period-button {
+    padding: 0.45rem 0.9rem;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg-secondary);
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .period-button.active {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .period-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .custom-date-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .custom-date-range.hidden {
+    display: none !important;
+  }
+
+  .date-input {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 0.85rem;
+    font-family: inherit;
+  }
+
+  .date-separator {
+    color: var(--fg-muted);
+    font-size: 0.85rem;
+  }
+
+  .custom-range-error {
+    margin-top: 0.5rem;
+    color: var(--accent-dark);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 720px) {
+    .hero {
+      padding-top: 8rem;
+    }
+
+    .hero h2 {
+      font-size: 2rem;
+    }
+  }
+</style>

@@ -118,6 +118,28 @@ test('custom-09: 点预设按钮收起日期选择器', async ({ page }) => {
   await expect(weekButton).toHaveClass(/active/);
 });
 
+test('custom-10: 开始日期晚于结束日期时显示错误提示', async ({ page }) => {
+  await page.goto('http://localhost:4321/admin');
+  await page.evaluate(() => {
+    const dashboard = document.querySelector<HTMLElement>('[data-view="dashboard"]');
+    const range = document.querySelector<HTMLElement>('[data-custom-range]');
+    const start = document.querySelector<HTMLInputElement>('#startDate');
+    const end = document.querySelector<HTMLInputElement>('#endDate');
+    if (!dashboard || !range || !start || !end) {
+      throw new Error('admin custom-range fixture missing');
+    }
+
+    dashboard.style.display = '';
+    range.classList.remove('hidden');
+    start.value = '2026-06-20';
+    end.value = '2026-06-15';
+    start.dispatchEvent(new Event('change', { bubbles: true }));
+    end.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+
+  await expect(page.locator('[data-custom-range-error]')).toContainText('开始日期不能晚于结束日期');
+});
+
 test('custom-06: overview 端点用自定义日期返回数据', async () => {
   const { onRequestGet } = await import('../functions/api/admin/stats/overview');
   const { FakeBehaviorEventStore, FakeAgentTurnStore, FakeRateLimitStore } = await import('../functions/api/_store/fake');
