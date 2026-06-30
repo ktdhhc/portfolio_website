@@ -4,6 +4,9 @@ interface OpenAiProviderConfig {
   apiKey: string;
   baseUrl: string;
   model: string;
+  defaultTemperature?: number;
+  defaultReasoningEffort?: 'high' | 'max';
+  defaultExtraBody?: Readonly<Record<string, unknown>>;
 }
 
 interface OpenAiToolCall {
@@ -32,17 +35,37 @@ function chatCompletionsUrl(baseUrl: string): string {
 export function createOpenAiCompatibleProvider(config: OpenAiProviderConfig): Provider {
   return {
     async chat(request: ChatRequest): Promise<ChatResponse> {
+      const requestBody: Record<string, unknown> = {
+        model: config.model,
+        messages: request.messages,
+      };
+
+      if (request.tools) {
+        requestBody.tools = request.tools;
+      }
+
+      const temperature = request.temperature ?? config.defaultTemperature;
+      if (temperature !== undefined) {
+        requestBody.temperature = temperature;
+      }
+
+      const reasoningEffort = request.reasoningEffort ?? config.defaultReasoningEffort;
+      if (reasoningEffort) {
+        requestBody.reasoning_effort = reasoningEffort;
+      }
+
+      const extraBody = request.extraBody ?? config.defaultExtraBody;
+      if (extraBody) {
+        requestBody.extra_body = extraBody;
+      }
+
       const response = await fetch(chatCompletionsUrl(config.baseUrl), {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${config.apiKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          model: config.model,
-          messages: request.messages,
-          tools: request.tools,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {

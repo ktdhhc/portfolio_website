@@ -11,7 +11,7 @@ tags:
   - SQLite
   - API Key 管理
   - 桌面应用
-featured: true
+featured: false
 ---
 
 ## 项目是什么

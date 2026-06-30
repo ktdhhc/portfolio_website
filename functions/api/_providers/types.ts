@@ -26,6 +26,9 @@ export interface ToolCall {
 export interface ChatRequest {
   messages: ChatMessage[];
   tools?: Tool[];
+  temperature?: number;
+  reasoningEffort?: 'high' | 'max';
+  extraBody?: Readonly<Record<string, unknown>>;
 }
 
 export interface ChatResponse {
