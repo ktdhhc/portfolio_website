@@ -165,8 +165,8 @@
 
   .hero-actions {
     position: absolute;
-    top: 50%;
-    right: 15rem;
+    top: 43%;
+    right: 20rem;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
@@ -205,6 +205,7 @@
     z-index: 2;
     background: var(--bg);
     color: var(--fg);
+    transition: opacity 0.35s ease;
   }
   @media (hover: hover) and (pointer: fine) {
     .hero-zh {
@@ -544,6 +545,44 @@
   }
   .footer-links a:hover { color: var(--fg); }
 
+  .hero-actions-mobile {
+    position: absolute;
+    top: 43%;
+    right: 20rem;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    z-index: 2;
+  }
+  .hero-actions-mobile .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .hero-actions-mobile .btn-solid-mobile {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .hero-actions-mobile .btn-solid-mobile:hover {
+    opacity: 0.85;
+  }
+  .hero-actions-mobile .btn-outline-mobile {
+    border: 1px solid var(--fg);
+    color: var(--fg);
+  }
+  .hero-actions-mobile .btn-outline-mobile:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
   /* ── Responsive ── */
   @media (max-width: 768px) {
     .grid { padding: 0 1.5rem; gap: 1rem; }
@@ -554,6 +593,7 @@
     .hero-note { grid-column: 1 / 13; }
     .hero-tags-cloud,
     .hero-actions { display: none; }
+    .hero-actions-mobile { right: 1.5rem; }
     .section { padding: 5rem 0; }
     .section-label { grid-column: 1 / 13; margin-bottom: 2rem; }
     .about-text,
@@ -646,6 +686,11 @@
         <div class="hero-note">
           <p>华南师范大学应用心理学硕士，具备 AI Agent 原型设计、Benchmark 评测与独立开发经验。</p>
         </div>
+      </div>
+      <!-- 移动端按钮（亮色背景上的深色按钮） -->
+      <div class="hero-actions-mobile">
+        <a href="#" class="btn btn-solid-mobile">下载 PDF</a>
+        <a href="./agent.html" class="btn btn-outline-mobile">与 Agent 对话</a>
       </div>
     </div>
   </div>
@@ -854,16 +899,39 @@
   <script>
     (function() {
       var hero = document.getElementById('hero');
-      if (!hero) return;
-      hero.addEventListener('mousemove', function(e) {
-        var rect = hero.getBoundingClientRect();
-        hero.style.setProperty('--spotlight-x', (e.clientX - rect.left) + 'px');
-        hero.style.setProperty('--spotlight-y', (e.clientY - rect.top) + 'px');
-      });
-      hero.addEventListener('mouseleave', function() {
-        hero.style.setProperty('--spotlight-x', '-9999px');
-        hero.style.setProperty('--spotlight-y', '-9999px');
-      });
+      var heroZh = document.querySelector('.hero-zh');
+      var heroSpotlight = document.querySelector('.hero-spotlight');
+      if (!hero || !heroZh || !heroSpotlight) return;
+
+      var isMobile = window.matchMedia('(hover: none)').matches;
+
+      if (!isMobile) {
+        // 桌面端：鼠标跟踪 spotlight
+        hero.addEventListener('mousemove', function(e) {
+          var rect = hero.getBoundingClientRect();
+          hero.style.setProperty('--spotlight-x', (e.clientX - rect.left) + 'px');
+          hero.style.setProperty('--spotlight-y', (e.clientY - rect.top) + 'px');
+        });
+        hero.addEventListener('mouseleave', function() {
+          hero.style.setProperty('--spotlight-x', '-9999px');
+          hero.style.setProperty('--spotlight-y', '-9999px');
+        });
+      } else {
+        // 移动端：点击 toggle 中英文背景
+        var isRevealed = false;
+        heroSpotlight.addEventListener('click', function(e) {
+          // 点击按钮或链接时不触发 toggle
+          if (e.target.closest('a')) return;
+          isRevealed = !isRevealed;
+          if (isRevealed) {
+            heroZh.style.opacity = '0';
+            heroZh.style.pointerEvents = 'none';
+          } else {
+            heroZh.style.opacity = '1';
+            heroZh.style.pointerEvents = 'auto';
+          }
+        });
+      }
     })();
   </script>
 </body>
