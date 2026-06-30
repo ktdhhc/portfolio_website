@@ -1,628 +1,870 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kaho — AI Agent 产品 & 认知系统工程</title>
-    <style>
-        :root {
-            --bg: #faf8f5;
-            --bg-elevated: #ffffff;
-            --bg-muted: #f5f0e8;
-            --border: #e8e0d4;
-            --border-hover: #d4ccc0;
-            --fg: #1f2329;
-            --fg-secondary: #5c5652;
-            --fg-muted: #9a9590;
-            --accent: #d4a574;
-            --accent-dark: #b8895a;
-            --accent-bg: #fef6ee;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaho — AI Agent 产品 & 认知系统工程</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --bg-elevated: #ffffff;
+    --border: #e8e0d4;
+    --border-hover: #d4ccc0;
+    --fg: #1f2329;
+    --fg-secondary: #5c5652;
+    --fg-muted: #9a9590;
+    --accent: #d4a574;
+    --accent-dark: #b8895a;
+    --accent-bg: #fef6ee;
+  }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; font-size: 16px; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif;
-            background: var(--bg);
-            color: var(--fg);
-            line-height: 1.7;
-            -webkit-font-smoothing: antialiased;
-        }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
 
-        /* Subtle paper texture */
-        body::before {
-            content: "";
-            position: fixed; inset: 0;
-            opacity: 0.015;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            pointer-events: none; z-index: 9999;
-        }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 3rem;
+  }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    width: 100%;
+  }
 
-        /* ── Nav ── */
-        nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            padding: 1.25rem 0;
-            background: rgba(250, 248, 245, 0.9);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border);
-        }
-        nav .container {
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .nav-logo {
-            font-weight: 700; font-size: 1.15rem;
-            letter-spacing: -0.02em;
-            color: var(--fg);
-        }
-        .nav-links {
-            display: flex; gap: 2.5rem; list-style: none;
-        }
-        .nav-links a {
-            color: var(--fg-secondary); text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s ease;
-        }
-        .nav-links a:hover { color: var(--fg); }
+  /* ── Top Bar ── */
+  .topbar {
+    padding: 1.5rem 0;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(250, 248, 245, 0.95);
+    backdrop-filter: blur(20px);
+  }
+  .topbar .grid {
+    align-items: center;
+  }
+  .topnav {
+    grid-column: 1 / 13;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .topnav > li {
+    position: relative;
+  }
+  .topnav a {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+  .topnav a:hover { color: var(--fg); }
 
-        /* ── Hero ── */
-        .hero {
-            padding: 12rem 0 8rem;
-            text-align: center;
-        }
-        .hero-badge {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--accent-bg);
-            border: 1px solid var(--accent);
-            border-radius: 100px;
-            font-size: 0.85rem; color: var(--accent-dark);
-            margin-bottom: 2.5rem;
-        }
-        .hero-badge .dot {
-            width: 6px; height: 6px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        .hero h1 {
-            font-size: 3.5rem; font-weight: 700;
-            letter-spacing: -0.03em; line-height: 1.1;
-            margin-bottom: 1.5rem;
-        }
-        .hero h1 .accent { color: var(--accent-dark); }
-        .hero-desc {
-            font-size: 1.15rem; color: var(--fg-secondary);
-            max-width: 560px;
-            margin: 0 auto 2.5rem;
-            line-height: 1.7;
-        }
-        .hero-actions {
-            display: flex; gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+  /* Nav dropdown */
+  .nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    min-width: 200px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.4rem 0;
+    list-style: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    z-index: 200;
+    box-shadow: 0 8px 32px rgba(31, 35, 41, 0.08);
+  }
+  .topnav > li:hover .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  .nav-dropdown-menu li a {
+    display: block;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.82rem;
+    color: var(--fg-secondary);
+    transition: all 0.2s ease;
+  }
+  .nav-dropdown-menu li a:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
 
-        /* ── Buttons ── */
-        .btn {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 0.9rem; font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            cursor: pointer; border: none;
-        }
-        .btn-primary {
-            background: var(--fg); color: var(--bg);
-        }
-        .btn-primary:hover {
-            opacity: 0.85;
-        }
-        .btn-secondary {
-            background: transparent; color: var(--fg-secondary);
-            border: 1px solid var(--border);
-        }
-        .btn-secondary:hover {
-            border-color: var(--fg-muted);
-            color: var(--fg);
-        }
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .hero-spotlight {
+    position: relative;
+    flex: 1;
+  }
+  .hero-layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 8rem 0 2rem;
+  }
+  .hero-en {
+    z-index: 1;
+    background: #0a0a0a;
+    color: #faf8f5;
+  }
+  .hero-en .line2 { color: var(--accent); }
+  .hero-en .hero-note p { color: rgba(250, 248, 245, 0.6); }
+  .hero-en .grid {
+    position: relative;
+    z-index: 2;
+  }
 
-        /* ── Section ── */
-        section { margin-bottom: 8rem; }
-        .section-header {
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-        .section-tag {
-            font-size: 0.75rem; color: var(--accent-dark);
-            text-transform: uppercase; letter-spacing: 0.15em;
-            margin-bottom: 0.75rem;
-            font-weight: 500;
-        }
-        .section-title {
-            font-size: 1.75rem; font-weight: 700;
-            letter-spacing: -0.02em;
-        }
+  .hero-tags-cloud {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .hero-tags-cloud .tag {
+    position: absolute;
+    font-size: 3rem;
+    font-weight: 500;
+    color: rgba(250, 248, 245, 0.22);
+    line-height: 1;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+  }
+  .hero-tags-cloud .tag:hover {
+    color: rgba(250, 248, 245, 0.6);
+  }
 
-        /* ── About / Intro ── */
-        .intro {
-            text-align: center;
-            max-width: 640px;
-            margin: 0 auto 8rem;
-        }
-        .intro-text {
-            font-size: 1.05rem; color: var(--fg-secondary);
-            line-height: 1.8;
-        }
-        .intro-meta {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            margin-top: 2.5rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-        }
-        .meta-item {
-            text-align: center;
-        }
-        .meta-label {
-            font-size: 0.75rem; color: var(--fg-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.35rem;
-        }
-        .meta-value {
-            font-size: 0.95rem; color: var(--fg);
-            font-weight: 500;
-        }
+  .hero-actions {
+    position: absolute;
+    top: 50%;
+    right: 15rem;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    z-index: 2;
+  }
+  .hero-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.85rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .hero-actions .btn-solid {
+    background: rgba(250, 248, 245, 0.9);
+    color: #0a0a0a;
+  }
+  .hero-actions .btn-solid:hover {
+    background: #fff;
+  }
+  .hero-actions .btn-outline {
+    border: 1px solid rgba(250, 248, 245, 0.35);
+    color: rgba(250, 248, 245, 0.75);
+  }
+  .hero-actions .btn-outline:hover {
+    border-color: rgba(250, 248, 245, 0.7);
+    color: #fff;
+  }
 
-        /* ── Education ── */
-        .edu-list {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .edu-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-        .edu-item:first-child { padding-top: 0; }
-        .edu-main h3 {
-            font-size: 1.1rem; font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-        .edu-main p {
-            font-size: 0.9rem; color: var(--fg-secondary);
-        }
-        .edu-time {
-            font-size: 0.85rem; color: var(--fg-muted);
-            white-space: nowrap;
-            margin-left: 1rem;
-        }
+  .hero-zh {
+    z-index: 2;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .hero-zh {
+      mask-image: radial-gradient(circle at var(--spotlight-x, -9999px) var(--spotlight-y, -9999px), transparent 15vw, black 15vw);
+      -webkit-mask-image: radial-gradient(circle at var(--spotlight-x, -9999px) var(--spotlight-y, -9999px), transparent 15vw, black 15vw);
+    }
+  }
+  .hero-footer-area {
+    position: relative;
+    z-index: 3;
+    background: var(--bg);
+    padding: 3rem 0;
+  }
 
-        /* ── Skills ── */
-        .skills-cloud {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.75rem;
-            max-width: 640px;
-            margin: 0 auto;
-        }
-        .skill-tag {
-            padding: 0.5rem 1rem;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            font-size: 0.85rem; color: var(--fg-secondary);
-            transition: all 0.2s ease;
-        }
-        .skill-tag:hover {
-            border-color: var(--accent);
-            color: var(--fg);
-        }
-        .skill-tag.highlight {
-            background: var(--accent-bg);
-            border-color: var(--accent);
-            color: var(--accent-dark);
-        }
+  .hero-main {
+    grid-column: 2 / 11;
+    padding-top: 10vh;
+  }
+  .hero h1 {
+    font-size: 5rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 .line2 {
+    display: block;
+    color: var(--accent-dark);
+    font-size: 3rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-top: 0.25rem;
+  }
+  .hero-note {
+    grid-column: 2 / 8;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .hero-note p {
+    color: var(--fg-secondary);
+  }
+  .hero-footer {
+    grid-column: 1 / 13;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .hero-status {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .hero-status .dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .hero-scroll {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.1em;
+  }
 
-        /* ── Experience ── */
-        .exp-card {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2.5rem;
-            max-width: 680px;
-            margin: 0 auto;
-        }
-        .exp-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .exp-title {
-            font-size: 1.2rem; font-weight: 600;
-        }
-        .exp-company {
-            color: var(--accent-dark); font-weight: 500;
-            font-size: 0.95rem;
-        }
-        .exp-time {
-            font-size: 0.85rem; color: var(--fg-muted);
-        }
-        .exp-desc {
-            font-size: 0.95rem; color: var(--fg-secondary);
-            line-height: 1.7;
-            margin-bottom: 1.5rem;
-        }
-        .exp-projects {
-            list-style: none;
-        }
-        .exp-project {
-            padding: 1.25rem 0;
-            border-top: 1px solid var(--border);
-        }
-        .exp-project:first-child {
-            border-top: none;
-            padding-top: 0;
-        }
-        .exp-project-title {
-            font-weight: 600;
-            margin-bottom: 0.35rem;
-        }
-        .exp-project-desc {
-            font-size: 0.9rem; color: var(--fg-secondary);
-            line-height: 1.7;
-        }
+  /* ── Section ── */
+  .section {
+    padding: 10rem 0;
+  }
+  .section-label {
+    grid-column: 1 / 3;
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    padding-top: 0.4rem;
+  }
+  .section-label span {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.65rem;
+    color: var(--border-hover);
+  }
 
-        /* ── Projects ── */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            max-width: 680px;
-            margin: 0 auto;
-        }
-        .project-card {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.2s ease;
-        }
-        .project-card:hover {
-            border-color: var(--border-hover);
-            box-shadow: 0 4px 20px rgba(31, 35, 41, 0.06);
-        }
-        .project-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        .project-name {
-            font-size: 1.15rem; font-weight: 600;
-        }
-        .project-time {
-            font-size: 0.8rem; color: var(--fg-muted);
-        }
-        .project-desc {
-            color: var(--fg-secondary);
-            margin-bottom: 1.25rem;
-            font-size: 0.95rem; line-height: 1.7;
-        }
-        .project-tags {
-            display: flex; gap: 0.5rem; flex-wrap: wrap;
-        }
-        .project-tag {
-            padding: 0.3rem 0.7rem;
-            background: var(--bg);
-            border-radius: 6px;
-            font-size: 0.8rem; color: var(--fg-muted);
-        }
-        .project-links {
-            display: flex; gap: 0.75rem;
-            margin-top: 1.25rem;
-        }
-        .project-link {
-            padding: 0.4rem 0.9rem;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.85rem; color: var(--fg-secondary);
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-        .project-link:hover {
-            border-color: var(--fg);
-            color: var(--fg);
-        }
+  /* ── About ── */
+  .about-text {
+    grid-column: 4 / 10;
+    font-size: 1.15rem;
+    color: var(--fg-secondary);
+    line-height: 1.8;
+    letter-spacing: -0.01em;
+  }
+  .about-meta {
+    grid-column: 4 / 12;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .meta-item dt {
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+  .meta-item dd {
+    font-size: 0.95rem;
+    color: var(--fg);
+    font-weight: 500;
+  }
 
-        /* ── Agent CTA ── */
-        .agent-cta {
-            background: var(--accent-bg);
-            border: 1px solid var(--accent);
-            border-radius: 20px;
-            padding: 4rem 2rem;
-            text-align: center;
-            max-width: 640px;
-            margin: 0 auto 8rem;
-        }
-        .agent-cta h2 {
-            font-size: 1.5rem; font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        .agent-cta p {
-            color: var(--fg-secondary);
-            max-width: 440px;
-            margin: 0 auto 1.5rem;
-            font-size: 1rem;
-            line-height: 1.7;
-        }
+  /* ── Skills ── */
+  .skills-group {
+    grid-column: 4 / 12;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4rem;
+  }
+  .skill-col h4 {
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  .skill-col ul {
+    list-style: none;
+  }
+  .skill-col li {
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .skill-col li:last-child { border-bottom: none; }
+  .skill-col li.highlight {
+    color: var(--fg);
+    font-weight: 600;
+  }
 
-        /* ── Footer ── */
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 3rem 0;
-            text-align: center;
-        }
-        .footer-links {
-            display: flex; justify-content: center;
-            gap: 2rem; margin-bottom: 1.5rem;
-        }
-        .footer-links a {
-            color: var(--fg-secondary); text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s ease;
-        }
-        .footer-links a:hover { color: var(--fg); }
-        .footer-copy {
-            font-size: 0.8rem; color: var(--fg-muted);
-        }
+  /* ── Experience ── */
+  .exp-block {
+    grid-column: 4 / 12;
+  }
+  .exp-header {
+    margin-bottom: 2rem;
+  }
+  .exp-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+  .exp-header .sub {
+    font-size: 0.9rem;
+    color: var(--accent-dark);
+    font-weight: 500;
+  }
+  .exp-header .time {
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    margin-top: 0.5rem;
+    display: block;
+  }
+  .exp-desc {
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+  }
+  .exp-list {
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+  .exp-list li {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .exp-list li strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    font-size: 0.95rem;
+  }
+  .exp-list li p {
+    font-size: 0.9rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+    max-width: 560px;
+  }
 
-        /* ── Responsive ── */
-        @media (max-width: 640px) {
-            .hero { padding: 8rem 0 5rem; }
-            .hero h1 { font-size: 2.25rem; }
-            .intro-meta {
-                flex-direction: column;
-                gap: 1.5rem;
-            }
-            .exp-header, .project-header {
-                flex-direction: column;
-            }
-            .nav-links { display: none; }
-        }
-    </style>
+  /* ── Projects ── */
+  .projects-list {
+    grid-column: 4 / 12;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .project-item {
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .project-item:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+  .project-item h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .project-item .time {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .project-item p {
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+    max-width: 560px;
+    margin-bottom: 1.25rem;
+  }
+  .project-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .project-tags span {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+  .project-tags span::after {
+    content: "·";
+    margin-left: 0.5rem;
+    color: var(--border);
+  }
+  .project-tags span:last-child::after { content: none; }
+  .project-links a {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    text-decoration: none;
+    margin-right: 1.5rem;
+    transition: color 0.2s ease;
+  }
+  .project-links a:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ── Agent CTA ── */
+  .agent-band {
+    background: var(--fg);
+    padding: 8rem 0;
+    margin: 4rem 0 0;
+  }
+  .agent-band .section-label {
+    color: var(--fg-muted);
+  }
+  .agent-band .section-label span {
+    color: #3a3f45;
+  }
+  .agent-content {
+    grid-column: 4 / 11;
+  }
+  .agent-content h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--bg);
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+    line-height: 1.3;
+  }
+  .agent-content p {
+    font-size: 1rem;
+    color: var(--fg-muted);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    max-width: 480px;
+  }
+  .agent-btn {
+    display: inline-block;
+    padding: 0.7rem 1.6rem;
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .agent-btn:hover {
+    background: #fff;
+    color: var(--fg);
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    padding: 4rem 0;
+  }
+  .footer-inner {
+    grid-column: 1 / 13;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-copy {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .footer-links a {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .footer-links a:hover { color: var(--fg); }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .grid { padding: 0 1.5rem; gap: 1rem; }
+    .hero { padding: 6rem 0 2rem; }
+    .hero-main { grid-column: 1 / 13; padding-top: 4vh; }
+    .hero h1 { font-size: 2.8rem; }
+    .hero h1 .line2 { font-size: 1.6rem; }
+    .hero-note { grid-column: 1 / 13; }
+    .hero-tags-cloud,
+    .hero-actions { display: none; }
+    .section { padding: 5rem 0; }
+    .section-label { grid-column: 1 / 13; margin-bottom: 2rem; }
+    .about-text,
+    .skills-group,
+    .exp-block,
+    .projects-list,
+    .agent-content { grid-column: 1 / 13; }
+    .about-meta { grid-template-columns: 1fr; gap: 1.25rem; }
+    .skills-group { grid-template-columns: 1fr; gap: 2rem; }
+    .topnav { gap: 1.25rem; }
+    .footer-inner {
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+  }
+</style>
 </head>
 <body>
-    <nav>
-        <div class="container">
-            <div class="nav-logo">Kaho</div>
-            <ul class="nav-links">
-                <li><a href="#about">关于</a></li>
-                <li><a href="#education">教育</a></li>
-                <li><a href="#experience">经历</a></li>
-                <li><a href="#projects">项目</a></li>
-                <li><a href="#agent">Agent</a></li>
-            </ul>
-        </div>
-    </nav>
 
-    <section class="hero">
-        <div class="container">
-            <div class="hero-badge">
-                <span class="dot"></span>
-                正在寻找 AI Agent / 认知产品方向机会
-            </div>
-            <h1>构建可信的 <span class="accent">AI Agent</span>，<br>连接认知科学与产品工程。</h1>
-            <p class="hero-desc">
-                华南师范大学应用心理学硕士，研究方向为视觉记忆与统计建模。
-                具备 AI Agent 原型设计、Benchmark 评测与独立开发经验。
-            </p>
-            <div class="hero-actions">
-                <a href="#" class="btn btn-primary">下载简历 (PDF)</a>
-                <a href="#agent" class="btn btn-secondary">与 Agent 对话</a>
-            </div>
-        </div>
-    </section>
+<header class="topbar">
+  <div class="grid">
+    <ul class="topnav">
+      <li><a href="./index.html">首页</a></li>
+      <li><a href="./resume.html">简历</a></li>
+      <li>
+        <a href="./projects.html">项目</a>
+        <ul class="nav-dropdown-menu">
+          <li><a href="./project-detail.html">Aindexer</a></li>
+          <li><a href="./project-detail.html">MemCraft</a></li>
+          <li><a href="./project-detail.html">HEART-Bench</a></li>
+          <li><a href="./project-detail.html">记忆系统评测与分析</a></li>
+          <li><a href="./project-detail.html">Human-Like Agent</a></li>
+        </ul>
+      </li>
+      <li><a href="./agent.html">Agent</a></li>
+    </ul>
+  </div>
+</header>
 
-    <section id="about" class="container">
-        <div class="intro">
-            <p class="intro-text">
-                专注于 Agent 架构设计、多智能体协作、RAG 系统与产品结构化。
-                将复杂需求拆解为可维护的系统，在可控复杂度内实现可靠的人机协作。
-                擅长将认知科学理论转化为产品模块、评测维度与数据标准。
-            </p>
-            <div class="intro-meta">
-                <div class="meta-item">
-                    <div class="meta-label">学历</div>
-                    <div class="meta-value">应用心理学硕士</div>
-                </div>
-                <div class="meta-item">
-                    <div class="meta-label">院校</div>
-                    <div class="meta-value">华南师范大学</div>
-                </div>
-                <div class="meta-item">
-                    <div class="meta-label">毕业</div>
-                    <div class="meta-value">2026年</div>
-                </div>
-            </div>
+<section class="hero" id="hero">
+  <!-- spotlight 区域：标题 + 描述 -->
+  <div class="hero-spotlight">
+    <!-- 底层：英文暗色 -->
+    <div class="hero-layer hero-en">
+      <div class="grid">
+        <div class="hero-main">
+          <h1>
+            Hello,<br>
+            I'm Kaho,<br>
+            <span class="line2">An AI collaborator for the new era</span>
+          </h1>
         </div>
-    </section>
+        <div class="hero-note">
+          <p>M.S. in Applied Psychology, SCNU.<br>Experienced in AI Agent prototyping and evaluation.</p>
+        </div>
+      </div>
+      <!-- 标签云：散布在深色背景中 -->
+      <div class="hero-tags-cloud">
+        <span class="tag" style="top: 18%; left: 72%;">INTJ</span>
+        <span class="tag" style="top: 32%; left: 55%;">完美极简主义者</span>
+        <span class="tag" style="top: 12%; left: 80%;">Vibe Coding</span>
+        <span class="tag" style="top: 48%; left: 55%;">8G 冲浪</span>
+        <span class="tag" style="top: 60%; left: 72%;">业余吉他手</span>
+        <span class="tag" style="top: 72%; left: 58%;">港乐发烧友</span>
+        <span class="tag" style="top: 35%; left: 82%;">硬核科幻迷</span>
+        <span class="tag" style="top: 82%; left: 78%;">资深 B 站研究员</span>
+        <span class="tag" style="top: 15%; left: 40%;">心理学硕士</span>
+        <span class="tag" style="top: 82%; left: 35%;">中羽0级运动员</span>
+        <span class="tag" style="top: 18%; left: 7%;">钢琴练习时长两年半</span>
+        <span class="tag" style="top: 46%; left: 5%;">自我驱动型</span>
+        <span class="tag" style="top: 72%; left: 3%;">黄子华15年老粉</span>
+      </div>
+      <!-- 按钮：右侧上下居中 -->
+      <div class="hero-actions">
+        <a href="#" class="btn btn-solid">下载 PDF</a>
+        <a href="./agent.html" class="btn btn-outline">与 Agent 对话</a>
+      </div>
+    </div>
+    <!-- 上层：中文亮色，带 spotlight mask -->
+    <div class="hero-layer hero-zh">
+      <div class="grid">
+        <div class="hero-main">
+          <h1>
+            你好，<br>
+            我是 Kaho，<br>
+            <span class="line2">新时代的 AI 协作者</span>
+          </h1>
+        </div>
+        <div class="hero-note">
+          <p>华南师范大学应用心理学硕士，具备 AI Agent 原型设计、Benchmark 评测与独立开发经验。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- footer 区域：状态条 + 滚动提示，始终在 spotlight 之外 -->
+  <div class="hero-footer-area">
+    <div class="grid">
+      <div class="hero-footer">
+        <div class="hero-status">
+          <span class="dot"></span>
+          正在寻找 AI Agent / 认知产品方向机会
+        </div>
+        <div class="hero-scroll">向下滚动</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <section id="education" class="container">
-        <div class="section-header">
-            <div class="section-tag">Education</div>
-            <h2 class="section-title">教育背景</h2>
-        </div>
-        <div class="edu-list">
-            <div class="edu-item">
-                <div class="edu-main">
-                    <h3>华南师范大学 · 应用心理学硕士</h3>
-                    <p>研究方向：视觉记忆与统计建模</p>
-                </div>
-                <div class="edu-time">2024 — 2026</div>
-            </div>
-            <div class="edu-item">
-                <div class="edu-main">
-                    <h3>华南农业大学 · 社会工作本科</h3>
-                    <p>主修社会心理学、社会统计学、数据库应用</p>
-                </div>
-                <div class="edu-time">2019 — 2023</div>
-            </div>
-        </div>
-    </section>
+<div class="grid">
+  <div class="hairline"></div>
+</div>
 
-    <section id="skills" class="container">
-        <div class="section-header">
-            <div class="section-tag">Tech Stack</div>
-            <h2 class="section-title">技能工具</h2>
+<section id="about" class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>01</span>
+      关于
+    </div>
+    <div class="about-text">
+      <p>
+        专注于 Agent 架构设计、多智能体协作、RAG 系统与产品结构化。
+        将复杂需求拆解为可维护的系统，在可控复杂度内实现可靠的人机协作。
+        擅长将认知科学理论转化为产品模块、评测维度与数据标准。
+      </p>
+      <dl class="about-meta">
+        <div class="meta-item">
+          <dt>学历</dt>
+          <dd>应用心理学硕士</dd>
         </div>
-        <div class="skills-cloud">
-            <span class="skill-tag highlight">Python</span>
-            <span class="skill-tag highlight">FastAPI</span>
-            <span class="skill-tag highlight">Prompt Engineering</span>
-            <span class="skill-tag">LangChain</span>
-            <span class="skill-tag">LangGraph</span>
-            <span class="skill-tag">React</span>
-            <span class="skill-tag">TypeScript</span>
-            <span class="skill-tag">SQLite</span>
-            <span class="skill-tag">统计分析</span>
-            <span class="skill-tag">实验设计</span>
-            <span class="skill-tag">PsychoPy</span>
-            <span class="skill-tag">Matlab</span>
+        <div class="meta-item">
+          <dt>院校</dt>
+          <dd>华南师范大学</dd>
         </div>
-    </section>
+        <div class="meta-item">
+          <dt>毕业</dt>
+          <dd>2026年</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
 
-    <section id="experience" class="container">
-        <div class="section-header">
-            <div class="section-tag">Experience</div>
-            <h2 class="section-title">实习经历</h2>
-        </div>
-        <div class="exp-card">
-            <div class="exp-header">
-                <div>
-                    <div class="exp-title">社交产品实习生</div>
-                    <div class="exp-company">趣丸科技</div>
-                </div>
-                <div class="exp-time">2025.11 — 2026.05</div>
-            </div>
-            <p class="exp-desc">
-                围绕认知科学驱动的 AI 产品研发，参与原型设计、记忆系统评测、
-                数据集建设与产品异常案例分析。
-            </p>
-            <ul class="exp-projects">
-                <li class="exp-project">
-                    <div class="exp-project-title">认知科学驱动的 AI 原型研发</div>
-                    <div class="exp-project-desc">
-                        梳理心理学与认知神经科学文献，为 Agent 架构设计提供理论依据；
-                        协助将认知科学理论转化为产品功能模块。
-                    </div>
-                </li>
-                <li class="exp-project">
-                    <div class="exp-project-title">记忆系统测试与数据异常分析</div>
-                    <div class="exp-project-desc">
-                        深度参与 KnowMe-Bench、CloneMem 测试集全量测试，
-                        分析记忆召回、角色一致性与回答生成问题来源。
-                    </div>
-                </li>
-                <li class="exp-project">
-                    <div class="exp-project-title">HEART-Bench 论文与数据集构建</div>
-                    <div class="exp-project-desc">
-                        作为作者之一参与 HEART-Bench 论文工作；
-                        协调高校专家团队完成数据标注与质检。
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </section>
+<section id="skills" class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>02</span>
+      技能工具
+    </div>
+    <div class="skills-group">
+      <div class="skill-col">
+        <h4>核心能力</h4>
+        <ul>
+          <li class="highlight">Python</li>
+          <li class="highlight">Prompt Engineering</li>
+          <li class="highlight">Claude Code</li>
+          <li>LangChain</li>
+          <li>LangGraph</li>
+        </ul>
+      </div>
+      <div class="skill-col">
+        <h4>工程工具</h4>
+        <ul>
+          <li>FastAPI</li>
+          <li>React</li>
+          <li>TypeScript</li>
+          <li>SQLite</li>
+        </ul>
+      </div>
+      <div class="skill-col">
+        <h4>研究方法</h4>
+        <ul>
+          <li>统计分析</li>
+          <li>实验设计</li>
+          <li>Matlab</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <section id="projects" class="container">
-        <div class="section-header">
-            <div class="section-tag">Selected Projects</div>
-            <h2 class="section-title">代表项目</h2>
-        </div>
-        <div class="projects-grid">
-            <div class="project-card">
-                <div class="project-header">
-                    <div class="project-name">Aindexer</div>
-                    <div class="project-time">2025.12</div>
-                </div>
-                <p class="project-desc">
-                    面向科研文献的本地化 AI 工作台，整合文献上传、结构化索引、
-                    搜索预览、翻译辅助与导出备份流程。
-                </p>
-                <div class="project-tags">
-                    <span class="project-tag">FastAPI</span>
-                    <span class="project-tag">React</span>
-                    <span class="project-tag">RAG</span>
-                </div>
-                <div class="project-links">
-                    <a href="https://www.aindexer.cn" class="project-link" target="_blank">产品主页</a>
-                    <a href="https://github.com/ktdhhc" class="project-link" target="_blank">GitHub</a>
-                </div>
-            </div>
+<section id="experience" class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>03</span>
+      实习经历
+    </div>
+    <div class="exp-block">
+      <div class="exp-header">
+        <h3>社交产品实习生</h3>
+        <span class="sub">趣丸科技</span>
+        <span class="time">2025.11 — 2026.05</span>
+      </div>
+      <p class="exp-desc">
+        围绕认知科学驱动的 AI 产品研发，参与原型设计、记忆系统评测、数据集建设与产品异常案例分析。
+      </p>
+      <ul class="exp-list">
+        <li>
+          <strong>认知科学驱动的 AI 原型研发</strong>
+          <p>梳理心理学与认知神经科学文献，为 Agent 架构设计提供理论依据；协助将认知科学理论转化为产品功能模块。</p>
+        </li>
+        <li>
+          <strong>记忆系统测试与数据异常分析</strong>
+          <p>深度参与 KnowMe-Bench、CloneMem 测试集全量测试，分析记忆召回、角色一致性与回答生成问题来源。</p>
+        </li>
+        <li>
+          <strong>HEART-Bench 论文与数据集构建</strong>
+          <p>作为作者之一参与 HEART-Bench 论文工作；协调高校专家团队完成数据标注与质检。</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
 
-            <div class="project-card">
-                <div class="project-header">
-                    <div class="project-name">角色记忆情境数据构建平台</div>
-                    <div class="project-time">2026.02 — 2026.04</div>
-                </div>
-                <p class="project-desc">
-                    面向长篇叙事文本的角色数据工作台，支持从原文中抽取角色记忆、
-                    人格特征与情境数据，用于辅助人设建模与情境反应生成。
-                </p>
-                <div class="project-tags">
-                    <span class="project-tag">FastAPI</span>
-                    <span class="project-tag">React</span>
-                    <span class="project-tag">LLM API</span>
-                </div>
-                <div class="project-links">
-                    <a href="#" class="project-link" target="_blank">GitHub</a>
-                </div>
-            </div>
+<section id="projects" class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>04</span>
+      代表项目
+    </div>
+    <div class="projects-list">
+      <div class="project-item">
+        <h3>Aindexer</h3>
+        <span class="time">2025.12 · 独立开发</span>
+        <p>面向科研文献的本地化 AI 工作台，整合文献上传、结构化索引、搜索预览、翻译辅助与导出备份流程。</p>
+        <div class="project-tags">
+          <span>FastAPI</span>
+          <span>SQLite</span>
+          <span>React</span>
+          <span>文献管理</span>
         </div>
-    </section>
+        <div class="project-links">
+          <a href="https://www.aindexer.cn" target="_blank">产品主页 →</a>
+          <a href="https://github.com/ktdhhc" target="_blank">GitHub →</a>
+        </div>
+      </div>
 
-    <section id="agent" class="container">
-        <div class="agent-cta">
-            <h2>与 Candidate Agent 对话</h2>
-            <p>
-                基于简历、项目文档与公开作品资料构建的问答助手。
-                可以询问项目细节、技术方案、岗位匹配度等问题。
-            </p>
-            <a href="#" class="btn btn-primary">开始对话</a>
+      <div class="project-item">
+        <h3>MemCraft</h3>
+        <span class="time">2026.03 — 2026.05 · 独立开发</span>
+        <p>面向长篇叙事文本的角色记忆数据构建系统。通过可审查、可回退的分步流水线，从原文中抽取角色人生轨迹并转换为结构化记忆文本。</p>
+        <div class="project-tags">
+          <span>FastAPI</span>
+          <span>SQLite</span>
+          <span>React</span>
+          <span>LLM</span>
+          <span>数据工程</span>
         </div>
-    </section>
+        <div class="project-links">
+          <a href="./project-detail.html">查看详情 →</a>
+        </div>
+      </div>
 
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="https://github.com/ktdhhc" target="_blank">GitHub</a>
-                <a href="https://www.aindexer.cn" target="_blank">产品主页</a>
-                <a href="mailto:13288338309@163.com">Email</a>
-            </div>
-            <p class="footer-copy">© 2025 Kaho</p>
+      <div class="project-item">
+        <h3>HEART-Bench</h3>
+        <span class="time">2025.11 — 2026.05 · 趣丸科技</span>
+        <p>面向角色扮演型 Agent 的行为一致性评测体系，评估 LLM 将情境理解转化为具体行动的能力。与上海交通大学、华南师范大学合作，已投稿 NeurIPS。</p>
+        <div class="project-tags">
+          <span>Agent 评测</span>
+          <span>行为一致性</span>
+          <span>数据集构建</span>
         </div>
-    </footer>
+        <div class="project-links">
+          <a href="https://arxiv.org/abs/2605.30058" target="_blank">论文 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="agent" class="agent-band">
+  <div class="grid">
+    <div class="section-label">
+      <span>05</span>
+      Agent
+    </div>
+    <div class="agent-content">
+      <h2>与 Kaho Agent<br>对话</h2>
+      <p>基于简历、项目文档与部分非公开作品资料构建的问答助手。可以询问项目细节、技术方案、岗位匹配度等问题。</p>
+      <a href="./agent.html" class="agent-btn">开始对话</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="grid">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2026 Kaho</span>
+      <ul class="footer-links">
+        <li><a href="https://github.com/ktdhhc" target="_blank">GitHub</a></li>
+        <li><a href="https://www.aindexer.cn" target="_blank">产品主页</a></li>
+        <li><a href="mailto:13288338309@163.com">Email</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+  <script>
+    (function() {
+      var hero = document.getElementById('hero');
+      if (!hero) return;
+      hero.addEventListener('mousemove', function(e) {
+        var rect = hero.getBoundingClientRect();
+        hero.style.setProperty('--spotlight-x', (e.clientX - rect.left) + 'px');
+        hero.style.setProperty('--spotlight-y', (e.clientY - rect.top) + 'px');
+      });
+      hero.addEventListener('mouseleave', function() {
+        hero.style.setProperty('--spotlight-x', '-9999px');
+        hero.style.setProperty('--spotlight-y', '-9999px');
+      });
+    })();
+  </script>
 </body>
 </html>

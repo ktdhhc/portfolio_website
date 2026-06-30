@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目 — Kaho</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --bg-elevated: #ffffff;
+    --border: #e8e0d4;
+    --border-hover: #d4ccc0;
+    --fg: #1f2329;
+    --fg-secondary: #5c5652;
+    --fg-muted: #9a9590;
+    --accent: #d4a574;
+    --accent-dark: #b8895a;
+    --accent-bg: #fef6ee;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 3rem;
+  }
+
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    width: 100%;
+  }
+
+  .topbar {
+    padding: 1.5rem 0;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(250, 248, 245, 0.95);
+    backdrop-filter: blur(20px);
+  }
+  .topbar .grid { align-items: center; }
+  .topnav {
+    grid-column: 1 / 13;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .topnav a {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+  .topnav a:hover { color: var(--fg); }
+
+  .page-header {
+    padding: 10rem 0 4rem;
+  }
+  .page-header h1 {
+    grid-column: 2 / 10;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .section {
+    padding: 4rem 0;
+  }
+  .section-label {
+    grid-column: 1 / 3;
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    padding-top: 0.4rem;
+  }
+  .section-label span {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.65rem;
+    color: var(--border-hover);
+  }
+
+  .projects-list {
+    grid-column: 4 / 12;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .project-item {
+    padding: 3rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .project-item:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+  .project-num {
+    font-size: 0.65rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .project-item h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .project-item .meta {
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    margin-bottom: 1.25rem;
+    display: block;
+  }
+  .project-item p {
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+    max-width: 560px;
+    margin-bottom: 1.25rem;
+  }
+  .project-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .project-tags span {
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+  .project-tags span::after {
+    content: "·";
+    margin-left: 0.5rem;
+    color: var(--border);
+  }
+  .project-tags span:last-child::after { content: none; }
+  .project-links a {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    text-decoration: none;
+    margin-right: 1.5rem;
+    transition: color 0.2s ease;
+  }
+  .project-links a:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .site-footer {
+    padding: 4rem 0;
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+  }
+  .footer-inner {
+    grid-column: 1 / 13;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-copy {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .footer-links a {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .footer-links a:hover { color: var(--fg); }
+
+  @media (max-width: 768px) {
+    .grid { padding: 0 1.5rem; gap: 1rem; }
+    .page-header { padding: 7rem 0 3rem; }
+    .page-header h1 { grid-column: 1 / 13; font-size: 2.2rem; }
+    .section { padding: 3rem 0; }
+    .section-label { grid-column: 1 / 13; margin-bottom: 2rem; }
+    .projects-list { grid-column: 1 / 13; }
+    .topnav { gap: 1.25rem; }
+    .footer-inner {
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="grid">
+    <ul class="topnav">
+      <li><a href="./index.html">首页</a></li>
+      <li><a href="./resume.html">简历</a></li>
+      <li><a href="./projects.html">项目</a></li>
+      <li><a href="./agent.html">Agent</a></li>
+    </ul>
+  </div>
+</header>
+
+<section class="page-header">
+  <div class="grid">
+    <h1>全部项目</h1>
+  </div>
+</section>
+
+<div class="grid">
+  <div class="hairline"></div>
+</div>
+
+<section class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>01</span>
+      个人项目
+    </div>
+    <div class="projects-list">
+      <div class="project-item">
+        <span class="project-num">PERSONAL — 01</span>
+        <h3>Aindexer</h3>
+        <span class="meta">2025.12 · 独立开发</span>
+        <p>面向科研文献的本地化 AI 工作台，整合文献上传、结构化索引、搜索预览、翻译辅助与导出备份流程。</p>
+        <div class="project-tags">
+          <span>FastAPI</span>
+          <span>SQLite</span>
+          <span>React</span>
+          <span>文献管理</span>
+          <span>文献阅读工作流</span>
+        </div>
+        <div class="project-links">
+          <a href="https://www.aindexer.cn" target="_blank">产品主页 →</a>
+          <a href="https://github.com/ktdhhc" target="_blank">GitHub →</a>
+        </div>
+      </div>
+
+      <div class="project-item">
+        <span class="project-num">PERSONAL — 02</span>
+        <h3>MemCraft</h3>
+        <span class="meta">2026.03 — 2026.05 · 独立开发</span>
+        <p>面向长篇叙事文本的角色记忆数据构建系统。通过可审查、可回退的分步流水线，从原文中抽取角色人生轨迹并转换为结构化记忆文本。</p>
+        <div class="project-tags">
+          <span>FastAPI</span>
+          <span>SQLite</span>
+          <span>React</span>
+          <span>LLM</span>
+          <span>数据工程</span>
+          <span>人机协作</span>
+        </div>
+        <div class="project-links">
+          <a href="./project-detail.html">查看详情 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>02</span>
+      实习项目
+    </div>
+    <div class="projects-list">
+      <div class="project-item">
+        <span class="project-num">INTERNSHIP — 01</span>
+        <h3>HEART-Bench</h3>
+        <span class="meta">2025.11 — 2026.05 · 趣丸科技</span>
+        <p>面向角色扮演型 Agent 的行为一致性评测体系，评估 LLM 将情境理解转化为具体行动的能力。与上海交通大学、华南师范大学合作，已投稿 NeurIPS。</p>
+        <div class="project-tags">
+          <span>Agent 评测</span>
+          <span>行为一致性</span>
+          <span>情境理解</span>
+          <span>数据集构建</span>
+        </div>
+        <div class="project-links">
+          <a href="https://arxiv.org/abs/2605.30058" target="_blank">论文 →</a>
+        </div>
+      </div>
+
+      <div class="project-item">
+        <span class="project-num">INTERNSHIP — 02</span>
+        <h3>记忆系统评测与分析</h3>
+        <span class="meta">2025.11 — 2026.05 · 趣丸科技</span>
+        <p>基于 KnowMe-Bench 对记忆系统进行全量测试，建立"检索→总结→推理"分层诊断方法论，发现 LLM 能力边界。</p>
+        <div class="project-tags">
+          <span>Benchmark 评测</span>
+          <span>记忆系统</span>
+          <span>错题归因</span>
+          <span>LLM-as-Judge</span>
+        </div>
+        <div class="project-links">
+          <a href="./project-detail.html">查看详情 →</a>
+        </div>
+      </div>
+
+      <div class="project-item">
+        <span class="project-num">INTERNSHIP — 03</span>
+        <h3>Human-Like Agent</h3>
+        <span class="meta">2025.11 — 2026.05 · 趣丸科技</span>
+        <p>从认知科学与心理学文献出发，为陪伴型 Agent 的记忆、情绪与价值判断设计提供理论依据，并推动理论走向原型模块。</p>
+        <div class="project-tags">
+          <span>认知科学</span>
+          <span>Agent 架构</span>
+          <span>记忆机制</span>
+          <span>文献综述</span>
+        </div>
+        <div class="project-links">
+          <a href="./project-detail.html">查看详情 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="grid">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2026 Kaho</span>
+      <ul class="footer-links">
+        <li><a href="https://github.com/ktdhhc" target="_blank">GitHub</a></li>
+        <li><a href="https://www.aindexer.cn" target="_blank">产品主页</a></li>
+        <li><a href="mailto:13288338309@163.com">Email</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

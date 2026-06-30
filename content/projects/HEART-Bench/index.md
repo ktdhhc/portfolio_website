@@ -1,6 +1,6 @@
 ---
 name: HEART-Bench
-tagline: 面向陪伴型 Agent 的行为一致性评测体系，评估 LLM 将情境理解转化为具体行动的能力
+tagline: 面向角色扮演型 Agent 的行为一致性评测体系，评估 LLM 将情境理解转化为具体行动的能力
 type: internship
 company: 趣丸科技
 role: AI 社交产品实习生
@@ -12,7 +12,7 @@ tags:
   - 数据集构建
   - NeurIPS
 links:
-  paper: "Peng2026（HEART_BENCH）"
+  paper: https://arxiv.org/abs/2605.30058
 featured: true
 ---
 
@@ -20,7 +20,7 @@ featured: true
 
 当前的 Agent 评测体系存在一个根本性问题：**评测范式错位**。绝大多数评测依赖问答形式，测试的是信息检索和语言组织能力，而非真正的行为决策能力。很多研究表明，LLM 在静态文本情景下的行为判断能力已超过普通人，但在角色扮演场景中却经常出现"猜错了但做对了"的认知-行为错配。
 
-HEART-Bench 由趣丸科技与上海交通大学、华南师范大学合作，目前已投稿 NeurIPS。它的核心理念是 **"Deeds, not Words"**——不测 Agent "懂不懂"，而是测它在面临关键决策岔路口时，能否做出符合其特定人格设定的实际行动。
+HEART-Bench（Human-Like Emotion And Reasoning Test） 由趣丸科技与上海交通大学、华南师范大学合作，目前已投稿 NeurIPS。它的核心理念是 **"Deeds, not Words"**——不测 Agent "懂不懂"，而是测它在面临关键决策岔路口时，能否做出符合其特定人格设定的实际行动。
 
 ---
 

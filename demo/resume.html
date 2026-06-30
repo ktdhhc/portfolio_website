@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在线简历 — Kaho</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --bg-elevated: #ffffff;
+    --border: #e8e0d4;
+    --border-hover: #d4ccc0;
+    --fg: #1f2329;
+    --fg-secondary: #5c5652;
+    --fg-muted: #9a9590;
+    --accent: #d4a574;
+    --accent-dark: #b8895a;
+    --accent-bg: #fef6ee;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 3rem;
+  }
+
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    width: 100%;
+  }
+
+  .topbar {
+    padding: 1.5rem 0;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(250, 248, 245, 0.95);
+    backdrop-filter: blur(20px);
+  }
+  .topbar .grid { align-items: center; }
+  .topnav {
+    grid-column: 1 / 13;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .topnav a {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+  .topnav a:hover { color: var(--fg); }
+
+  /* ── Page Header ── */
+  .page-header {
+    padding: 10rem 0 4rem;
+  }
+  .page-header h1 {
+    grid-column: 2 / 10;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+  .page-header p {
+    grid-column: 2 / 8;
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+  }
+  .page-actions {
+    grid-column: 2 / 10;
+    margin-top: 2rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 8px;
+    font-size: 0.88rem; font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer; border: none;
+    letter-spacing: -0.01em;
+  }
+  .btn-primary {
+    background: var(--fg); color: var(--bg);
+  }
+  .btn-primary:hover { opacity: 0.82; }
+  .btn-secondary {
+    background: transparent; color: var(--fg-secondary);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover {
+    border-color: var(--fg-muted);
+    color: var(--fg);
+  }
+
+  /* ── Section ── */
+  .section {
+    padding: 6rem 0;
+  }
+  .section-label {
+    grid-column: 1 / 3;
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    padding-top: 0.4rem;
+  }
+  .section-label span {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.65rem;
+    color: var(--border-hover);
+  }
+  .section-body {
+    grid-column: 4 / 12;
+  }
+
+  /* ── Education ── */
+  .edu-list {
+    list-style: none;
+  }
+  .edu-list li {
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .edu-list li:first-child { padding-top: 0; }
+  .edu-list h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+  }
+  .edu-list .sub {
+    font-size: 0.9rem;
+    color: var(--fg-secondary);
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .edu-list .time {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Experience ── */
+  .exp-block {}
+  .exp-header {
+    margin-bottom: 1.5rem;
+  }
+  .exp-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+  .exp-header .sub {
+    font-size: 0.9rem;
+    color: var(--accent-dark);
+    font-weight: 500;
+  }
+  .exp-header .time {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    margin-top: 0.5rem;
+    display: block;
+  }
+  .exp-desc {
+    font-size: 0.95rem;
+    color: var(--fg-secondary);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+    max-width: 600px;
+  }
+  .exp-list {
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+  .exp-list li {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .exp-list li strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    font-size: 0.95rem;
+  }
+  .exp-list li p {
+    font-size: 0.88rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+    max-width: 560px;
+  }
+
+  /* ── Skills ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4rem;
+  }
+  .skill-col h4 {
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  .skill-col ul {
+    list-style: none;
+  }
+  .skill-col li {
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .skill-col li:last-child { border-bottom: none; }
+  .skill-col li.highlight {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  /* ── Project Index ── */
+  .project-index {
+    list-style: none;
+  }
+  .project-index li {
+    border-bottom: 1px solid var(--border);
+  }
+  .project-index a {
+    display: block;
+    padding: 1.25rem 0;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+  .project-index a:hover { opacity: 0.7; }
+  .project-index .name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .project-index .tagline {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    padding: 4rem 0;
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+  }
+  .footer-inner {
+    grid-column: 1 / 13;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-copy {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .footer-links a {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .footer-links a:hover { color: var(--fg); }
+
+  @media (max-width: 768px) {
+    .grid { padding: 0 1.5rem; gap: 1rem; }
+    .page-header { padding: 7rem 0 3rem; }
+    .page-header h1 { grid-column: 1 / 13; font-size: 2.2rem; }
+    .page-header p { grid-column: 1 / 13; }
+    .page-actions { grid-column: 1 / 13; }
+    .section { padding: 4rem 0; }
+    .section-label { grid-column: 1 / 13; margin-bottom: 2rem; }
+    .section-body { grid-column: 1 / 13; }
+    .skills-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .topnav { gap: 1.25rem; }
+    .footer-inner {
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="grid">
+    <ul class="topnav">
+      <li><a href="./index.html">首页</a></li>
+      <li><a href="./resume.html">简历</a></li>
+      <li><a href="./projects.html">项目</a></li>
+      <li><a href="./agent.html">Agent</a></li>
+    </ul>
+  </div>
+</header>
+
+<section class="page-header">
+  <div class="grid">
+    <h1>在线简历</h1>
+    <p>华南师范大学应用心理学硕士。具备 AI Agent 原型设计、Benchmark 评测与独立开发经验。</p>
+    <div class="page-actions">
+      <a href="#" class="btn btn-primary">下载 PDF 简历</a>
+      <a href="./agent.html" class="btn btn-secondary">与 Agent 对话</a>
+    </div>
+  </div>
+</section>
+
+<div class="grid">
+  <div class="hairline"></div>
+</div>
+
+<section id="education" class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>01</span>
+      教育背景
+    </div>
+    <div class="section-body">
+      <ul class="edu-list">
+        <li>
+          <h4>华南师范大学 · 应用心理硕士</h4>
+          <span class="sub">研究方向：视觉记忆与统计建模</span>
+          <span class="time">2024 — 2026</span>
+        </li>
+        <li>
+          <h4>华南农业大学 · 社会工作系学士</h4>
+          <span class="sub">主修社会心理学、社会统计学、社会调查理论与方法、数据库应用</span>
+          <span class="time">2019 — 2023</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="experience" class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>02</span>
+      实习经历
+    </div>
+    <div class="section-body">
+      <div class="exp-block">
+        <div class="exp-header">
+          <h3>社交产品实习生</h3>
+          <span class="sub">趣丸科技</span>
+          <span class="time">2025.11 — 2026.05</span>
+        </div>
+        <p class="exp-desc">
+          围绕认知科学驱动的 AI 产品研发，参与原型设计、记忆系统评测、数据集建设与产品异常案例分析。
+        </p>
+        <ul class="exp-list">
+          <li>
+            <strong>认知科学驱动的 AI 原型研发</strong>
+            <p>梳理心理学与认知神经科学文献，为 Agent 架构设计提供理论依据；协助将认知科学理论转化为产品功能模块。</p>
+          </li>
+          <li>
+            <strong>记忆系统测试与数据异常分析</strong>
+            <p>深度参与 KnowMe-Bench、CloneMem 测试集全量测试，分析记忆召回、角色一致性与回答生成问题来源。</p>
+          </li>
+          <li>
+            <strong>HEART-Bench 论文与数据集构建</strong>
+            <p>作为作者之一参与 HEART-Bench 论文工作；协调高校专家团队完成数据标注与质检。</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills" class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>03</span>
+      技能工具
+    </div>
+    <div class="section-body">
+      <div class="skills-grid">
+        <div class="skill-col">
+          <h4>核心能力</h4>
+          <ul>
+            <li class="highlight">Python</li>
+            <li class="highlight">Prompt Engineering</li>
+            <li class="highlight">Claude Code</li>
+            <li>LangChain</li>
+            <li>LangGraph</li>
+          </ul>
+        </div>
+        <div class="skill-col">
+          <h4>工程工具</h4>
+          <ul>
+            <li>FastAPI</li>
+            <li>React</li>
+            <li>TypeScript</li>
+            <li>SQLite</li>
+          </ul>
+        </div>
+        <div class="skill-col">
+          <h4>研究方法</h4>
+          <ul>
+            <li>统计分析</li>
+            <li>实验设计</li>
+            <li>Matlab</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="section">
+  <div class="grid">
+    <div class="section-label">
+      <span>04</span>
+      项目索引
+    </div>
+    <div class="section-body">
+      <ul class="project-index">
+        <li>
+          <a href="./project-detail.html">
+            <div class="name">Aindexer</div>
+            <div class="tagline">面向科研文献的本地化 AI 工作台</div>
+          </a>
+        </li>
+        <li>
+          <a href="./project-detail.html">
+            <div class="name">MemCraft</div>
+            <div class="tagline">面向长篇叙事文本的角色记忆数据构建工作台</div>
+          </a>
+        </li>
+        <li>
+          <a href="./project-detail.html">
+            <div class="name">HEART-Bench</div>
+            <div class="tagline">面向角色扮演型 Agent 的行为一致性评测体系</div>
+          </a>
+        </li>
+        <li>
+          <a href="./project-detail.html">
+            <div class="name">记忆系统评测与分析</div>
+            <div class="tagline">基于 KnowMe-Bench 对记忆系统进行全量测试与错题归因</div>
+          </a>
+        </li>
+        <li>
+          <a href="./project-detail.html">
+            <div class="name">Human-Like Agent</div>
+            <div class="tagline">从认知科学出发的陪伴型 Agent 架构探索</div>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="grid">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2026 Kaho</span>
+      <ul class="footer-links">
+        <li><a href="https://github.com/ktdhhc" target="_blank">GitHub</a></li>
+        <li><a href="https://www.aindexer.cn" target="_blank">产品主页</a></li>
+        <li><a href="mailto:13288338309@163.com">Email</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MemCraft — Kaho</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --bg-elevated: #ffffff;
+    --border: #e8e0d4;
+    --border-hover: #d4ccc0;
+    --fg: #1f2329;
+    --fg-secondary: #5c5652;
+    --fg-muted: #9a9590;
+    --accent: #d4a574;
+    --accent-dark: #b8895a;
+    --accent-bg: #fef6ee;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 3rem;
+  }
+
+  .topbar {
+    padding: 1.5rem 0;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(250, 248, 245, 0.95);
+    backdrop-filter: blur(20px);
+  }
+  .topbar .grid { align-items: center; }
+  .topnav {
+    grid-column: 1 / 13;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .topnav a {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+  .topnav a:hover { color: var(--fg); }
+
+  .article-header {
+    padding: 10rem 0 3rem;
+  }
+  .article-type {
+    grid-column: 2 / 10;
+    font-size: 0.7rem;
+    color: var(--accent-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  .article-title {
+    grid-column: 2 / 11;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+  }
+  .article-meta {
+    grid-column: 2 / 10;
+    font-size: 0.9rem;
+    color: var(--fg-secondary);
+    margin-bottom: 1.5rem;
+  }
+  .article-meta .dot {
+    margin: 0 0.5rem;
+    color: var(--fg-muted);
+  }
+  .article-tags {
+    grid-column: 2 / 10;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .article-tags span {
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+  .article-tags span::after {
+    content: "·";
+    margin-left: 0.5rem;
+    color: var(--border);
+  }
+  .article-tags span:last-child::after { content: none; }
+  .article-links {
+    grid-column: 2 / 10;
+    display: flex;
+    gap: 1rem;
+  }
+  .article-links a {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .article-links a:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    width: 100%;
+    margin: 2rem 0;
+  }
+
+  /* ── Article Body ── */
+  .article-body {
+    padding: 2rem 0 6rem;
+  }
+  .body-label {
+    grid-column: 1 / 3;
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    padding-top: 0.5rem;
+  }
+  .body-content {
+    grid-column: 4 / 11;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--fg-secondary);
+  }
+  .body-content h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+  .body-content h2:first-child { margin-top: 0; }
+  .body-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .body-content p {
+    margin-bottom: 1.25rem;
+  }
+  .body-content strong {
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .body-content em {
+    font-style: italic;
+  }
+  .body-content blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-bg);
+    border-radius: 0 8px 8px 0;
+  }
+  .body-content ul, .body-content ol {
+    margin: 0 0 1.25rem;
+    padding-left: 1.5rem;
+  }
+  .body-content li {
+    margin-bottom: 0.5rem;
+  }
+  .body-content hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5rem 0;
+  }
+  .body-content code {
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    background: var(--bg-muted);
+    color: var(--fg);
+    font-size: 0.9em;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  }
+  .body-content pre {
+    margin: 1.5rem 0;
+    padding: 1rem 1.125rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    line-height: 1.7;
+    background: var(--fg);
+    color: var(--bg);
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 0.875rem;
+  }
+  .body-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background: var(--bg-elevated);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .body-content th, .body-content td {
+    border: 1px solid var(--border);
+    padding: 0.7rem 0.85rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .body-content th {
+    background: var(--bg-muted);
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .body-content tbody tr:nth-child(even) td {
+    background: var(--bg);
+  }
+  .body-content img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+  }
+
+  .back-link {
+    grid-column: 4 / 11;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .back-link a {
+    font-size: 0.9rem;
+    color: var(--accent-dark);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .back-link a:hover { color: var(--fg); }
+
+  .site-footer {
+    padding: 4rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .footer-inner {
+    grid-column: 1 / 13;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-copy {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .footer-links a {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .footer-links a:hover { color: var(--fg); }
+
+  @media (max-width: 768px) {
+    .grid { padding: 0 1.5rem; gap: 1rem; }
+    .article-header { padding: 7rem 0 2rem; }
+    .article-title { grid-column: 1 / 13; font-size: 2.2rem; }
+    .article-type, .article-meta, .article-tags, .article-links { grid-column: 1 / 13; }
+    .body-label { grid-column: 1 / 13; margin-bottom: 1rem; }
+    .body-content { grid-column: 1 / 13; }
+    .back-link { grid-column: 1 / 13; }
+    .topnav { gap: 1.25rem; }
+    .footer-inner {
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="grid">
+    <ul class="topnav">
+      <li><a href="./index.html">首页</a></li>
+      <li><a href="./resume.html">简历</a></li>
+      <li><a href="./projects.html">项目</a></li>
+      <li><a href="./agent.html">Agent</a></li>
+    </ul>
+  </div>
+</header>
+
+<article>
+  <header class="article-header">
+    <div class="grid">
+      <div class="article-type">个人项目</div>
+      <h1 class="article-title">MemCraft</h1>
+      <div class="article-meta">
+        独立开发<span class="dot">·</span>2026.03 — 2026.05
+      </div>
+      <div class="article-tags">
+        <span>FastAPI</span>
+        <span>SQLite</span>
+        <span>React</span>
+        <span>LLM</span>
+        <span>数据工程</span>
+        <span>人机协作</span>
+      </div>
+      <div class="article-links">
+        <a href="https://github.com/ktdhhc" target="_blank">GitHub →</a>
+        <a href="./projects.html">← 返回项目列表</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="hairline"></div>
+  </div>
+
+  <div class="article-body">
+    <div class="grid">
+      <div class="body-label">正文</div>
+      <div class="body-content">
+
+        <h2>项目是什么</h2>
+        <p>MemCraft 是一个面向长篇叙事文本的角色记忆数据构建系统。给定一篇小说、传记或剧本，以及一个目标角色名，它会通过一条可审查、可回退的分步流水线，从原文中抽取该角色的人生轨迹，并将其转换为结构化事件和第一人称记忆文本。</p>
+        <p>这个项目的想法来自我在实习期间参与的一个学术项目。当时我在做 HEART-Bench——一个衡量 Agent 长记忆信息召回率和角色一致性的评测体系，与上海交通大学和华南师范大学合作，目前已投稿 NeurIPS。在那个项目里，我深度参与了评测方案设计和数据集复核，也因此接触到了上交大团队构建角色记忆数据的方式。我发现，高质量的角色记忆数据本身就是稀缺的，而现有的构建流程在可控性、可追溯性和人工介入的灵活性上，都还有明显的改进空间。</p>
+        <p>MemCraft 就是沿着这个方向做出来的。它不直接来自 HEART-Bench 的代码，而是把评测过程中积累的对"什么样的数据才算好"的理解，和我对分步控制、人工审核、情境设计、人格分析等问题的思考结合在一起，重新搭了一套独立的构建流程。</p>
+
+        <h2>它在解决什么</h2>
+        <p>长篇叙事文本里的角色经历是隐含的、散落的、前后交织的。一个角色可能在第三章提到童年，在第十章回溯同一段经历，在第二十章被另一个角色用不同视角重新描述。人工整理这些内容很慢，而且很难保证一致性。</p>
+        <p>直接让 LLM 来做呢？它可以生成看起来很通顺的总结，但你很难信任它。它会编造原文里没有的细节，会把不同时间线的事件混在一起，会遗漏关键转折，而且你很难知道它到底是在"回忆"还是在"想象"。</p>
+        <blockquote>
+          LLM 的生成能力和结构化数据的质量要求之间有落差。弥合这个落差不能只靠更好的模型，还需要一套流程设计，让每一步产出都能被检查、被修正、被重新执行。
+        </blockquote>
+
+        <h2>它是怎么工作的</h2>
+        <p>整个系统围绕一条 7 步主链构建。每一步都有明确的输入和输出，中间结果全部保存，任何一步都可以单独重跑：</p>
+
+        <table>
+          <thead>
+            <tr><th>步骤</th><th>做什么</th><th>为什么这样设计</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>preprocess</td><td>按章节、场景或启发式边界将原文分块</td><td>让后续处理有结构可循，而不是面对一整篇长文</td></tr>
+            <tr><td>extract_nodes</td><td>用滑动窗口逐块抽取人生节点，再合并去重</td><td>窗口重叠避免遗漏跨块信息，合并避免重复</td></tr>
+            <tr><td>review_nodes</td><td>对节点排序、标注问题</td><td>不删节点，只标问题，把裁决权留给人</td></tr>
+            <tr><td>expand_events</td><td>将节点展开为带上下文的事件</td><td>节点是骨架，事件才是有血有肉的经历</td></tr>
+            <tr><td>generate_terminology</td><td>从事件中提取术语映射</td><td>统一人称和称谓，为记忆生成做准备</td></tr>
+            <tr><td>convert_memory</td><td>将事件转为第一人称记忆文本</td><td>匿名化、低主观、可直接用于 Agent 记忆</td></tr>
+            <tr><td>final_check</td><td>程序化检查 + LLM 逐条检查 + LLM 全局检查</td><td>双重校验，不信任任何单次 LLM 输出</td></tr>
+          </tbody>
+        </table>
+
+        <p>主链之外，系统还支持两条分支流程：<strong>情境生成</strong>（从事件中派生情境题）和<strong>人格分析</strong>（从文本窗口中提取人格切面并综合成档案）。这两条分支的设计直接受到 HEART-Bench 的启发——在评测中我们发现，单纯的"信息召回"测试不足以衡量 Agent 的角色一致性，情境推理和人格维度的考察同样重要。分支流程复用主链的中间结果，不重复计算。</p>
+
+        <p>整个过程不是全自动的。每一步的结果都展示在前端工作台上，用户可以审查节点、修改术语表、重跑单个步骤、输入意见引导重新生成。系统的设计哲学是：<strong>不信任 LLM 的单次输出，但信任流程可以把它的输出逐步校正到可用。</strong></p>
+
+        <h2>我主要做了什么</h2>
+        <p>我独立完成了这个项目从架构设计到前后端实现的全部工作。</p>
+        <p><strong>在架构层面</strong>，我选择了分步流水线而不是端到端生成。这个决定源于 HEART-Bench 数据复核中的观察：数据质量问题往往是上游偏差的级联放大。如果把整个过程做成一步到位的黑盒，出了问题只能从头重来。分步设计的代价是代码量更多、流程更复杂，但好处是能精确定位到某一步，只重跑出问题的环节。</p>
+        <p><strong>在 LLM 调用层面</strong>，我实现了流式请求、自动 fallback、SQLite 日志持久化和 token 估算。每一次 LLM 调用的输入输出都被完整记录，包括 prompt、response 和耗时。这让 prompt 迭代有了可回溯的依据——哪些改动带来了改善，哪些只是噪声，能从日志里看到。</p>
+        <p><strong>在前端层面</strong>，我围绕"审查"而不是"展示"来组织页面。主链的每一步都有对应的工作台，支持查看、编辑和重跑。节点审查页展示证据片段和审核动作，术语表编辑页区分锁定行和可编辑行，最终结果页做事件和记忆的并排对照。前端整体保持低视觉噪音，把注意力留给数据本身。</p>
+        <p><strong>在 prompt 层面</strong>，每个步骤的 system prompt 和 user prompt 都独立管理，支持版本迭代。项目里有不少 prompt 是反复修改过的——有些是因为 LLM 的输出格式不稳定，有些是因为它总会遗漏某些类型的节点，有些是因为它在处理特定文本结构时表现异常。这部分工作没有捷径，基本是跑一遍、看结果、改 prompt、再跑一遍的循环。</p>
+
+        <h2>难点与复盘</h2>
+        <p>这个项目里最难的部分，不是写代码，而是学会和 LLM 的不确定性共处。</p>
+        <p>一个具体的例子是节点抽取。早期版本用一次 LLM 调用处理整篇文本，结果要么丢失节点，要么把不同时间的事件混在一起。后来改成滑动窗口分块抽取，窗口之间有重叠，再用规则合并加 LLM 审查做去重。这个改动让召回率明显提升，但也带来了新的问题：合并逻辑有时会把两个不同的事件错误地合并成一个，因为它们的 summary 太相似了。这类问题没有一劳永逸的解法，只能在规则和 prompt 之间反复调整。</p>
+        <p>另一个至今没有完全解决的问题是<strong>长文本中的事件时间排序</strong>。LLM 对时间信息的理解是模糊的，尤其当文本里用的是"那年秋天""几年后""大学毕业后"这类相对时间描述时，它很难给出可靠的绝对时间线。目前系统用规则和 LLM 审查做了一层排序，但对于时间线复杂的长文本，排序结果仍然不够稳定。这可能是下一步引入 RAG 的方向。</p>
+        <p>还有一类问题和 prompt 工程有关。同一个 prompt 在不同的 LLM 上表现差异很大，在同一模型的不同版本上也可能不同。项目里有一个 prompt 目录专门管理各步骤的 prompt 文件，废弃的版本也会保留。这个做法让我在迭代时能更清楚地看到哪些改动带来了改善，哪些只是噪声。</p>
+
+        <h2>当前状态</h2>
+        <p>目前这个项目已经能稳定完成一条完整的链路：从文本输入到结构化记忆输出，中间每一步都可以独立执行、审查和重跑。前端支持五个页面：分步生成、情境生成、人格分析、已保存数据和 LLM 日志。数据默认保留在本地 SQLite，导出需要显式操作，不会自动写入。</p>
+        <p>它还不是一个成熟的产品，更准确地说是一个已经能工作的内部工具。很多工程细节还在继续打磨，前端的耦合度也需要进一步拆解。但它已经验证了一个核心想法：<strong>用流程来约束 LLM 的输出，比单纯依赖 prompt 来得更可靠。</strong></p>
+
+        <h2>最后</h2>
+        <p>MemCraft 不是一个凭空想出来的项目。它从 HEART-Bench 的学术研究中获得方向，从与上交大团队的协作中看到方法，再经过自己的思考和独立实现，变成了一套能跑起来的构建流程。</p>
+        <p>从"LLM 能生成文本"到"LLM 能构建你敢用的结构化数据"，中间的距离不是模型能力的问题，而是流程设计、质量控制和人机协作的问题。这个项目让我在工程层面对这个问题有了比较完整的体验，也让我对下一步的方向——引入 RAG 改善时间排序、探索跨文档角色信息融合——有了更具体的判断。</p>
+
+        <div class="back-link">
+          <a href="./projects.html">← 返回项目列表</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<footer class="site-footer">
+  <div class="grid">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2026 Kaho</span>
+      <ul class="footer-links">
+        <li><a href="https://github.com/ktdhhc" target="_blank">GitHub</a></li>
+        <li><a href="https://www.aindexer.cn" target="_blank">产品主页</a></li>
+        <li><a href="mailto:13288338309@163.com">Email</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

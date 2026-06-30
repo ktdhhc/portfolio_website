@@ -104,6 +104,12 @@ test('010-08: 首页 Agent CTA 开始对话会跳转到 /agent', async ({ page }
   await expect(page).toHaveURL(/\/agent\/?$/);
 });
 
+test('010-09: /agent 页面导航栏简历菜单包含 PDF 下载链接', async ({ page }) => {
+  await page.goto('/agent/');
+  await expect(page.locator('#resume-menu')).toContainText('PDF 下载');
+  await expect(page.locator('#resume-menu')).not.toContainText('PDF 待补充');
+});
+
 // ─────────────────────────────
 // Issue 011: Agent 资料读取闭环 + 项目问答边界
 // ─────────────────────────────

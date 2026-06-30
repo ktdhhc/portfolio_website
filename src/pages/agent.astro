@@ -4,20 +4,22 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import profile from '../../content/profile.json';
 import { getCollection } from 'astro:content';
+import { hasResumePdf } from '../utils/resume-pdf';
 
 const projects = await getCollection('projects');
+const resumePdfAvailable = hasResumePdf();
 ---
 
 <Base title={`Candidate Agent — ${profile.name}`}>
-  <Nav name={profile.name} projects={projects} />
+  <Nav name={profile.name} projects={projects} hasResumePdf={resumePdfAvailable} />
 
   <header class="hero">
     <div class="container">
       <div class="hero-badge">
         <span class="dot"></span>
-        Candidate Agent
+        Kaho Agent
       </div>
-      <h1>向 Agent 提问，<br><span class="accent">了解候选人</span></h1>
+      <h1>与 <span class="accent">Kaho Agent</span> 对话，<br>了解候选人</h1>
       <p class="hero-desc">
         基于简历、项目文档与部分非公开资料回答，不会替本人确认未经验证的信息。
       </p>
