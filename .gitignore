@@ -51,3 +51,7 @@ playwright/.cache/
 
 # Cloudflare Wrangler local state
 .wrangler/
+
+# keep app data modules tracked even if a global gitignore ignores generic data/
+!src/data/
+!src/data/*.ts
