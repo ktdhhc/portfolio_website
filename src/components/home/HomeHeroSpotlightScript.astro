@@ -1,10 +1,54 @@
 <script is:inline>
   (function () {
     var hero = document.getElementById('hero');
-    if (!hero) return;
+    var heroSpotlight = hero ? hero.querySelector('.hero-spotlight') : null;
+    var heroZh = hero ? hero.querySelector('.hero-zh') : null;
+    var heroFront = hero ? hero.querySelector('.hero-front') : null;
+    var heroFlipper = hero ? hero.querySelector('[data-hero-flipper]') : null;
+    var aboutButton = hero ? hero.querySelector('[data-hero-about]') : null;
+    var backButton = hero ? hero.querySelector('[data-hero-back]') : null;
+    if (!hero || !heroSpotlight || !heroZh || !heroFlipper) return;
+
+    function showCard() {
+      hero.classList.add('is-card-open');
+      heroFlipper.style.transform = 'rotateX(180deg)';
+      if (heroFront instanceof HTMLElement) heroFront.style.pointerEvents = 'none';
+    }
+
+    function hideCard() {
+      hero.classList.remove('is-card-open');
+      heroFlipper.style.transform = 'rotateX(0deg)';
+      if (heroFront instanceof HTMLElement) heroFront.style.pointerEvents = '';
+    }
+
+    if (aboutButton instanceof HTMLElement) {
+      aboutButton.addEventListener('click', function () {
+        showCard();
+      });
+    }
+
+    if (backButton instanceof HTMLElement) {
+      backButton.addEventListener('click', function () {
+        hideCard();
+      });
+    }
 
     var canSpotlight = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    if (!canSpotlight) return;
+    var useMobileToggle = window.innerWidth <= 768 || !canSpotlight;
+    if (useMobileToggle) {
+      var isRevealed = false;
+      heroSpotlight.addEventListener('click', function (event) {
+        var target = event.target;
+        if (!(target instanceof Element)) return;
+        if (target.closest('a') || target.closest('button')) return;
+
+        isRevealed = !isRevealed;
+        heroZh.style.opacity = isRevealed ? '0' : '1';
+        heroZh.style.pointerEvents = isRevealed ? 'none' : 'auto';
+      });
+
+      return;
+    }
 
     hero.addEventListener('mousemove', function (event) {
       var rect = hero.getBoundingClientRect();

@@ -4,17 +4,13 @@ import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import AgentCTA from '../components/AgentCTA.astro';
 import Footer from '../components/Footer.astro';
-import HomeAbout from '../components/home/HomeAbout.astro';
-import HomeSkillsSnapshot from '../components/home/HomeSkillsSnapshot.astro';
-import HomeExperienceSnapshot from '../components/home/HomeExperienceSnapshot.astro';
 import HomeFeaturedProjects from '../components/home/HomeFeaturedProjects.astro';
 import profile from '../../content/profile.json';
 import { getCollection } from 'astro:content';
-import { resumeData } from '../data/resume';
 import { hasResumePdf } from '../utils/resume-pdf';
 
 const projects = await getCollection('projects');
-const featuredProjects = projects.filter((p) => p.data.featured).slice(0, 3);
+const featuredProjects = projects.filter((p) => p.data.featured).slice(0, 2);
 const resumePdfAvailable = hasResumePdf();
 ---
 
@@ -22,9 +18,6 @@ const resumePdfAvailable = hasResumePdf();
   <Nav name={profile.name} projects={projects} hasResumePdf={resumePdfAvailable} />
   <Hero profile={profile} hasResumePdf={resumePdfAvailable} />
   <div class="grid"><div class="hairline"></div></div>
-  <HomeAbout profile={profile} />
-  <HomeSkillsSnapshot skills={resumeData.skills} />
-  <HomeExperienceSnapshot experience={resumeData.experience} />
   <HomeFeaturedProjects projects={featuredProjects} />
   <AgentCTA name={profile.name} />
   <Footer github={profile.github} homepage={profile.homepage} email={profile.email} showAdmin={true} />

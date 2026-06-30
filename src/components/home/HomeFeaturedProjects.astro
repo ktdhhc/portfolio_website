@@ -6,7 +6,7 @@ const { projects = [] } = Astro.props;
 
 <section id="projects" class="home-section">
   <div class="grid">
-    <SectionLabel index="04" label="项目" class="home-section-label">
+    <SectionLabel label="项目" class="home-section-label">
       <div class="projects-list">
         {projects.map((project) => (
           <article class="project-item">
@@ -19,21 +19,17 @@ const { projects = [] } = Astro.props;
             <div class="project-links">
               <a href={`/projects/${project.id}/`}>查看详情 →</a>
               {project.data.links?.demo && (
-                <a href={project.data.links.demo} target="_blank" rel="noreferrer">产品主页 →</a>
+                <a href={project.data.links.demo} target="_blank" rel="noreferrer">产品主页</a>
               )}
               {project.data.links?.github && (
-                <a href={project.data.links.github} target="_blank" rel="noreferrer">GitHub →</a>
+                <a href={project.data.links.github} target="_blank" rel="noreferrer">GitHub</a>
               )}
               {project.data.links?.docs && (
-                <a href={project.data.links.docs} target="_blank" rel="noreferrer">文档 →</a>
+                <a href={project.data.links.docs} target="_blank" rel="noreferrer">文档</a>
               )}
             </div>
           </article>
         ))}
-      </div>
-
-      <div class="all-projects-link">
-        <a href="/projects/">查看全部项目 →</a>
       </div>
     </SectionLabel>
   </div>
@@ -114,23 +110,16 @@ const { projects = [] } = Astro.props;
     flex-wrap: wrap;
     gap: 1rem 1.5rem;
   }
-
-  .project-links a,
-  .all-projects-link a {
+  .project-links a {
     font-size: 0.85rem;
     color: var(--fg-secondary);
     transition: var(--transition);
   }
 
-  .project-links a:hover,
-  .all-projects-link a:hover {
+  .project-links a:hover {
     color: var(--accent-dark);
     text-decoration: underline;
     text-underline-offset: 3px;
-  }
-
-  .all-projects-link {
-    margin-top: 2rem;
   }
 
   @media (max-width: 768px) {

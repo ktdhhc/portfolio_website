@@ -87,8 +87,8 @@ test('/projects/aindexer 详情页顶部显示项目元信息', async ({ page })
 
 test('/projects/aindexer 详情页头部和正文末尾都有返回 /projects 的链接', async ({ page }) => {
   await page.goto('/projects/aindexer/');
-  const headerBackLink = page.locator('.article-links a[href="/projects/"]');
-  const backLink = page.locator('.back-link a[href="/projects/"]');
+  const headerBackLink = page.locator('.back-link[href="/projects/"]');
+  const backLink = page.locator('.article-body .back-link a[href="/projects/"]');
 
   await expect(headerBackLink).toBeVisible();
   await expect(backLink).toBeVisible();

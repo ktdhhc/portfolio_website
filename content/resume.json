@@ -38,9 +38,9 @@
   "skills": [
     { "name": "Python", "highlight": true, "group": "core" },
     { "name": "Prompt Engineering", "highlight": true, "group": "core" },
-    { "name": "Claude code", "highlight": true, "group": "core" },
-    { "name": "LangChain", "group": "tool" },
-    { "name": "LangGraph", "group": "tool" },
+    { "name": "LangChain", "highlight": true, "group": "core"},
+    { "name": "LangGraph", "highlight": true, "group": "core" },
+    { "name": "Claude code", "group": "tool" },
     { "name": "FastAPI", "group": "tool" },
     { "name": "React", "group": "tool" },
     { "name": "TypeScript", "group": "tool" },

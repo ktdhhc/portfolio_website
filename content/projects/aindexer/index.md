@@ -3,7 +3,7 @@ name: Aindexer
 tagline: 面向科研文献的本地化 AI 工作台
 type: personal
 role: 独立开发
-period: "2025.12"
+period: "2025.12 - 2026.05"
 tags:
   - FastAPI
   - SQLite

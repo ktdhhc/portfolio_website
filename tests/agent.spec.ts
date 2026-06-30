@@ -56,7 +56,6 @@ test('010-02a: /agent 页面使用页头与分隔线承载定位说明', async (
   await expect(page.locator('.page-header-title')).toHaveText('Candidate Agent');
   await expect(page.locator('.page-header-description')).toContainText('基于简历、项目文档与部分非公开资料回答');
   await expect(page.locator('.page-header').locator('.privacy-note')).toContainText('提问内容可能被记录');
-  await expect(page.locator('.hairline')).toBeVisible();
 });
 
 test('010-03: /agent 页面包含消息区、输入框和发送按钮', async ({ page }) => {

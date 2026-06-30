@@ -20,6 +20,8 @@ Keyper 是一个轻量级的桌面工具，用来统一管理各个平台的 LLM
 
 Keyper 把这些 Key 收拢到一个地方，给它们挂上平台标签，支持一键复制和批量探测。它不是一个 Playground，也不做对话功能，只专注于 Key 本身的管理和验证。
 
+<img src="/images/Keyper/ScreenShot_2026-06-30_231104_288.png" alt="Keyper" style="max-width: 100%; border-radius: 12px;" />
+
 ---
 
 ## 它在解决什么

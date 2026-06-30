@@ -7,6 +7,8 @@ const { project, typeLabel } = Astro.props as {
 };
 ---
 
+<a class="back-link" href="/projects/">← 返回</a>
+
 <header class="article-header">
   <div class="grid">
     <div class="article-type">{typeLabel}</div>
@@ -32,7 +34,6 @@ const { project, typeLabel } = Astro.props as {
       {project.data.links?.demo && <a href={project.data.links.demo} target="_blank">产品主页 →</a>}
       {project.data.links?.docs && <a href={project.data.links.docs} target="_blank">文档 →</a>}
       {project.data.links?.paper && <a href={project.data.links.paper} target="_blank">arXiv →</a>}
-      <a href="/projects/">← 返回项目列表</a>
     </div>
   </div>
 </header>
@@ -43,7 +44,7 @@ const { project, typeLabel } = Astro.props as {
   }
 
   .article-type {
-    grid-column: 2 / 10;
+    grid-column: 1 / 10;
     display: inline-flex;
     align-items: center;
     justify-self: start;
@@ -59,7 +60,7 @@ const { project, typeLabel } = Astro.props as {
   }
 
   .article-title {
-    grid-column: 2 / 11;
+    grid-column: 1 / 11;
     font-size: 3rem;
     font-weight: 700;
     letter-spacing: -0.03em;
@@ -68,7 +69,7 @@ const { project, typeLabel } = Astro.props as {
   }
 
   .article-meta {
-    grid-column: 2 / 10;
+    grid-column: 1 / 10;
     font-size: 0.9rem;
     color: var(--fg-secondary);
     margin-bottom: 1.5rem;
@@ -80,7 +81,7 @@ const { project, typeLabel } = Astro.props as {
   }
 
   .article-tags {
-    grid-column: 2 / 10;
+    grid-column: 1 / 10;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -104,7 +105,7 @@ const { project, typeLabel } = Astro.props as {
   }
 
   .article-links {
-    grid-column: 2 / 10;
+    grid-column: 1 / 10;
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
@@ -120,6 +121,22 @@ const { project, typeLabel } = Astro.props as {
     color: var(--accent-dark);
     text-decoration: underline;
     text-underline-offset: 0.18em;
+  }
+
+  .back-link {
+    position: fixed;
+    top: 7rem;
+    left: 10rem;
+    z-index: 500;
+    font-size: 0.82rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: var(--transition);
+  }
+
+  .back-link:hover {
+    color: var(--fg);
   }
 
   @media (max-width: 768px) {

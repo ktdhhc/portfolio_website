@@ -24,21 +24,44 @@ const placeholderTags = [
   { label: '栋笃笑15年老粉', top: '72%', left: '3%' },
   { label: 'Prompt Engineering', top: '90%', left: '60%' },
 ];
+
+const letterParagraphs = [
+  `欢迎来到我的主页。`,
+  `我是 Kaho，一个相信技术应当有温度的人。`,
+  `这个空间是我与外界交互的一个窗口。在这里，我不仅想分享我的项目与技术方案，更想记录我对"智能"这个概念的逐渐理解，以及与之协作共生的过程。`,
+  `我关注的方向是 AI 与认知科学的交叉地带，前者让我着迷于从巨量数据中涌现的能力，后者提醒我永远不要忽视人的作用。两者结合，才能做出真正打动人的产品。`,
+  `如果你想快速了解我的项目、经历或处事风格，可以继续浏览页面，或者直接通过 Agent 与我对话，我永远在。`,
+];
 ---
 
 <section class="hero" id="hero">
   <div class="hero-spotlight">
-    <HomeHeroEnglishLayer
-      name={profile.name}
-      englishBio={englishBio}
-      placeholderTags={placeholderTags}
-      hasResumePdf={hasResumePdf}
-    />
-    <HomeHeroChineseLayer
-      name={profile.name}
-      description={profile.description}
-      hasResumePdf={hasResumePdf}
-    />
+    <div class="hero-flipper" data-hero-flipper>
+      <div class="hero-front">
+        <HomeHeroEnglishLayer
+          name={profile.name}
+          englishBio={englishBio}
+          placeholderTags={placeholderTags}
+          hasResumePdf={hasResumePdf}
+        />
+        <HomeHeroChineseLayer
+          name={profile.name}
+          description={profile.description}
+          hasResumePdf={hasResumePdf}
+        />
+      </div>
+
+      <div class="hero-back">
+        <div class="hero-card">
+          <button type="button" class="card-back" data-hero-back>← 返回</button>
+          <div class="card-content">
+            <div class="card-body">
+              {letterParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <HomeHeroFooter statusText={heroStatusText} />
@@ -53,10 +76,116 @@ const placeholderTags = [
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    perspective: 1200px;
   }
 
   .hero-spotlight {
     position: relative;
     flex: 1;
+  }
+
+  .hero-flipper {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero-front,
+  .hero-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+  }
+
+  .hero-back {
+    transform: rotateX(180deg);
+    pointer-events: none;
+  }
+
+  .hero-card {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    padding: 2rem;
+  }
+
+  .card-back {
+    position: absolute;
+    bottom: 3%;
+    left: 48%;
+    z-index: 11;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    color: var(--fg-muted);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    pointer-events: none;
+    transition: var(--transition);
+  }
+
+  .hero.is-card-open .hero-back {
+    pointer-events: auto;
+  }
+
+  .hero.is-card-open .card-back {
+    pointer-events: auto;
+  }
+
+  .card-back:hover {
+    color: var(--fg);
+  }
+
+  .card-content {
+    position: relative;
+    width: 100%;
+    max-width: 40rem;
+    aspect-ratio: 4 / 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5rem 3.5rem 3rem;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    box-shadow: 0 2px 24px rgba(31, 35, 41, 0.04);
+    letter-spacing: 0.06em;
+    font-weight: 400;
+  }
+
+  .card-body p {
+    margin-bottom: 1rem;
+    color: var(--fg-secondary);
+    font-size: 0.95rem;
+    line-height: 1.9;
+    text-indent: 2em;
+  }
+
+  .card-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+
+
+    .hero-card {
+      padding: 1.5rem;
+    }
+
+    .card-content {
+      aspect-ratio: auto;
+      min-height: min(70vh, 34rem);
+      padding: 2rem 1.5rem 3.5rem;
+    }
+
+    .card-back {
+      left: 50%;
+      transform: translateX(-50%);
+    }
   }
 </style>

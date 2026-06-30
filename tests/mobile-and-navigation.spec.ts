@@ -26,6 +26,20 @@ test.describe('移动端视口 (375px)', () => {
     expect(response?.status()).toBe(200);
     await expect(page.locator('body')).toContainText('Aindexer');
   });
+
+  test('首页移动端点击 hero 空白区域会切换中英文前景层', async ({ page }) => {
+    await page.goto('/');
+    const heroSpotlight = page.locator('.hero-spotlight');
+    const heroZh = page.locator('.hero-zh');
+
+    await expect(heroZh).toHaveCSS('opacity', '1');
+
+    await heroSpotlight.click({ position: { x: 24, y: 200 } });
+    await expect(heroZh).toHaveCSS('opacity', '0');
+
+    await heroSpotlight.click({ position: { x: 24, y: 200 } });
+    await expect(heroZh).toHaveCSS('opacity', '1');
+  });
 });
 
 test.describe('页面间导航', () => {
@@ -60,15 +74,15 @@ test.describe('页面间导航', () => {
 
   test('从详情页返回 /projects', async ({ page }) => {
     await page.goto('/projects/aindexer/');
-    const backLink = page.locator('.back-link a[href="/projects/"]');
-    await backLink.click();
+    const backLink = page.locator('.back-link[href="/projects/"]');
+    await backLink.click({ force: true });
     await expect(page).toHaveURL(/\/projects/);
   });
 
-  test('首页有查看全部项目链接', async ({ page }) => {
+  test('首页不再显示查看全部项目链接', async ({ page }) => {
     await page.goto('/');
     const allProjectsLink = page.locator('.all-projects-link a[href="/projects/"]');
-    await expect(allProjectsLink).toBeVisible();
+    await expect(allProjectsLink).toHaveCount(0);
   });
 
   test('移动端点击简历菜单会展开下拉', async ({ page }) => {
