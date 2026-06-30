@@ -1,0 +1,86 @@
+---
+import SectionLabel from '../layout/SectionLabel.astro';
+
+const { skills = [] } = Astro.props;
+
+const skillGroups = [
+  { key: 'core', title: '核心能力' },
+  { key: 'tool', title: '工程工具' },
+  { key: 'research', title: '研究方法' },
+];
+---
+
+<section id="skills" class="resume-section">
+  <div class="grid">
+    <SectionLabel index="03" label="技能" class="resume-section-label">
+      <div class="skills-grid">
+        {skillGroups.map((group) => (
+          <section class="skills-group">
+            <h2>{group.title}</h2>
+            <ul>
+              {skills.filter((entry) => entry.group === group.key).map((skill) => (
+                <li class:list={{ highlight: skill.highlight }}>{skill.name}</li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </SectionLabel>
+  </div>
+</section>
+
+<style>
+  .resume-section {
+    padding: 6rem 0;
+  }
+
+  .resume-section-label {
+    grid-column: 1 / -1;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4rem;
+  }
+
+  .skills-group h2 {
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+
+  .skills-group ul {
+    list-style: none;
+  }
+
+  .skills-group li {
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .skills-group li:last-child {
+    border-bottom: none;
+  }
+
+  .skills-group li.highlight {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .resume-section {
+      padding: 4rem 0;
+    }
+
+    .skills-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

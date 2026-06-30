@@ -2,66 +2,30 @@
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import ProjectCard from '../components/ProjectCard.astro';
 import AgentCTA from '../components/AgentCTA.astro';
 import Footer from '../components/Footer.astro';
+import HomeAbout from '../components/home/HomeAbout.astro';
+import HomeSkillsSnapshot from '../components/home/HomeSkillsSnapshot.astro';
+import HomeExperienceSnapshot from '../components/home/HomeExperienceSnapshot.astro';
+import HomeFeaturedProjects from '../components/home/HomeFeaturedProjects.astro';
 import profile from '../../content/profile.json';
 import { getCollection } from 'astro:content';
+import { resumeData } from '../data/resume';
 import { hasResumePdf } from '../utils/resume-pdf';
 
 const projects = await getCollection('projects');
-const featuredProjects = projects.filter((p) => p.data.featured);
+const featuredProjects = projects.filter((p) => p.data.featured).slice(0, 3);
 const resumePdfAvailable = hasResumePdf();
 ---
 
 <Base title={`${profile.name} — AI Agent 产品 & 认知系统工程`}>
   <Nav name={profile.name} projects={projects} hasResumePdf={resumePdfAvailable} />
   <Hero profile={profile} hasResumePdf={resumePdfAvailable} />
-  <section id="projects" class="container">
-    <SectionHeader tag="Selected Projects" title="代表项目" />
-    <div class="projects-grid">
-      {featuredProjects.map((project) => (
-        <ProjectCard
-          name={project.data.name}
-          tagline={project.data.tagline}
-          period={project.data.period}
-          tags={project.data.tags}
-          links={project.data.links}
-          type={project.data.type}
-          role={project.data.role}
-          company={project.data.company}
-          slug={project.id}
-        />
-      ))}
-    </div>
-    <div class="all-projects-link">
-
-    </div>
-  </section>
-  <AgentCTA />
+  <div class="grid"><div class="hairline"></div></div>
+  <HomeAbout profile={profile} />
+  <HomeSkillsSnapshot skills={resumeData.skills} />
+  <HomeExperienceSnapshot experience={resumeData.experience} />
+  <HomeFeaturedProjects projects={featuredProjects} />
+  <AgentCTA name={profile.name} />
   <Footer github={profile.github} homepage={profile.homepage} email={profile.email} showAdmin={true} />
 </Base>
-
-<style>
-  .projects-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    max-width: 680px;
-    margin: 0 auto;
-  }
-  .all-projects-link {
-    text-align: center;
-    margin-top: 2.5rem;
-  }
-  .all-projects-link a {
-    color: var(--accent-dark);
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: var(--transition);
-  }
-  .all-projects-link a:hover {
-    color: var(--fg);
-  }
-</style>

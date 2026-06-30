@@ -1,38 +1,82 @@
 ---
-import Button from '../components/Button.astro';
+import SectionLabel from '../components/layout/SectionLabel.astro';
+
+const { name = 'Kaho' } = Astro.props;
 ---
 
-<section id="agent" class="container">
-  <div class="agent-cta">
-    <h2>与 Kaho Agent 对话</h2>
-    <p>
-      基于简历、项目文档与部分非公开资料的问答助手。
-      可以询问项目细节、技术方案、岗位匹配度等问题。
-    </p>
-    <Button variant="primary" href="/agent/">开始对话</Button>
+<section id="agent" class="agent-band">
+  <div class="grid">
+    <SectionLabel index="05" label="Agent" class="agent-section-label">
+      <div class="agent-content">
+        <h2>与 {name} Agent 对话</h2>
+        <p>
+          基于简历、项目文档与部分非公开资料构建的问答助手。
+          可以询问项目细节、技术方案、岗位匹配度等问题。
+        </p>
+        <a href="/agent/" class="agent-btn">开始对话</a>
+      </div>
+    </SectionLabel>
   </div>
 </section>
 
 <style>
-  .agent-cta {
-    background: var(--accent-bg);
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-cta);
-    padding: 4rem 2rem;
-    text-align: center;
-    max-width: 640px;
-    margin: 0 auto;
+  .agent-band {
+    background: var(--fg);
+    padding: 6.5rem 0;
+    margin-top: 1rem;
   }
-  .agent-cta h2 {
-    font-size: 1.5rem;
+
+  .agent-section-label {
+    grid-column: 1 / -1;
+  }
+
+  .agent-band :global(.section-label-index) {
+    color: #3a3f45;
+  }
+
+  .agent-band :global(.section-label-title) {
+    color: var(--fg-muted);
+  }
+
+  .agent-content h2 {
+    font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    color: var(--bg);
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+    line-height: 1.3;
   }
-  .agent-cta p {
-    color: var(--fg-secondary);
-    max-width: 440px;
-    margin: 0 auto 1.5rem;
+
+  .agent-content p {
     font-size: 1rem;
+    color: var(--fg-muted);
     line-height: 1.7;
+    margin-bottom: 2rem;
+    max-width: 30rem;
+  }
+
+  .agent-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.7rem 1.6rem;
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+    border-radius: var(--radius-button);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+
+  .agent-btn:hover {
+    background: #ffffff;
+    color: var(--fg);
+  }
+
+  @media (max-width: 768px) {
+    .agent-band {
+      padding: 5rem 0;
+    }
   }
 </style>

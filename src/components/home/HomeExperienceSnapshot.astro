@@ -1,0 +1,110 @@
+---
+import SectionLabel from '../layout/SectionLabel.astro';
+
+const { experience = [] } = Astro.props;
+---
+
+<section id="experience" class="home-section">
+  <div class="grid">
+    <SectionLabel index="03" label="经历" class="home-section-label">
+      <div class="experience-stack">
+        {experience.map((entry) => (
+          <article class="experience-entry">
+            <header class="exp-header">
+              <h3>{entry.title}</h3>
+              <span class="sub">{entry.company}</span>
+              <span class="time">{entry.period}</span>
+            </header>
+            <p class="exp-desc">{entry.description}</p>
+            <ul class="exp-list">
+              {entry.projects.map((project) => (
+                <li>
+                  <strong>{project.title}</strong>
+                  <p>{project.description}</p>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </SectionLabel>
+  </div>
+</section>
+
+<style>
+  .home-section {
+    padding: 6.5rem 0;
+  }
+
+  .home-section-label {
+    grid-column: 1 / -1;
+  }
+
+  .experience-stack {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .exp-header {
+    margin-bottom: 2rem;
+  }
+
+  .exp-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+
+  .sub {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--accent-dark);
+    font-weight: 500;
+  }
+
+  .time {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    margin-top: 0.5rem;
+  }
+
+  .exp-desc {
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    max-width: 37.5rem;
+  }
+
+  .exp-list {
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .exp-list li {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .exp-list strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    font-size: 0.95rem;
+  }
+
+  .exp-list p {
+    font-size: 0.9rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+    max-width: 35rem;
+  }
+
+  @media (max-width: 768px) {
+    .home-section {
+      padding: 5rem 0;
+    }
+  }
+</style>

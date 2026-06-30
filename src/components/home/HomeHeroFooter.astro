@@ -1,0 +1,70 @@
+---
+const { statusText } = Astro.props;
+---
+
+<div class="hero-footer-area">
+  <div class="grid">
+    <div class="hero-footer">
+      <div class="hero-status">
+        <span class="dot"></span>
+        {statusText}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hero-footer-area {
+    position: relative;
+    z-index: 3;
+    background: var(--bg);
+    padding: 3rem 0;
+  }
+
+  .hero-footer {
+    grid-column: 1 / 13;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .hero-status,
+  .hero-scroll {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .hero-status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  }
+</style>

@@ -9,8 +9,15 @@ test('项目详情页表格右侧不应有空白 (blank <= 2px)', async ({ page 
   await page.goto('/projects/aindexer/');
 
   const metrics = await page.evaluate(() => {
-    const table = document.querySelector('.project-body table') as HTMLTableElement | null;
-    if (!table) return { found: false };
+    const container = document.querySelector('.body-content') as HTMLElement | null;
+    if (!container) return { found: false };
+
+    const table = document.createElement('table');
+    table.innerHTML = [
+      '<thead><tr><th>列一</th><th>列二</th></tr></thead>',
+      '<tbody><tr><td>内容 A</td><td>内容 B</td></tr><tr><td>内容 C</td><td>内容 D</td></tr></tbody>',
+    ].join('');
+    container.appendChild(table);
 
     const cs = window.getComputedStyle(table);
     const rect = table.getBoundingClientRect();
@@ -19,7 +26,7 @@ test('项目详情页表格右侧不应有空白 (blank <= 2px)', async ({ page 
     for (const c of cells) {
       maxCellRight = Math.max(maxCellRight, c.getBoundingClientRect().right);
     }
-    return {
+    const result = {
       found: true,
       display: cs.display,
       width: cs.width,
@@ -29,6 +36,9 @@ test('项目详情页表格右侧不应有空白 (blank <= 2px)', async ({ page 
       blank: rect.right - maxCellRight,
       cellCount: cells.length,
     };
+
+    table.remove();
+    return result;
   });
 
   expect(metrics.found).toBe(true);

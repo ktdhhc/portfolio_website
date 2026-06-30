@@ -53,7 +53,7 @@ test.describe('页面间导航', () => {
 
   test('从 /projects 点击查看详情进入详情页', async ({ page }) => {
     await page.goto('/projects/');
-    const detailLink = page.locator('.project-detail-link a').first();
+    const detailLink = page.locator('.project-title a').first();
     await detailLink.click();
     await expect(page).toHaveURL(/\/projects\/[a-z-]+/);
   });
@@ -91,7 +91,7 @@ test.describe('页面间导航', () => {
 
 test.describe('构建完整性', () => {
   test('全部 5 个公开页面返回 200', async ({ page }) => {
-    const pages = ['/', '/resume/', '/projects/', '/projects/aindexer/', '/projects/character-memory/'];
+    const pages = ['/', '/resume/', '/projects/', '/projects/aindexer/', '/projects/keyper/'];
     for (const url of pages) {
       const response = await page.goto(url);
       expect(response?.status(), `${url} should return 200`).toBe(200);
@@ -99,7 +99,7 @@ test.describe('构建完整性', () => {
   });
 
   test('4 个项目详情页全部返回 200', async ({ page }) => {
-    const slugs = ['aindexer', 'character-memory', 'human-like-agent', 'memory-system-testing'];
+    const slugs = ['aindexer', 'keyper', 'human-like-agent', 'memory-system-testing'];
     for (const slug of slugs) {
       const response = await page.goto(`/projects/${slug}/`);
       expect(response?.status(), `/projects/${slug}/ should return 200`).toBe(200);

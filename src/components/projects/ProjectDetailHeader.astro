@@ -1,0 +1,148 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+const { project, typeLabel } = Astro.props as {
+  readonly project: CollectionEntry<'projects'>;
+  readonly typeLabel: string;
+};
+---
+
+<header class="article-header">
+  <div class="grid">
+    <div class="article-type">{typeLabel}</div>
+    <h1 class="article-title">{project.data.name}</h1>
+    <div class="article-meta">
+      <span>{project.data.role}</span>
+      <span class="dot">·</span>
+      <span>{project.data.period}</span>
+      {project.data.type === 'internship' && project.data.company && (
+        <>
+          <span class="dot">·</span>
+          <span>{project.data.company}</span>
+        </>
+      )}
+    </div>
+    {project.data.tags.length > 0 && (
+      <div class="article-tags">
+        {project.data.tags.map((tag) => <span>{tag}</span>)}
+      </div>
+    )}
+    <div class="article-links">
+      {project.data.links?.github && <a href={project.data.links.github} target="_blank">GitHub →</a>}
+      {project.data.links?.demo && <a href={project.data.links.demo} target="_blank">产品主页 →</a>}
+      {project.data.links?.docs && <a href={project.data.links.docs} target="_blank">文档 →</a>}
+      {project.data.links?.paper && <a href={project.data.links.paper} target="_blank">arXiv →</a>}
+      <a href="/projects/">← 返回项目列表</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .article-header {
+    padding: 10rem 0 3rem;
+  }
+
+  .article-type {
+    grid-column: 2 / 10;
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    padding: 0.35rem 0.8rem;
+    border-radius: var(--radius-pill);
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .article-title {
+    grid-column: 2 / 11;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+  }
+
+  .article-meta {
+    grid-column: 2 / 10;
+    font-size: 0.9rem;
+    color: var(--fg-secondary);
+    margin-bottom: 1.5rem;
+  }
+
+  .dot {
+    margin: 0 0.5rem;
+    color: var(--fg-muted);
+  }
+
+  .article-tags {
+    grid-column: 2 / 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .article-tags span {
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .article-tags span::after {
+    content: '·';
+    margin-left: 0.5rem;
+    color: var(--border);
+  }
+
+  .article-tags span:last-child::after {
+    content: none;
+  }
+
+  .article-links {
+    grid-column: 2 / 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .article-links a {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    transition: var(--transition);
+  }
+
+  .article-links a:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  @media (max-width: 768px) {
+    .article-header {
+      padding: 7rem 0 2rem;
+    }
+
+    .article-type,
+    .article-title,
+    .article-meta,
+    .article-tags,
+    .article-links {
+      grid-column: 1 / 13;
+    }
+
+    .article-title {
+      font-size: 2.2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .article-links {
+      gap: 0.75rem;
+    }
+  }
+</style>

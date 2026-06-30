@@ -16,7 +16,22 @@ interface ChatRequestBody {
 
 const maxToolRounds = 5;
 
-function firstMeaningfulLine(content: string): string {
+function firstMeaningfulLine(content: string, fileId?: string): string {
+  // 对于项目 index.md 文件，提取 name 和 tagline 拼接显示
+  if (fileId && fileId.startsWith('projects/') && fileId.endsWith('/index.md')) {
+    const lines = content.split('\n').map((line) => line.trim());
+    let name = '';
+    let tagline = '';
+    for (const line of lines) {
+      if (line.startsWith('name: ')) name = line.slice(6);
+      if (line.startsWith('tagline: ')) tagline = line.slice(9);
+      if (name && tagline) break;
+    }
+    if (name && tagline) return `${name} — ${tagline}`;
+    if (name) return name;
+  }
+
+  // 对于其他文件，保持原来的行为
   return (
     content
       .split('\n')
@@ -27,7 +42,7 @@ function firstMeaningfulLine(content: string): string {
 
 function buildMainContext(): ChatMessage[] {
   const fileIndex = readableAgentFileIds
-    .map((file) => `- ${file}: ${firstMeaningfulLine(agentMaterials[file])}`)
+    .map((file) => `- ${file}: ${firstMeaningfulLine(agentMaterials[file], file)}`)
     .join('\n');
 
   return [
@@ -38,7 +53,7 @@ function buildMainContext(): ChatMessage[] {
         agentMaterials['agent/answer-rules.md'],
         `候选人 profile 摘要：\n${agentMaterials['profile.json']}`,
         `可通过 read_file 工具读取的文件索引：\n${fileIndex}`,
-        '回答具体项目或简历细节前，应优先使用 read_file 读取相关文件；资料不足时明确说明无法确认。',
+        '当访客询问任何具体项目时，你必须直接读取对应的项目文件（如 projects/{slug}/index.md）。不要假设你已经知道答案。只有在读取了相关文件后才能回答项目细节。',
       ].join('\n\n'),
     },
   ];

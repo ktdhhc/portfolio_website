@@ -2,6 +2,8 @@
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import PageHeader from '../components/layout/PageHeader.astro';
+import Hairline from '../components/layout/Hairline.astro';
 import profile from '../../content/profile.json';
 import { getCollection } from 'astro:content';
 import { hasResumePdf } from '../utils/resume-pdf';
@@ -13,49 +15,56 @@ const resumePdfAvailable = hasResumePdf();
 <Base title={`Candidate Agent — ${profile.name}`}>
   <Nav name={profile.name} projects={projects} hasResumePdf={resumePdfAvailable} />
 
-  <header class="hero">
-    <div class="container">
-      <div class="hero-badge">
-        <span class="dot"></span>
-        Kaho Agent
+  <section class="agent-header-shell">
+    <div class="grid">
+      <div class="agent-page-header">
+        <PageHeader
+          title="Candidate Agent"
+          description="基于简历、项目文档与部分非公开资料回答，不会替本人确认未经验证的信息。"
+        >
+          <p class="privacy-note">提问内容可能被记录，请勿输入敏感信息</p>
+        </PageHeader>
       </div>
-      <h1>与 <span class="accent">Kaho Agent</span> 对话，<br>了解候选人</h1>
-      <p class="hero-desc">
-        基于简历、项目文档与部分非公开资料回答，不会替本人确认未经验证的信息。
-      </p>
-      <p class="privacy-note">提问内容可能被记录，请勿输入敏感信息</p>
     </div>
-  </header>
+  </section>
 
-  <main class="container">
-    <section class="chat-card" aria-label="Candidate Agent 对话">
-      <div class="chat-messages" id="chatMessages">
-        <div class="empty-state" id="emptyState">
-          <p>从这里开始</p>
-          <span>选择下方预设问题，或直接输入</span>
-        </div>
-      </div>
+  <main class="agent-main">
+    <div class="grid">
+      <Hairline />
+    </div>
 
-      <div class="chat-input-area">
-        <div class="jd-wrap" id="jdWrap">
-          <textarea class="jd-textarea" id="jdInput" placeholder="粘贴 JD 文本，Agent 会分析匹配点、风险点和建议追问。"></textarea>
-        </div>
-        <div class="input-row">
-          <input type="text" class="chat-input" id="chatInput" placeholder="输入你的问题…" autocomplete="off" />
-          <button class="send-btn" id="sendBtn" type="button" aria-label="发送">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-          </button>
-        </div>
-        <div class="input-meta">
-          <div class="presets" id="presetBar">
-            <button class="preset" data-question="请快速介绍候选人">自我介绍</button>
-            <button class="preset" data-question="请介绍候选人的代表项目">项目问答</button>
-            <button class="preset" data-question="请分析候选人与这个岗位的匹配度">岗位匹配</button>
-            <button class="preset" data-question="请总结候选人的优势与不足">优势不足</button>
-            <button class="preset" data-question="请生成建议面试问题">面试问题</button>
+    <section class="agent-chat-shell">
+      <div class="grid">
+        <section class="chat-card" aria-label="Candidate Agent 对话">
+          <div class="chat-messages" id="chatMessages">
+            <div class="empty-state" id="emptyState">
+              <p>从这里开始</p>
+              <span>选择下方预设问题，或直接输入</span>
+            </div>
           </div>
-          <button class="jd-toggle" id="jdToggle" type="button">JD 分析</button>
-        </div>
+
+          <div class="chat-input-area">
+            <div class="jd-wrap" id="jdWrap">
+              <textarea class="jd-textarea" id="jdInput" placeholder="粘贴 JD 文本，Agent 会分析匹配点、风险点和建议追问。"></textarea>
+            </div>
+            <div class="input-row">
+              <input type="text" class="chat-input" id="chatInput" placeholder="输入你的问题…" autocomplete="off" />
+              <button class="send-btn" id="sendBtn" type="button" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
+            <div class="input-meta">
+              <div class="presets" id="presetBar">
+                <button class="preset" data-question="请快速介绍候选人">自我介绍</button>
+                <button class="preset" data-question="请介绍候选人的代表项目">项目问答</button>
+                <button class="preset" data-question="请分析候选人与这个岗位的匹配度">岗位匹配</button>
+                <button class="preset" data-question="请总结候选人的优势与不足">优势不足</button>
+                <button class="preset" data-question="请生成建议面试问题">面试问题</button>
+              </div>
+              <button class="jd-toggle" id="jdToggle" type="button">JD 分析</button>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
   </main>
@@ -64,69 +73,48 @@ const resumePdfAvailable = hasResumePdf();
 </Base>
 
 <style>
-  /* ── Hero ── */
-  .hero {
-    padding: 11rem 0 5rem;
-    text-align: center;
+  .agent-header-shell {
+    padding: 10rem 0 3rem;
   }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    font-size: 0.8rem; color: var(--fg-muted);
-    margin-bottom: 1.25rem;
+
+  .agent-page-header {
+    grid-column: 1 / -1;
   }
-  .hero-badge .dot {
-    width: 6px; height: 6px;
-    background: var(--success);
-    border-radius: 50%;
-    animation: pulse 2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  .hero h1 {
-    font-size: 3rem; font-weight: 700;
-    letter-spacing: -0.03em; line-height: 1.1;
-    margin-bottom: 1.25rem;
-  }
-  .hero h1 .accent { color: var(--accent-dark); }
-  .hero-desc {
-    font-size: 1rem; color: var(--fg-secondary);
-    max-width: 420px;
-    margin: 0 auto;
-    line-height: 1.7;
-  }
+
   .privacy-note {
-    margin-top: 1.75rem;
+    margin-top: 0.75rem;
     font-size: 0.8rem;
     color: var(--fg-muted);
   }
-  @media (max-width: 640px) {
-    .hero h1 { font-size: 2.25rem; }
-    .hero { padding: 8rem 0 4rem; }
+
+  .agent-main {
+    padding-bottom: 4rem;
   }
 
-  /* ── Chat Card ── */
+  .agent-chat-shell {
+    padding: 2rem 0 2rem;
+  }
+
   .chat-card {
+    grid-column: 2 / 12;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
     min-height: 560px;
     display: flex;
     flex-direction: column;
-    margin-bottom: 4rem;
   }
+
   .chat-messages {
     flex: 1;
-    padding: 2.5rem;
+    min-height: 360px;
+    padding: 2rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 1.75rem;
+    gap: 1.5rem;
   }
-  @media (max-width: 640px) {
-    .chat-messages { padding: 1.5rem; }
-  }
+
   .empty-state {
     flex: 1;
     display: flex;
@@ -142,6 +130,22 @@ const resumePdfAvailable = hasResumePdf();
   }
   .empty-state span {
     font-size: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    .agent-header-shell {
+      padding: 7rem 0 3rem;
+    }
+
+    .chat-card {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .chat-messages {
+      padding: 1.5rem;
+    }
   }
 </style>
 
@@ -173,7 +177,7 @@ const resumePdfAvailable = hasResumePdf();
     background: var(--fg);
     color: var(--bg);
     padding: 0.9rem 1.2rem;
-    border-radius: var(--radius-card);
+    border-radius: calc(var(--radius-button) + 4px);
     border-bottom-right-radius: 4px;
   }
   .message.agent .message-bubble {
@@ -341,7 +345,7 @@ const resumePdfAvailable = hasResumePdf();
     max-width: 90%;
     padding: 1rem 1.2rem;
     background: var(--bg-muted);
-    border-radius: var(--radius-card);
+    border-radius: calc(var(--radius-button) + 4px);
     font-size: 0.9rem;
     color: var(--fg-secondary);
     line-height: 1.65;

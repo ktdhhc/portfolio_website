@@ -1,0 +1,140 @@
+---
+const { project, index = 0 } = Astro.props;
+
+const isInternship = project.data.type === 'internship';
+const detailHref = `/projects/${project.id}/`;
+const projectNumber = String(index + 1).padStart(2, '0');
+const projectLabel = isInternship ? 'INTERNSHIP' : 'PERSONAL';
+const metaItems = isInternship
+  ? [project.data.role, project.data.period, project.data.company]
+  : [project.data.role, project.data.period];
+
+const projectLinks = [];
+
+if (project.data.links?.demo) {
+  projectLinks.push({ href: project.data.links.demo, label: '产品主页' });
+}
+
+if (project.data.links?.github) {
+  projectLinks.push({ href: project.data.links.github, label: 'GitHub' });
+}
+
+if (project.data.links?.docs) {
+  projectLinks.push({ href: project.data.links.docs, label: '文档' });
+}
+---
+
+<article class:list={['project-item', { 'project-item-first': index === 0 }]}>
+  <span class="project-num">{projectLabel} — {projectNumber}</span>
+  <h3 class="project-title">
+    <a href={detailHref}>{project.data.name}</a>
+  </h3>
+  <span class="project-meta">{metaItems.join(' · ')}</span>
+  <p class="project-tagline">{project.data.tagline}</p>
+
+  {project.data.tags.length > 0 && (
+    <div class="project-tags" aria-label={`${project.data.name} tags`}>
+      {project.data.tags.map((tag) => <span>{tag}</span>)}
+    </div>
+  )}
+
+  {projectLinks.length > 0 && (
+    <div class="project-links">
+      {projectLinks.map((link) => (
+        <a href={link.href} target="_blank" rel="noreferrer" class="project-link">{link.label} →</a>
+      ))}
+    </div>
+  )}
+</article>
+
+<style>
+  .project-item {
+    padding: 3rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .project-item-first {
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .project-num {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 0.65rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .project-title {
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .project-title a {
+    transition: var(--transition);
+  }
+
+  .project-title a:hover {
+    color: var(--accent-dark);
+  }
+
+  .project-meta {
+    display: block;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+  }
+
+  .project-tagline {
+    max-width: 35rem;
+    margin-bottom: 1.25rem;
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-tags span {
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .project-tags span::after {
+    content: '·';
+    margin-left: 0.5rem;
+    color: var(--border);
+  }
+
+  .project-tags span:last-child::after {
+    content: none;
+  }
+
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .project-link {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    transition: var(--transition);
+  }
+
+  .project-link:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

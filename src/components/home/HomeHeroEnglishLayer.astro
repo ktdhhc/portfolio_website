@@ -1,0 +1,182 @@
+---
+const { name, englishBio, placeholderTags = [], hasResumePdf = false } = Astro.props;
+---
+
+<div class="hero-layer hero-en">
+  <div class="grid hero-grid">
+    <div class="hero-main">
+      <h1>
+        Hello,<br />
+        I&apos;m {name},<br />
+        <span class="line2">An AI collaborator for the new era</span>
+      </h1>
+    </div>
+    <div class="hero-note">
+      <p>{englishBio}</p>
+    </div>
+  </div>
+
+  <div class="hero-tags-cloud" aria-hidden="true">
+    {placeholderTags.map((tag) => (
+      <span class="tag" style={`top: ${tag.top}; left: ${tag.left};`}>{tag.label}</span>
+    ))}
+  </div>
+
+  <div class="hero-actions">
+    {hasResumePdf ? (
+      <a href="/resume.pdf" download class="btn btn-solid">下载 PDF</a>
+    ) : (
+      <span class="btn btn-disabled">PDF 简历待补充</span>
+    )}
+    <a href="/agent/" class="btn btn-outline">与 Agent 对话</a>
+  </div>
+</div>
+
+<style>
+  .hero-layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 8rem 0 2rem;
+  }
+
+  .hero-en {
+    z-index: 1;
+    background: #0a0a0a;
+    color: var(--bg);
+  }
+
+  .hero-grid,
+  .hero-actions {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-main {
+    grid-column: 2 / 11;
+    padding-top: 10vh;
+  }
+
+  .hero-note {
+    grid-column: 2 / 8;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  h1 {
+    margin-bottom: 1.5rem;
+    font-size: 5rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  .line2 {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--accent);
+    font-size: 3rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-note p {
+    color: rgba(250, 248, 245, 0.62);
+  }
+
+  .hero-tags-cloud {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .tag {
+    position: absolute;
+    white-space: nowrap;
+    font-size: 2.35rem;
+    font-weight: 500;
+    line-height: 1;
+    color: rgba(250, 248, 245, 0.2);
+  }
+
+  .hero-actions {
+    position: absolute;
+    top: 43%;
+    right: 20rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transform: translateY(-50%);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.4rem;
+    padding: 0.85rem 2rem;
+    border-radius: var(--radius-button);
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: var(--transition);
+  }
+
+  .btn-solid {
+    background: rgba(250, 248, 245, 0.92);
+    color: #0a0a0a;
+  }
+
+  .btn-solid:hover {
+    background: #ffffff;
+  }
+
+  .btn-outline {
+    border: 1px solid rgba(250, 248, 245, 0.35);
+    color: rgba(250, 248, 245, 0.78);
+  }
+
+  .btn-outline:hover {
+    border-color: rgba(250, 248, 245, 0.7);
+    color: #ffffff;
+  }
+
+  .btn-disabled {
+    cursor: default;
+    border: 1px solid rgba(250, 248, 245, 0.18);
+    background: rgba(250, 248, 245, 0.14);
+    color: rgba(250, 248, 245, 0.58);
+  }
+
+  @media (max-width: 768px) {
+    .hero-layer {
+      padding: 6rem 0 2rem;
+    }
+
+    .hero-main,
+    .hero-note {
+      grid-column: 1 / 13;
+    }
+
+    .hero-main {
+      padding-top: 4vh;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+    }
+
+    .line2 {
+      font-size: 1.6rem;
+    }
+
+    .hero-tags-cloud,
+    .hero-actions {
+      display: none;
+    }
+  }
+</style>

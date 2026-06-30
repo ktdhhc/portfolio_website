@@ -1,0 +1,8 @@
+---
+const { as: tag = 'div', class: className, ...rest } = Astro.props;
+const Tag = tag;
+---
+
+<Tag class:list={['grid', className]} {...rest}>
+  <slot />
+</Tag>

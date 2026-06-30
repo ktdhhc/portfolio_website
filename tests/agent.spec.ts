@@ -50,6 +50,15 @@ test('010-02: /agent 页面包含隐私提示', async ({ page }) => {
   await expect(page.locator('body')).toContainText('请勿输入敏感信息');
 });
 
+test('010-02a: /agent 页面使用页头与分隔线承载定位说明', async ({ page }) => {
+  await page.goto('/agent/');
+  await expect(page.locator('.page-header')).toBeVisible();
+  await expect(page.locator('.page-header-title')).toHaveText('Candidate Agent');
+  await expect(page.locator('.page-header-description')).toContainText('基于简历、项目文档与部分非公开资料回答');
+  await expect(page.locator('.page-header').locator('.privacy-note')).toContainText('提问内容可能被记录');
+  await expect(page.locator('.hairline')).toBeVisible();
+});
+
 test('010-03: /agent 页面包含消息区、输入框和发送按钮', async ({ page }) => {
   await page.goto('/agent/');
   await expect(page.locator('.chat-messages')).toBeVisible();
@@ -88,13 +97,16 @@ test('010-06: LLM API 失败时显示降级提示', async ({ page }) => {
   await page.goto('/agent/');
   await page.locator('.chat-input').fill('你好');
   await page.locator('.send-btn').click();
-  await expect(page.locator('.chat-messages')).toContainText('Agent 服务暂时不可用');
-  await expect(page.locator('.chat-messages')).toContainText('查看静态简历');
+  const errorMessage = page.locator('.error-message');
+  await expect(errorMessage).toContainText('Agent 服务暂时不可用');
+  await expect(errorMessage).toContainText('查看静态简历');
+  await expect(errorMessage.getByRole('link', { name: '查看静态简历' })).toHaveAttribute('href', '/resume');
+  await expect(errorMessage.getByRole('link', { name: '项目页' })).toHaveAttribute('href', '/projects');
 });
 
 test('010-07: 首页 Agent 入口会跳转到 /agent', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('link', { name: '与 Agent 对话' }).click();
+  await page.locator('.hero-actions-mobile a[href="/agent/"]').click();
   await expect(page).toHaveURL(/\/agent\/?$/);
 });
 

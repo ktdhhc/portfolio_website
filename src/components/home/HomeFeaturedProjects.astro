@@ -1,0 +1,141 @@
+---
+import SectionLabel from '../layout/SectionLabel.astro';
+
+const { projects = [] } = Astro.props;
+---
+
+<section id="projects" class="home-section">
+  <div class="grid">
+    <SectionLabel index="04" label="项目" class="home-section-label">
+      <div class="projects-list">
+        {projects.map((project) => (
+          <article class="project-item">
+            <h3>{project.data.name}</h3>
+            <span class="time">{project.data.period} · {project.data.role}</span>
+            <p>{project.data.tagline}</p>
+            <div class="project-tags">
+              {project.data.tags.map((tag) => <span>{tag}</span>)}
+            </div>
+            <div class="project-links">
+              <a href={`/projects/${project.id}/`}>查看详情 →</a>
+              {project.data.links?.demo && (
+                <a href={project.data.links.demo} target="_blank" rel="noreferrer">产品主页 →</a>
+              )}
+              {project.data.links?.github && (
+                <a href={project.data.links.github} target="_blank" rel="noreferrer">GitHub →</a>
+              )}
+              {project.data.links?.docs && (
+                <a href={project.data.links.docs} target="_blank" rel="noreferrer">文档 →</a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="all-projects-link">
+        <a href="/projects/">查看全部项目 →</a>
+      </div>
+    </SectionLabel>
+  </div>
+</section>
+
+<style>
+  .home-section {
+    padding: 6.5rem 0;
+  }
+
+  .home-section-label {
+    grid-column: 1 / -1;
+  }
+
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .project-item {
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .project-item:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .project-item h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .time {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    margin-bottom: 1rem;
+  }
+
+  .project-item p {
+    font-size: 1rem;
+    color: var(--fg-secondary);
+    line-height: 1.7;
+    max-width: 35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .project-tags span {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .project-tags span::after {
+    content: '·';
+    margin-left: 0.5rem;
+    color: var(--border);
+  }
+
+  .project-tags span:last-child::after {
+    content: none;
+  }
+
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+  }
+
+  .project-links a,
+  .all-projects-link a {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+    transition: var(--transition);
+  }
+
+  .project-links a:hover,
+  .all-projects-link a:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .all-projects-link {
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .home-section {
+      padding: 5rem 0;
+    }
+  }
+</style>

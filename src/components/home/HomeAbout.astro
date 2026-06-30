@@ -1,0 +1,83 @@
+---
+import SectionLabel from '../layout/SectionLabel.astro';
+
+const { profile } = Astro.props;
+
+const aboutParagraph = `${profile.description} 当前首页 about 文案使用中性占位版本，后续可由 content/profile.json 的独立字段替换；本轮先基于现有资料，聚焦 ${profile.research}、AI Agent 原型设计与评测实践之间的连接。`;
+---
+
+<section id="about" class="home-section">
+  <div class="grid">
+    <SectionLabel index="01" label="关于" class="home-section-label">
+      <div class="about-text">
+        <p>{aboutParagraph}</p>
+      </div>
+      <dl class="about-meta">
+        <div class="meta-item">
+          <dt>学历</dt>
+          <dd>{profile.education}</dd>
+        </div>
+        <div class="meta-item">
+          <dt>院校</dt>
+          <dd>{profile.school}</dd>
+        </div>
+        <div class="meta-item">
+          <dt>毕业</dt>
+          <dd>{profile.graduation}</dd>
+        </div>
+      </dl>
+    </SectionLabel>
+  </div>
+</section>
+
+<style>
+  .home-section {
+    padding: 6.5rem 0;
+  }
+
+  .home-section-label {
+    grid-column: 1 / -1;
+  }
+
+  .about-text {
+    font-size: 1.15rem;
+    color: var(--fg-secondary);
+    line-height: 1.8;
+    letter-spacing: -0.01em;
+  }
+
+  .about-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .meta-item dt {
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+
+  .meta-item dd {
+    font-size: 0.95rem;
+    color: var(--fg);
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .home-section {
+      padding: 5rem 0;
+    }
+
+    .about-meta {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,23 @@
+---
+const { eyebrow, title, description, actionHref, actionLabel, class: className } = Astro.props;
+const hasBodyContent = Astro.slots.has('default');
+const hasActionContent = Astro.slots.has('action') || (actionHref && actionLabel);
+---
+
+<header class:list={['page-header', className]}>
+  <div class="page-header-body">
+    {eyebrow && <div class="page-header-eyebrow">{eyebrow}</div>}
+    <h1 class="page-header-title">{title}</h1>
+    {description && <p class="page-header-description">{description}</p>}
+    {hasBodyContent && <slot />}
+  </div>
+  {hasActionContent && (
+    <div class="page-header-actions">
+      <slot name="action">
+        {actionHref && actionLabel && (
+          <a href={actionHref} class="page-header-link">{actionLabel}</a>
+        )}
+      </slot>
+    </div>
+  )}
+</header>

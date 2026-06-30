@@ -18,6 +18,7 @@ const projects = defineCollection({
           github: z.string().url().optional(),
           demo: z.string().url().optional(),
           docs: z.string().url().optional(),
+          paper: z.string().url().optional(),
         })
         .optional(),
       featured: z.boolean().optional().default(false),

@@ -1,0 +1,67 @@
+---
+import SectionLabel from '../layout/SectionLabel.astro';
+
+const { projects = [] } = Astro.props;
+---
+
+<section id="projects" class="resume-section">
+  <div class="grid">
+    <SectionLabel index="04" label="项目索引" class="resume-section-label">
+      <ul class="project-index">
+        {projects.map((project) => (
+          <li>
+            <a href={`/projects/${project.id}/`}>
+              <div class="name">{project.data.name}</div>
+              <div class="tagline">{project.data.tagline}</div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </SectionLabel>
+  </div>
+</section>
+
+<style>
+  .resume-section {
+    padding: 6rem 0;
+  }
+
+  .resume-section-label {
+    grid-column: 1 / -1;
+  }
+
+  .project-index {
+    list-style: none;
+  }
+
+  .project-index li {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-index a {
+    display: block;
+    padding: 1.25rem 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .project-index a:hover {
+    opacity: 0.7;
+  }
+
+  .name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .tagline {
+    font-size: 0.85rem;
+    color: var(--fg-secondary);
+  }
+
+  @media (max-width: 768px) {
+    .resume-section {
+      padding: 4rem 0;
+    }
+  }
+</style>

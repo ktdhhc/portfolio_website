@@ -1,120 +1,110 @@
 ---
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import Education from '../components/Education.astro';
-import Experience from '../components/Experience.astro';
-import Skills from '../components/Skills.astro';
+import PageHeader from '../components/layout/PageHeader.astro';
+import ResumeEducationSection from '../components/resume/ResumeEducationSection.astro';
+import ResumeExperienceSection from '../components/resume/ResumeExperienceSection.astro';
+import ResumeProjectIndexSection from '../components/resume/ResumeProjectIndexSection.astro';
+import ResumeSkillsSection from '../components/resume/ResumeSkillsSection.astro';
 import Footer from '../components/Footer.astro';
 import profile from '../../content/profile.json';
-import resume from '../../content/resume.json';
+import { resumeData } from '../data/resume';
 import { getCollection } from 'astro:content';
 import { hasResumePdf } from '../utils/resume-pdf';
 
-const education = resume.education;
-const experience = resume.experience;
-const skills = resume.skills;
+const education = resumeData.education;
+const experience = resumeData.experience;
+const skills = resumeData.skills;
 const projects = await getCollection('projects');
 const resumePdfAvailable = hasResumePdf();
 ---
 
 <Base title={`在线简历 — ${profile.name}`}>
   <Nav name={profile.name} projects={projects} hasResumePdf={resumePdfAvailable} />
-  <section class="container" style="padding-top: 8rem;">
-    <SectionHeader tag=" " title=" " />
-    <div class="pdf-download">
-      {resumePdfAvailable ? (
-        <a href="/resume.pdf" download class="pdf-button">下载 PDF 简历</a>
-      ) : (
-        <span class="pdf-unavailable">PDF 简历待补充</span>
-      )}
+  <section class="resume-header-shell">
+    <div class="grid">
+      <PageHeader title="在线简历" description={profile.description} class="resume-page-header">
+        <div slot="action" class="resume-actions">
+          {resumePdfAvailable ? (
+            <a href="/resume.pdf" download class="resume-action resume-action-primary">下载 PDF 简历</a>
+          ) : (
+            <span class="resume-action resume-action-disabled">PDF 简历待补充</span>
+          )}
+          <a href="/agent/" class="resume-action resume-action-secondary">与 Agent 对话</a>
+        </div>
+      </PageHeader>
     </div>
   </section>
-  <div class="resume-sections">
-    <Education education={education} />
-    <Experience experience={experience} />
-    <Skills skills={skills} />
-    <section class="container">
-      <SectionHeader tag="Projects" title="项目索引" />
-      <div class="project-index">
-        {projects.map((project) => (
-          <a href={`/projects/${project.id}`} class="index-item">
-            <div class="index-name">{project.data.name}</div>
-            <div class="index-tagline">{project.data.tagline}</div>
-          </a>
-        ))}
-      </div>
-    </section>
-  </div>
+  <div class="grid"><div class="hairline"></div></div>
+  <ResumeEducationSection education={education} />
+  <ResumeExperienceSection experience={experience} />
+  <ResumeSkillsSection skills={skills} />
+  <ResumeProjectIndexSection projects={projects} />
   <Footer github={profile.github} homepage={profile.homepage} email={profile.email} />
 </Base>
 
 <style>
-  .resume-sections {
-    --resume-section-gap: 3rem;
+  .resume-header-shell {
+    padding: 10rem 0 4rem;
   }
-  .resume-sections :global(section.container + section.container) {
-    margin-top: var(--resume-section-gap);
+
+  .resume-page-header {
+    grid-column: 1 / -1;
   }
-  .project-index {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    max-width: 680px;
-    margin: 0 auto;
+
+  .resume-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75rem;
   }
-  .index-item {
-    display: block;
-    padding: 1.25rem 1.5rem;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-card);
-    transition: var(--transition);
-  }
-  .index-item:hover {
-    border-color: var(--border-hover);
-    box-shadow: 0 4px 20px rgba(31, 35, 41, 0.06);
-  }
-  .index-name {
-    font-size: 1.05rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-  }
-  .index-tagline {
-    font-size: 0.85rem;
-    color: var(--fg-secondary);
-  }
-  .pdf-download {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  .pdf-button {
-    display: inline-block;
-    padding: 0.7rem 1.5rem;
-    background: var(--fg);
-    color: var(--bg);
-    border-radius: var(--radius-button);
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: var(--transition);
-  }
-  .pdf-button:hover {
-    opacity: 0.85;
-  }
-  .pdf-unavailable {
+
+  .resume-action {
     display: inline-flex;
     align-items: center;
-    padding: 0.7rem 1.5rem;
-    background: var(--bg-muted);
-    color: var(--fg-muted);
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.75rem 1.1rem;
+    border: 1px solid var(--border);
     border-radius: var(--radius-button);
     font-size: 0.9rem;
+    transition: var(--transition);
+  }
+
+  .resume-action-primary {
+    background: var(--fg);
+    border-color: var(--fg);
+    color: var(--bg);
+  }
+
+  .resume-action-primary:hover {
+    opacity: 0.82;
+  }
+
+  .resume-action-secondary {
+    background: transparent;
+    color: var(--fg-secondary);
+  }
+
+  .resume-action-secondary:hover {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+
+  .resume-action-disabled {
+    background: var(--bg-muted);
+    color: var(--fg-muted);
     font-weight: 500;
     cursor: default;
   }
-  @media (max-width: 640px) {
-    .resume-sections {
-      --resume-section-gap: 3rem;
+
+  @media (max-width: 768px) {
+    .resume-header-shell {
+      padding: 7rem 0 3rem;
+    }
+
+    .resume-actions {
+      justify-content: flex-start;
     }
   }
 </style>

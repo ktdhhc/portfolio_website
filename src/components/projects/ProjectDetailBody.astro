@@ -1,0 +1,250 @@
+---
+const { Content } = Astro.props;
+---
+
+<section class="article-body">
+  <div class="grid">
+    <div class="body-label">正文</div>
+    <div class="body-content">
+      <Content />
+    </div>
+    <div class="back-link">
+      <a href="/projects/">← 返回项目列表</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .article-body {
+    padding: 2rem 0 6rem;
+  }
+
+  .body-label {
+    grid-column: 1 / 3;
+    font-size: 0.7rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    padding-top: 0.5rem;
+  }
+
+  .body-content {
+    grid-column: 4 / 11;
+    min-width: 0;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--fg-secondary);
+  }
+
+  .body-content :global(h2) {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+
+  .body-content :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .body-content :global(h3) {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .body-content :global(p) {
+    margin-bottom: 1.25rem;
+  }
+
+  .body-content :global(strong) {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  .body-content :global(em) {
+    font-style: italic;
+  }
+
+  .body-content :global(a) {
+    color: var(--accent-dark);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 0.18em;
+    transition: var(--transition);
+  }
+
+  .body-content :global(a:hover) {
+    color: var(--fg);
+    text-decoration-color: var(--accent-dark);
+  }
+
+  .body-content :global(ul),
+  .body-content :global(ol) {
+    margin: 0 0 1.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .body-content :global(ul) {
+    list-style: disc;
+  }
+
+  .body-content :global(ol) {
+    list-style: decimal;
+  }
+
+  .body-content :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .body-content :global(li > ul),
+  .body-content :global(li > ol) {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+  }
+
+  .body-content :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5rem 0;
+  }
+
+  .body-content :global(blockquote) {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-button) var(--radius-button) 0;
+    background: var(--accent-bg);
+  }
+
+  .body-content :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .body-content :global(code) {
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    background: var(--bg-muted);
+    color: var(--fg);
+    font-size: 0.9em;
+    font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    word-break: break-word;
+  }
+
+  .body-content :global(pre) {
+    margin: 1.5rem 0;
+    padding: 1rem 1.125rem;
+    border-radius: var(--radius-button);
+    overflow-x: auto;
+    line-height: 1.7;
+  }
+
+  .body-content :global(pre.astro-code) {
+    border: 1px solid var(--border-hover);
+  }
+
+  .body-content :global(pre:not(.astro-code)) {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .body-content :global(pre code) {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: 0.875rem;
+    word-break: normal;
+  }
+
+  .body-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background: var(--bg-elevated);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .body-content :global(th),
+  .body-content :global(td) {
+    border: 1px solid var(--border);
+    padding: 0.7rem 0.85rem;
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: break-word;
+  }
+
+  .body-content :global(th) {
+    background: var(--bg-muted);
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  .body-content :global(tbody tr:nth-child(even) td) {
+    background: var(--bg);
+  }
+
+  .body-content :global(img) {
+    max-width: 100%;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+  }
+
+  .back-link {
+    grid-column: 4 / 11;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .back-link a {
+    font-size: 0.9rem;
+    color: var(--accent-dark);
+    font-weight: 500;
+    transition: var(--transition);
+  }
+
+  .back-link a:hover {
+    color: var(--fg);
+  }
+
+  @media (max-width: 768px) {
+    .body-label,
+    .body-content,
+    .back-link {
+      grid-column: 1 / 13;
+    }
+
+    .body-label {
+      margin-bottom: 1rem;
+      padding-top: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .body-content {
+      font-size: 0.95rem;
+    }
+
+    .body-content :global(h2) {
+      font-size: 1.35rem;
+    }
+
+    .body-content :global(table) {
+      font-size: 0.85rem;
+    }
+
+    .body-content :global(th),
+    .body-content :global(td) {
+      padding: 0.6rem 0.7rem;
+    }
+  }
+</style>

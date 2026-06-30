@@ -1,71 +1,62 @@
 ---
-import Badge from '../components/Badge.astro';
-import Button from '../components/Button.astro';
+import HomeHeroEnglishLayer from './home/HomeHeroEnglishLayer.astro';
+import HomeHeroChineseLayer from './home/HomeHeroChineseLayer.astro';
+import HomeHeroFooter from './home/HomeHeroFooter.astro';
+import HomeHeroSpotlightScript from './home/HomeHeroSpotlightScript.astro';
 
 const { profile, hasResumePdf = false } = Astro.props;
+
+const heroStatusText = '正在寻找 AI Agent / 认知产品方向机会';
+const englishBio = `M.S. in Applied Psychology, SCNU. Working across AI Agent prototyping, benchmark evaluation, and independent product building.`;
+const placeholderTags = [
+  { label: 'INTJ', top: '18%', left: '72%' },
+  { label: '完美极简主义者', top: '32%', left: '50%' },
+  { label: 'Vibe Coding', top: '12%', left: '80%' },
+  { label: '8G 冲浪', top: '48%', left: '55%' },
+  { label: '业余吉他手', top: '60%', left: '72%' },
+  { label: '港乐发烧友', top: '72%', left: '58%' },
+  { label: '硬核科幻迷', top: '35%', left: '82%' },
+  { label: '资深 B 站研究员', top: '82%', left: '78%' },
+  { label: '心理学硕士', top: '15%', left: '40%' },
+  { label: '中羽0级运动员', top: '82%', left: '35%' },
+  { label: '钢琴练习时长两年半', top: '18%', left: '7%' },
+  { label: '自我驱动型', top: '46%', left: '5%' },
+  { label: '栋笃笑15年老粉', top: '72%', left: '3%' },
+  { label: 'Prompt Engineering', top: '90%', left: '60%' },
+];
 ---
 
-<section class="hero">
-  <div class="container">
-    <Badge text="正在寻找 AI Agent / 产品方向机会" />
-    <h1>你好，我是 <span class="accent">Kaho</span><br/>新时代的 AI 协作者</h1>
-    <p class="hero-desc">{profile.description}</p>
-    <div class="hero-actions">
-      {hasResumePdf ? (
-        <Button variant="primary" href="/resume.pdf">下载简历 (PDF)</Button>
-      ) : (
-        <span class="pdf-unavailable">PDF 简历待补充</span>
-      )}
-      <Button variant="secondary" href="/agent/">与 Agent 对话</Button>
-    </div>
+<section class="hero" id="hero">
+  <div class="hero-spotlight">
+    <HomeHeroEnglishLayer
+      name={profile.name}
+      englishBio={englishBio}
+      placeholderTags={placeholderTags}
+      hasResumePdf={hasResumePdf}
+    />
+    <HomeHeroChineseLayer
+      name={profile.name}
+      description={profile.description}
+      hasResumePdf={hasResumePdf}
+    />
   </div>
+
+  <HomeHeroFooter statusText={heroStatusText} />
 </section>
+
+<HomeHeroSpotlightScript />
 
 <style>
   .hero {
-    padding: var(--hero-padding-top) 0 var(--hero-padding-bottom);
-    text-align: center;
-  }
-  h1 {
-    font-size: 3.5rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
-  }
-  .accent {
-    color: var(--accent-dark);
-  }
-  .hero-desc {
-    font-size: 1.15rem;
-    color: var(--fg-secondary);
-    max-width: 560px;
-    margin: 0 auto 2.5rem;
-    line-height: 1.7;
-  }
-  .hero-actions {
+    position: relative;
+    min-height: 100vh;
     display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    overflow: hidden;
   }
-  .pdf-unavailable {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-button);
-    background: var(--bg-muted);
-    color: var(--fg-muted);
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: default;
-  }
-  @media (max-width: 640px) {
-    .hero {
-      padding: var(--hero-padding-top-mobile) 0 var(--hero-padding-bottom-mobile);
-    }
-    h1 {
-      font-size: 2.25rem;
-    }
+
+  .hero-spotlight {
+    position: relative;
+    flex: 1;
   }
 </style>

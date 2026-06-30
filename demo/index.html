@@ -211,6 +211,7 @@
     .hero-zh {
       mask-image: radial-gradient(circle at var(--spotlight-x, -9999px) var(--spotlight-y, -9999px), transparent 15vw, black 15vw);
       -webkit-mask-image: radial-gradient(circle at var(--spotlight-x, -9999px) var(--spotlight-y, -9999px), transparent 15vw, black 15vw);
+      pointer-events: none;
     }
   }
   .hero-footer-area {
@@ -472,6 +473,23 @@
     text-underline-offset: 3px;
   }
 
+  .resume-link {
+    grid-column: 4 / 12;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .resume-link a {
+    font-size: 0.9rem;
+    color: var(--accent-dark);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  .resume-link a:hover {
+    color: var(--fg);
+  }
+
   /* ── Agent CTA ── */
   .agent-band {
     background: var(--fg);
@@ -583,6 +601,106 @@
     color: var(--bg);
   }
 
+  /* ── About Me Button ── */
+  .hero-about-btn {
+    position: absolute;
+    bottom: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    padding: 0.6rem 2rem;
+    background: transparent;
+    border: 1px solid rgba(250, 248, 245, 0.3);
+    color: rgba(250, 248, 245, 0.7);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: inherit;
+  }
+  .hero-about-btn:hover {
+    border-color: rgba(250, 248, 245, 0.7);
+    color: #fff;
+    background: rgba(250, 248, 245, 0.05);
+  }
+
+  /* ── Hero Card (Letter) ── */
+  .hero-card {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    padding: 2rem;
+  }
+  .hero-card.active {
+    display: flex;
+  }
+  .card-back {
+    position: absolute;
+    bottom: 3%;
+    left: 48%;
+    background: transparent;
+    border: none;
+    color: var(--fg-muted);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0.5rem;
+    z-index: 11;
+  }
+  .card-back:hover {
+    color: var(--fg);
+  }
+  .card-content {
+    position: relative;
+    max-width: 640px;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 2.5rem 3.5rem 3rem;
+    box-shadow: 0 2px 24px rgba(31, 35, 41, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+  }
+  .card-salutation {
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--fg);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+  }
+  .card-body p {
+    font-size: 0.95rem;
+    color: var(--fg-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.9;
+    text-indent: 2em;
+  }
+  /* .card-body p:first-child {
+    text-indent: 0;
+  } */
+  .card-signoff {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--fg-secondary);
+    text-align: right;
+    line-height: 1.8;
+    letter-spacing: 0.08em;
+  }
+
   /* ── Responsive ── */
   @media (max-width: 768px) {
     .grid { padding: 0 1.5rem; gap: 1rem; }
@@ -638,7 +756,7 @@
   <!-- spotlight 区域：标题 + 描述 -->
   <div class="hero-spotlight">
     <!-- 底层：英文暗色 -->
-    <div class="hero-layer hero-en">
+    <div class="hero-layer hero-en" id="heroEn">
       <div class="grid">
         <div class="hero-main">
           <h1>
@@ -654,7 +772,7 @@
       <!-- 标签云：散布在深色背景中 -->
       <div class="hero-tags-cloud">
         <span class="tag" style="top: 18%; left: 72%;">INTJ</span>
-        <span class="tag" style="top: 32%; left: 55%;">完美极简主义者</span>
+        <span class="tag" style="top: 32%; left: 50%;">完美极简主义者</span>
         <span class="tag" style="top: 12%; left: 80%;">Vibe Coding</span>
         <span class="tag" style="top: 48%; left: 55%;">8G 冲浪</span>
         <span class="tag" style="top: 60%; left: 72%;">业余吉他手</span>
@@ -665,16 +783,18 @@
         <span class="tag" style="top: 82%; left: 35%;">中羽0级运动员</span>
         <span class="tag" style="top: 18%; left: 7%;">钢琴练习时长两年半</span>
         <span class="tag" style="top: 46%; left: 5%;">自我驱动型</span>
-        <span class="tag" style="top: 72%; left: 3%;">黄子华15年老粉</span>
+        <span class="tag" style="top: 72%; left: 3%;">栋笃笑15年老粉</span>
+        <span class="tag" style="top: 90%; left: 60%;">Prompt Engineering</span>
       </div>
       <!-- 按钮：右侧上下居中 -->
       <div class="hero-actions">
         <a href="#" class="btn btn-solid">下载 PDF</a>
         <a href="./agent.html" class="btn btn-outline">与 Agent 对话</a>
       </div>
+      <button class="hero-about-btn" id="aboutMeBtn">ABOUT ME</button>
     </div>
     <!-- 上层：中文亮色，带 spotlight mask -->
-    <div class="hero-layer hero-zh">
+    <div class="hero-layer hero-zh" id="heroZh">
       <div class="grid">
         <div class="hero-main">
           <h1>
@@ -693,6 +813,21 @@
         <a href="./agent.html" class="btn btn-outline-mobile">与 Agent 对话</a>
       </div>
     </div>
+    <!-- 书信卡片层 -->
+    <div class="hero-card" id="heroCard">
+      <button class="card-back" id="cardBack">← 返回</button>
+      <div class="card-content">
+        <!-- <p class="card-salutation">欢迎来到我的主页，</p> -->
+        <div class="card-body">
+          <p>欢迎来到我的主页。</p>
+          <p>我是 Kaho，一个相信技术应当有温度的人。</p>
+          <p>这个空间是我与外界对话的窗口。在这里，我想分享的不仅是项目与技术方案，更是我对"智能"这件事的理解——它不是冰冷的计算，而是在复杂世界中寻找简洁路径的过程。</p>
+          <p>我关注的方向是 AI Agent 与认知科学的交叉地带。前者让我着迷于系统设计的优雅，后者提醒我永远不要忽视人的因素。两者结合，才能做出真正可用的产品。</p>
+          <p>如果你对我的项目或想法感兴趣，欢迎继续浏览，或者直接通过 Agent 与我对话。</p>
+        </div>
+        <!-- <p class="card-signoff">此致<br>Kaho</p> -->
+      </div>
+    </div>
   </div>
   <!-- footer 区域：状态条 + 滚动提示，始终在 spotlight 之外 -->
   <div class="hero-footer-area">
@@ -702,7 +837,6 @@
           <span class="dot"></span>
           正在寻找 AI Agent / 认知产品方向机会
         </div>
-        <div class="hero-scroll">向下滚动</div>
       </div>
     </div>
   </div>
@@ -712,111 +846,11 @@
   <div class="hairline"></div>
 </div>
 
-<section id="about" class="section">
-  <div class="grid">
-    <div class="section-label">
-      <span>01</span>
-      关于
-    </div>
-    <div class="about-text">
-      <p>
-        专注于 Agent 架构设计、多智能体协作、RAG 系统与产品结构化。
-        将复杂需求拆解为可维护的系统，在可控复杂度内实现可靠的人机协作。
-        擅长将认知科学理论转化为产品模块、评测维度与数据标准。
-      </p>
-      <dl class="about-meta">
-        <div class="meta-item">
-          <dt>学历</dt>
-          <dd>应用心理学硕士</dd>
-        </div>
-        <div class="meta-item">
-          <dt>院校</dt>
-          <dd>华南师范大学</dd>
-        </div>
-        <div class="meta-item">
-          <dt>毕业</dt>
-          <dd>2026年</dd>
-        </div>
-      </dl>
-    </div>
-  </div>
-</section>
 
-<section id="skills" class="section">
-  <div class="grid">
-    <div class="section-label">
-      <span>02</span>
-      技能工具
-    </div>
-    <div class="skills-group">
-      <div class="skill-col">
-        <h4>核心能力</h4>
-        <ul>
-          <li class="highlight">Python</li>
-          <li class="highlight">Prompt Engineering</li>
-          <li class="highlight">Claude Code</li>
-          <li>LangChain</li>
-          <li>LangGraph</li>
-        </ul>
-      </div>
-      <div class="skill-col">
-        <h4>工程工具</h4>
-        <ul>
-          <li>FastAPI</li>
-          <li>React</li>
-          <li>TypeScript</li>
-          <li>SQLite</li>
-        </ul>
-      </div>
-      <div class="skill-col">
-        <h4>研究方法</h4>
-        <ul>
-          <li>统计分析</li>
-          <li>实验设计</li>
-          <li>Matlab</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="experience" class="section">
-  <div class="grid">
-    <div class="section-label">
-      <span>03</span>
-      实习经历
-    </div>
-    <div class="exp-block">
-      <div class="exp-header">
-        <h3>社交产品实习生</h3>
-        <span class="sub">趣丸科技</span>
-        <span class="time">2025.11 — 2026.05</span>
-      </div>
-      <p class="exp-desc">
-        围绕认知科学驱动的 AI 产品研发，参与原型设计、记忆系统评测、数据集建设与产品异常案例分析。
-      </p>
-      <ul class="exp-list">
-        <li>
-          <strong>认知科学驱动的 AI 原型研发</strong>
-          <p>梳理心理学与认知神经科学文献，为 Agent 架构设计提供理论依据；协助将认知科学理论转化为产品功能模块。</p>
-        </li>
-        <li>
-          <strong>记忆系统测试与数据异常分析</strong>
-          <p>深度参与 KnowMe-Bench、CloneMem 测试集全量测试，分析记忆召回、角色一致性与回答生成问题来源。</p>
-        </li>
-        <li>
-          <strong>HEART-Bench 论文与数据集构建</strong>
-          <p>作为作者之一参与 HEART-Bench 论文工作；协调高校专家团队完成数据标注与质检。</p>
-        </li>
-      </ul>
-    </div>
-  </div>
-</section>
 
 <section id="projects" class="section">
   <div class="grid">
     <div class="section-label">
-      <span>04</span>
       代表项目
     </div>
     <div class="projects-list">
@@ -832,7 +866,7 @@
         </div>
         <div class="project-links">
           <a href="https://www.aindexer.cn" target="_blank">产品主页 →</a>
-          <a href="https://github.com/ktdhhc" target="_blank">GitHub →</a>
+          <a href="./project-detail.html">查看详情 →</a>
         </div>
       </div>
 
@@ -851,20 +885,6 @@
           <a href="./project-detail.html">查看详情 →</a>
         </div>
       </div>
-
-      <div class="project-item">
-        <h3>HEART-Bench</h3>
-        <span class="time">2025.11 — 2026.05 · 趣丸科技</span>
-        <p>面向角色扮演型 Agent 的行为一致性评测体系，评估 LLM 将情境理解转化为具体行动的能力。与上海交通大学、华南师范大学合作，已投稿 NeurIPS。</p>
-        <div class="project-tags">
-          <span>Agent 评测</span>
-          <span>行为一致性</span>
-          <span>数据集构建</span>
-        </div>
-        <div class="project-links">
-          <a href="https://arxiv.org/abs/2605.30058" target="_blank">论文 →</a>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -872,7 +892,6 @@
 <section id="agent" class="agent-band">
   <div class="grid">
     <div class="section-label">
-      <span>05</span>
       Agent
     </div>
     <div class="agent-content">
@@ -899,9 +918,27 @@
   <script>
     (function() {
       var hero = document.getElementById('hero');
-      var heroZh = document.querySelector('.hero-zh');
+      var heroEn = document.getElementById('heroEn');
+      var heroZh = document.getElementById('heroZh');
+      var heroCard = document.getElementById('heroCard');
+      var aboutMeBtn = document.getElementById('aboutMeBtn');
+      var cardBack = document.getElementById('cardBack');
       var heroSpotlight = document.querySelector('.hero-spotlight');
-      if (!hero || !heroZh || !heroSpotlight) return;
+      if (!hero || !heroEn || !heroZh || !heroCard) return;
+
+      // About Me / Card toggle
+      function showCard() {
+        heroEn.style.display = 'none';
+        heroZh.style.display = 'none';
+        heroCard.style.display = 'flex';
+      }
+      function hideCard() {
+        heroEn.style.display = '';
+        heroZh.style.display = '';
+        heroCard.style.display = 'none';
+      }
+      if (aboutMeBtn) aboutMeBtn.addEventListener('click', showCard);
+      if (cardBack) cardBack.addEventListener('click', hideCard);
 
       var isMobile = window.matchMedia('(hover: none)').matches;
 
@@ -921,7 +958,7 @@
         var isRevealed = false;
         heroSpotlight.addEventListener('click', function(e) {
           // 点击按钮或链接时不触发 toggle
-          if (e.target.closest('a')) return;
+          if (e.target.closest('a') || e.target.closest('button')) return;
           isRevealed = !isRevealed;
           if (isRevealed) {
             heroZh.style.opacity = '0';

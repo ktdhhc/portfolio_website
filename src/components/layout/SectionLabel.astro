@@ -1,0 +1,13 @@
+---
+const { index, label, title, class: className } = Astro.props;
+---
+
+<div class:list={['section-label', className]}>
+  <div class="section-label-meta">
+    {index && <span class="section-label-index">{index}</span>}
+    {(label || title) && <span class="section-label-title">{label ?? title}</span>}
+  </div>
+  <div class="section-label-body">
+    <slot />
+  </div>
+</div>

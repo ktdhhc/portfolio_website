@@ -3,56 +3,70 @@ const { github, homepage, email, showAdmin } = Astro.props;
 ---
 
 <footer>
-  <div class="footer-container">
+  <div class="footer-container grid">
+    <p class="footer-copy">
+      © 2026 Kaho
+    </p>
     <div class="footer-links">
       {github && <a href={github} target="_blank">GitHub</a>}
       {homepage && <a href={homepage} target="_blank">产品主页</a>}
       {email && <a href={`mailto:${email}`}>Email</a>}
-    </div>
-    <p class="footer-copy">
-      © 2026 Kaho
       {showAdmin && <a href="/admin" class="admin-link">Admin</a>}
-    </p>
+    </div>
   </div>
 </footer>
 
 <style>
   footer {
     padding: 3rem 0;
-    text-align: center;
+    border-top: 1px solid var(--border);
   }
   .footer-container {
-    max-width: var(--container-max);
-    margin: 0 auto;
-    padding: var(--container-padding);
-  }
-  .footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-  }
-  .footer-links a {
-    color: var(--fg-secondary);
-    font-size: 0.9rem;
-    transition: var(--transition);
-  }
-  .footer-links a:hover {
-    color: var(--fg);
+    align-items: center;
   }
   .footer-copy {
+    grid-column: 1 / 5;
     font-size: 0.8rem;
     color: var(--fg-muted);
   }
-  .admin-link {
-    margin-left: 0.5rem;
-    font-size: 0.75rem;
+  .footer-links {
+    display: flex;
+    grid-column: 7 / 13;
+    justify-content: flex-end;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.1rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-pill);
     color: var(--fg-muted);
-    text-decoration: none;
+    font-size: 0.8rem;
     transition: var(--transition);
   }
+  .footer-links a:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+  .admin-link {
+    font-size: 0.75rem;
+    color: var(--fg-muted);
+  }
   .admin-link:hover {
-    color: var(--fg-secondary);
+    color: var(--bg);
+  }
+
+  @media (max-width: 768px) {
+    .footer-copy,
+    .footer-links {
+      grid-column: 1 / -1;
+    }
+
+    .footer-links {
+      justify-content: flex-start;
+    }
   }
 </style>

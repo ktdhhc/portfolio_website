@@ -1,0 +1,175 @@
+---
+const { name, description, hasResumePdf = false } = Astro.props;
+---
+
+<div class="hero-layer hero-zh">
+  <div class="grid hero-grid">
+    <div class="hero-main">
+      <h1>
+        你好，<br />
+        我是 {name}，<br />
+        <span class="line2">新时代的 AI 协作者</span>
+      </h1>
+    </div>
+    <div class="hero-note">
+      <p>{description}</p>
+    </div>
+  </div>
+
+  <div class="hero-actions-mobile">
+    {hasResumePdf ? (
+      <a href="/resume.pdf" download class="btn btn-solid-mobile">下载 PDF</a>
+    ) : (
+      <span class="btn btn-disabled-mobile">PDF 简历待补充</span>
+    )}
+    <a href="/agent/" class="btn btn-outline-mobile">与 Agent 对话</a>
+  </div>
+</div>
+
+<style>
+  .hero-layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 8rem 0 2rem;
+  }
+
+  .hero-zh {
+    z-index: 2;
+    background: var(--bg);
+    color: var(--fg);
+    pointer-events: none;
+  }
+
+  .hero-grid,
+  .hero-actions-mobile {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-main {
+    grid-column: 2 / 11;
+    padding-top: 10vh;
+  }
+
+  .hero-note {
+    grid-column: 2 / 8;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  h1 {
+    margin-bottom: 1.5rem;
+    font-size: 5rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  .line2 {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--accent-dark);
+    font-size: 3rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-note p {
+    color: var(--fg-secondary);
+  }
+
+  .hero-actions-mobile {
+    position: absolute;
+    top: 43%;
+    right: 20rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transform: translateY(-50%);
+    pointer-events: auto;
+  }
+
+  .btn-solid-mobile,
+  .btn-outline-mobile,
+  .btn-disabled-mobile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.4rem;
+    padding: 0.85rem 2rem;
+    border-radius: var(--radius-button);
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: var(--transition);
+  }
+
+  .btn-solid-mobile {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .btn-solid-mobile:hover {
+    opacity: 0.85;
+  }
+
+  .btn-outline-mobile {
+    border: 1px solid var(--fg);
+    color: var(--fg);
+  }
+
+  .btn-outline-mobile:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .btn-disabled-mobile {
+    cursor: default;
+    border: 1px solid var(--border);
+    background: var(--bg-muted);
+    color: var(--fg-muted);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hero-zh {
+      mask-image: radial-gradient(circle at var(--spotlight-x, -9999px) var(--spotlight-y, -9999px), transparent 15vw, black 15vw);
+      -webkit-mask-image: radial-gradient(circle at var(--spotlight-x, -9999px) var(--spotlight-y, -9999px), transparent 15vw, black 15vw);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-layer {
+      padding: 6rem 0 2rem;
+    }
+
+    .hero-zh {
+      pointer-events: auto;
+    }
+
+    .hero-main,
+    .hero-note {
+      grid-column: 1 / 13;
+    }
+
+    .hero-main {
+      padding-top: 4vh;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+    }
+
+    .line2 {
+      font-size: 1.6rem;
+    }
+
+    .hero-actions-mobile {
+      display: flex;
+      right: 1.5rem;
+      gap: 1rem;
+    }
+  }
+</style>

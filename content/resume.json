@@ -36,16 +36,16 @@
     }
   ],
   "skills": [
-    { "name": "Python", "highlight": true },
-    { "name": "Prompt Engineering", "highlight": true },
-    { "name": "Claude code", "highlight": true },
-    { "name": "LangChain" },
-    { "name": "LangGraph" },
-    { "name": "FastAPI"},
-    { "name": "React" },
-    { "name": "TypeScript" },
-    { "name": "SQLite" },
-    { "name": "统计分析" },
-    { "name": "Matlab" }
+    { "name": "Python", "highlight": true, "group": "core" },
+    { "name": "Prompt Engineering", "highlight": true, "group": "core" },
+    { "name": "Claude code", "highlight": true, "group": "core" },
+    { "name": "LangChain", "group": "tool" },
+    { "name": "LangGraph", "group": "tool" },
+    { "name": "FastAPI", "group": "tool" },
+    { "name": "React", "group": "tool" },
+    { "name": "TypeScript", "group": "tool" },
+    { "name": "SQLite", "group": "tool" },
+    { "name": "统计分析", "group": "research" },
+    { "name": "Matlab", "group": "research" }
   ]
 }

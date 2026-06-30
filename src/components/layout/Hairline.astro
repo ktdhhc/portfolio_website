@@ -1,0 +1,9 @@
+---
+const { class: className, decorative = true, ...rest } = Astro.props;
+---
+
+<div
+  class:list={['hairline', className]}
+  aria-hidden={decorative ? 'true' : undefined}
+  {...rest}
+></div>
