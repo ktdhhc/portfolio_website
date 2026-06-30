@@ -10,7 +10,7 @@ import { getCollection } from 'astro:content';
 import { hasResumePdf } from '../utils/resume-pdf';
 
 const projects = await getCollection('projects');
-const featuredProjects = projects.filter((p) => p.data.featured).slice(0, 2);
+const featuredProjects = projects.filter((p) => ['aindexer', 'memcraft'].includes(p.id));
 const resumePdfAvailable = hasResumePdf();
 ---
 
