@@ -6,128 +6,15 @@ const { name, projects = [], hasResumePdf = false } = Astro.props;
   <div class="nav-container grid">
     <ul class="nav-links">
       <li><a href="/" class="nav-link">首页</a></li>
-      <li class="nav-dropdown">
-        <button
-          type="button"
-          class="dropdown-label"
-          aria-expanded="false"
-          aria-controls="resume-menu"
-        >
-          简历 ▾
-        </button>
-        <ul id="resume-menu" class="dropdown-menu">
-          <li><a href="/resume#education">教育</a></li>
-          <li><a href="/resume#experience">经历</a></li>
-          <li><a href="/resume#skills">技能</a></li>
-          {hasResumePdf ? (
-            <li><a href="/resume.pdf" download>PDF 下载</a></li>
-          ) : (
-            <li><span class="dropdown-disabled">PDF 待补充</span></li>
-          )}
-        </ul>
-      </li>
-      <li class="nav-dropdown">
-        <button
-          type="button"
-          class="dropdown-label"
-          aria-expanded="false"
-          aria-controls="projects-menu"
-        >
-          项目 ▾
-        </button>
-        <ul id="projects-menu" class="dropdown-menu">
-          {projects.slice(0, 3).map((project) => (
-            <li><a href={`/projects/${project.id}`}>{project.data.name}</a></li>
-          ))}
-          <li><a href="/projects/" class="dropdown-all">查看全部 →</a></li>
-        </ul>
-      </li>
+      <li><a href="/resume/" class="nav-link">简历</a></li>
+      <li><a href="/projects/" class="nav-link">项目</a></li>
       <li><a href="/agent/" class="nav-link">Agent</a></li>
     </ul>
   </div>
 </nav>
 
 <script is:inline>
-  const dropdowns = Array.from(document.querySelectorAll('.nav-dropdown'));
-  const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-  const setExpanded = (dropdown, expanded) => {
-    const trigger = dropdown.querySelector('.dropdown-label');
-    if (trigger) {
-      trigger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-    }
-  };
-
-  const closeDropdown = (dropdown) => {
-    dropdown.classList.remove('is-open', 'is-hover');
-    setExpanded(dropdown, false);
-  };
-
-  const closeAllDropdowns = (except) => {
-    dropdowns.forEach((dropdown) => {
-      if (dropdown !== except) {
-        closeDropdown(dropdown);
-      }
-    });
-  };
-
-  dropdowns.forEach((dropdown) => {
-    const trigger = dropdown.querySelector('.dropdown-label');
-    if (!trigger) return;
-
-    if (supportsHover) {
-      dropdown.addEventListener('mouseenter', () => {
-        closeAllDropdowns(dropdown);
-        dropdown.classList.add('is-hover');
-        setExpanded(dropdown, true);
-      });
-
-      dropdown.addEventListener('mouseleave', () => {
-        dropdown.classList.remove('is-hover');
-        if (!dropdown.classList.contains('is-open')) {
-          setExpanded(dropdown, false);
-        }
-      });
-    }
-
-    trigger.addEventListener('click', () => {
-      const willOpen = !dropdown.classList.contains('is-open');
-      closeAllDropdowns(dropdown);
-      dropdown.classList.remove('is-hover');
-
-      if (willOpen) {
-        dropdown.classList.add('is-open');
-        setExpanded(dropdown, true);
-      } else {
-        closeDropdown(dropdown);
-      }
-    });
-
-    trigger.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        trigger.click();
-        return;
-      }
-
-      if (event.key === 'Escape') {
-        closeAllDropdowns();
-        trigger.blur();
-      }
-    });
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('.nav-dropdown')) {
-      closeAllDropdowns();
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      closeAllDropdowns();
-    }
-  });
+  // Dropdown functionality removed - nav items now link directly to pages
 </script>
 
 <style>
@@ -181,70 +68,10 @@ const { name, projects = [], hasResumePdf = false } = Astro.props;
     white-space: nowrap;
   }
   .nav-link:hover,
-  .dropdown-label:hover,
-  .dropdown-label:focus-visible,
   .nav-link:focus-visible {
     background: var(--fg);
     color: var(--bg);
     outline: none;
-  }
-  .nav-dropdown.is-hover .dropdown-label,
-  .nav-dropdown.is-open .dropdown-label {
-    background: var(--fg);
-    color: var(--bg);
-  }
-  .dropdown-menu {
-    position: absolute;
-    top: calc(100% + 0.55rem);
-    left: 50%;
-    min-width: 200px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-button);
-    box-shadow: 0 8px 32px rgba(31, 35, 41, 0.08);
-    padding: 0.45rem 0;
-    list-style: none;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-50%) translateY(-4px);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
-    z-index: 1;
-  }
-  .nav-dropdown {
-    position: relative;
-  }
-  .nav-dropdown.is-hover .dropdown-menu,
-  .nav-dropdown.is-open .dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
-  }
-  .dropdown-menu li a {
-    display: block;
-    padding: 0.55rem 1.25rem;
-    font-size: 0.82rem;
-    color: var(--fg-secondary);
-    transition: var(--transition);
-    white-space: nowrap;
-  }
-  .dropdown-menu li a:hover {
-    background: var(--fg);
-    color: var(--bg);
-  }
-  .dropdown-disabled {
-    display: block;
-    padding: 0.55rem 1.25rem;
-    font-size: 0.82rem;
-    color: var(--fg-muted);
-    white-space: nowrap;
-    cursor: default;
-  }
-  .dropdown-all {
-    border-top: 1px solid var(--border);
-    color: var(--fg-muted) !important;
-    font-weight: 500;
-    margin-top: 0.2rem;
-    padding-top: 0.6rem !important;
   }
   @media (max-width: 768px) {
     nav {
@@ -273,16 +100,6 @@ const { name, projects = [], hasResumePdf = false } = Astro.props;
 
     .nav-link {
       font-size: 0.8rem;
-    }
-
-    .dropdown-menu {
-      left: 0;
-      transform: translateY(-4px);
-    }
-
-    .nav-dropdown.is-hover .dropdown-menu,
-    .nav-dropdown.is-open .dropdown-menu {
-      transform: translateY(0);
     }
   }
 </style>

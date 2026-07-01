@@ -81,20 +81,18 @@ test('/projects 页面项目标题保留到 /projects/[slug] 的详情导航', a
   expect(firstHref).toMatch(/\/projects\/.+/);
 });
 
-test('/projects 页面 Nav 使用下拉菜单而非锚点', async ({ page }) => {
+test('/projects 页面 Nav 包含直接链接', async ({ page }) => {
   await page.goto('/projects/');
-  const navDropdowns = page.locator('nav .nav-dropdown');
-  const count = await navDropdowns.count();
-  expect(count).toBeGreaterThanOrEqual(2);
-  // 下拉菜单存在且含子链接
-  const menuLinks = page.locator('nav .dropdown-menu a');
-  const linkCount = await menuLinks.count();
-  expect(linkCount).toBeGreaterThanOrEqual(4);
+  const resumeLink = page.locator('nav a[href="/resume/"]');
+  const projectLink = page.locator('nav a[href="/projects/"]');
+  await expect(resumeLink).toBeVisible();
+  await expect(projectLink).toBeVisible();
 });
 
-test('首页 Nav 使用下拉菜单', async ({ page }) => {
+test('首页 Nav 包含直接链接', async ({ page }) => {
   await page.goto('/');
-  const navDropdowns = page.locator('nav .nav-dropdown');
-  const count = await navDropdowns.count();
-  expect(count).toBeGreaterThanOrEqual(2);
+  const resumeLink = page.locator('nav a[href="/resume/"]');
+  const projectLink = page.locator('nav a[href="/projects/"]');
+  await expect(resumeLink).toBeVisible();
+  await expect(projectLink).toBeVisible();
 });

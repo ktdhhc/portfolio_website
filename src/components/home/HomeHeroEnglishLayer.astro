@@ -200,10 +200,44 @@ const { name, englishBio, placeholderTags = [], hasResumePdf = false } = Astro.p
       font-size: 1.6rem;
     }
 
-    .hero-tags-cloud,
-    .hero-actions,
+    .hero-actions {
+      display: flex;
+      position: absolute;
+      top: auto;
+      bottom: 15%;
+      left: 1.5rem;
+      right: 1.5rem;
+      transform: none;
+      gap: 0.75rem;
+      width: auto;
+    }
+
+    .hero-actions .btn {
+      width: 100%;
+      min-height: 2.5rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.85rem;
+    }
+
+    .hero-tags-cloud {
+      display: block;
+    }
+
+    .tag {
+      font-size: 1.2rem;
+    }
+
     .hero-about-btn {
-      display: none;
+      position: absolute;
+      top: auto;
+      bottom: calc(15% - 3.5rem);
+      left: 1.5rem;
+      right: 1.5rem;
+      transform: none;
+      width: auto;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.85rem;
+      pointer-events: auto;
     }
   }
 </style>

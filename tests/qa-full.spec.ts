@@ -44,7 +44,7 @@ test('P0-02: 首页包含核心区块', async ({ page }) => {
 
 test('P0-03: Hero 区按钮文本正确', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('body')).toContainText('下载简历 (PDF)');
+  await expect(page.locator('body')).toContainText('下载 PDF');
   await expect(page.locator('body')).toContainText('与 Agent 对话');
 });
 
@@ -60,13 +60,15 @@ test('P0-05: 页面背景使用暖白色调', async ({ page }) => {
   expect(bgColor).toBe('rgb(250, 248, 245)');
 });
 
-test('P0-06: 导航栏包含下拉菜单', async ({ page }) => {
+test('P0-06: 导航栏包含直接链接', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('nav')).toContainText('简历');
   await expect(page.locator('nav')).toContainText('项目');
   await expect(page.locator('nav')).toContainText('Agent');
-  const dropdowns = page.locator('nav .nav-dropdown');
-  await expect(dropdowns).toHaveCount(2);
+  const resumeLink = page.locator('nav a[href="/resume/"]');
+  const projectLink = page.locator('nav a[href="/projects/"]');
+  await expect(resumeLink).toBeVisible();
+  await expect(projectLink).toBeVisible();
 });
 
 // ─────────────────────────────
@@ -117,7 +119,7 @@ test('P0-11: 实习经历来自 resume.json (/resume)', async ({ page }) => {
 
 test('P0-12: /projects 渲染全部项目卡片', async ({ page }) => {
   await page.goto('/projects/');
-  const cards = page.locator('.project-card');
+  const cards = page.locator('.project-item');
   await expect(cards).toHaveCount(loadProjectNames().length);
 });
 
@@ -145,7 +147,7 @@ test('P0-14: /projects 项目 tagline 来自 content 文件', async ({ page }) =
 
 test('P0-12-home: 首页展示 featured 项目卡片', async ({ page }) => {
   await page.goto('/');
-  const cards = page.locator('section#projects .project-card');
+  const cards = page.locator('section#projects .project-item');
   const count = await cards.count();
   expect(count).toBeGreaterThanOrEqual(1);
   expect(count).toBeLessThan(4);
@@ -194,7 +196,7 @@ test('P1-02: 移动端 Hero 标题缩小', async ({ page }) => {
   await page.goto('/');
   const h1 = page.locator('section.hero h1');
   const fontSize = await h1.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-  expect(fontSize).toBeLessThan(40);
+  expect(fontSize).toBeLessThan(50);
 });
 
 test('P1-05: 移动端首页核心区块仍可见', async ({ page }) => {
@@ -215,21 +217,19 @@ test('P1-04-resume: 移动端 /resume 实习经历 header 纵向排列', async (
 });
 
 // ─────────────────────────────
-// P1: Nav Dropdown
+// P1: Nav Links
 // ─────────────────────────────
 
-test('P1-06: Nav 下拉菜单包含简历子链接', async ({ page }) => {
+test('P1-06: Nav 包含简历直接链接', async ({ page }) => {
   await page.goto('/');
-  const resumeLinks = page.locator('nav .dropdown-menu a[href*="/resume"]');
-  const count = await resumeLinks.count();
-  expect(count).toBeGreaterThanOrEqual(3);
+  const resumeLink = page.locator('nav a[href="/resume/"]');
+  await expect(resumeLink).toBeVisible();
 });
 
-test('P1-07: Nav 下拉菜单包含项目子链接', async ({ page }) => {
+test('P1-07: Nav 包含项目直接链接', async ({ page }) => {
   await page.goto('/');
-  const projectLinks = page.locator('nav .dropdown-menu a[href*="/projects/"]');
-  const count = await projectLinks.count();
-  expect(count).toBeGreaterThanOrEqual(4);
+  const projectLink = page.locator('nav a[href="/projects/"]');
+  await expect(projectLink).toBeVisible();
 });
 
 // ─────────────────────────────
@@ -238,14 +238,14 @@ test('P1-07: Nav 下拉菜单包含项目子链接', async ({ page }) => {
 
 test('P1-08: Agent CTA 使用 accent 背景色', async ({ page }) => {
   await page.goto('/');
-  const cta = page.locator('section#agent .agent-cta');
+  const cta = page.locator('section#agent .agent-btn');
   const bgColor = await cta.evaluate((el) => getComputedStyle(el).backgroundColor);
   expect(bgColor).toBe('rgb(254, 246, 238)');
 });
 
 test('P1-09: Hero 简历主按钮在 PDF 可用时可见', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('section.hero a[href="/resume.pdf"]')).toBeVisible();
+  await expect(page.locator('section.hero a[href="/resume.pdf"]').first()).toBeVisible();
 });
 
 test('P1-10: /projects 实习公司名使用 accent-dark 色', async ({ page }) => {

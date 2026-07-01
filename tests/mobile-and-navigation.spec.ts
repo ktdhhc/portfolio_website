@@ -31,14 +31,41 @@ test.describe('移动端视口 (375px)', () => {
     await page.goto('/');
     const heroSpotlight = page.locator('.hero-spotlight');
     const heroZh = page.locator('.hero-zh');
+    const heroEn = page.locator('.hero-en');
 
     await expect(heroZh).toHaveCSS('opacity', '1');
+    await expect(heroEn).toHaveCSS('pointer-events', 'none');
+
+    await heroSpotlight.click({ position: { x: 24, y: 200 } });
+    await expect(heroZh).toHaveCSS('opacity', '0');
+    await expect(heroEn).toHaveCSS('pointer-events', 'auto');
+
+    await heroSpotlight.click({ position: { x: 24, y: 200 } });
+    await expect(heroZh).toHaveCSS('opacity', '1');
+    await expect(heroEn).toHaveCSS('pointer-events', 'none');
+  });
+
+  test('首页移动端暗色层 ABOUT ME 可打开并关闭卡片', async ({ page }) => {
+    await page.goto('/');
+    const heroSpotlight = page.locator('.hero-spotlight');
+    const hero = page.locator('#hero');
+    const heroZh = page.locator('.hero-zh');
+    const heroBack = page.locator('.hero-back');
+    const heroCard = page.locator('.hero-card');
+    const aboutMeButton = page.getByRole('button', { name: 'ABOUT ME' });
+    const backButton = page.getByRole('button', { name: '← 返回' });
 
     await heroSpotlight.click({ position: { x: 24, y: 200 } });
     await expect(heroZh).toHaveCSS('opacity', '0');
 
-    await heroSpotlight.click({ position: { x: 24, y: 200 } });
-    await expect(heroZh).toHaveCSS('opacity', '1');
+    await aboutMeButton.click();
+    await expect(hero).toHaveClass(/is-card-open/);
+    await expect(heroBack).toHaveCSS('opacity', '1');
+    await expect(heroCard).toContainText('欢迎来到我的主页');
+
+    await backButton.click();
+    await expect(hero).not.toHaveClass(/is-card-open/);
+    await expect(heroBack).toHaveCSS('opacity', '0');
   });
 });
 
@@ -51,18 +78,16 @@ test.describe('页面间导航', () => {
     await expect(menu).toBeVisible();
   });
 
-  test('Nav 下拉包含简历子链接', async ({ page }) => {
+  test('Nav 包含简历链接', async ({ page }) => {
     await page.goto('/');
-    const resumeLinks = page.locator('nav .dropdown-menu a[href*="/resume"]');
-    const count = await resumeLinks.count();
-    expect(count).toBeGreaterThanOrEqual(3);
+    const resumeLink = page.locator('nav a[href="/resume/"]');
+    await expect(resumeLink).toBeVisible();
   });
 
-  test('Nav 下拉包含项目子链接', async ({ page }) => {
+  test('Nav 包含项目链接', async ({ page }) => {
     await page.goto('/');
-    const projectLinks = page.locator('nav .dropdown-menu a[href*="/projects/"]');
-    const count = await projectLinks.count();
-    expect(count).toBeGreaterThanOrEqual(4);
+    const projectLink = page.locator('nav a[href="/projects/"]');
+    await expect(projectLink).toBeVisible();
   });
 
   test('从 /projects 点击查看详情进入详情页', async ({ page }) => {
@@ -85,21 +110,19 @@ test.describe('页面间导航', () => {
     await expect(allProjectsLink).toHaveCount(0);
   });
 
-  test('移动端点击简历菜单会展开下拉', async ({ page }) => {
+  test('移动端点击简历链接可跳转', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/');
-    const dropdownLabel = page.locator('nav .nav-dropdown .dropdown-label').first();
-    const menu = page.locator('nav .nav-dropdown .dropdown-menu').first();
-    await dropdownLabel.click();
-    await expect(menu).toBeVisible();
+    const resumeLink = page.locator('nav a[href="/resume/"]');
+    await resumeLink.click();
+    await expect(page).toHaveURL(/\/resume/);
   });
 
-  test('键盘 Enter 可展开简历菜单', async ({ page }) => {
+  test('键盘 Tab 可聚焦导航链接', async ({ page }) => {
     await page.goto('/');
-    const dropdownLabel = page.locator('nav .nav-dropdown .dropdown-label').first();
-    const menu = page.locator('nav .nav-dropdown .dropdown-menu').first();
-    await dropdownLabel.press('Enter');
-    await expect(menu).toBeVisible();
+    const resumeLink = page.locator('nav a[href="/resume/"]');
+    await resumeLink.focus();
+    await expect(resumeLink).toBeFocused();
   });
 });
 

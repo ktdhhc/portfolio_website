@@ -200,6 +200,136 @@
         .stat-change.down { color: var(--danger); }
         .stat-change.neutral { color: var(--fg-muted); }
 
+        /* ── Agent Snapshot ── */
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 1.5rem;
+        }
+        .snapshot-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .snapshot-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .snapshot-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        .snapshot-card-desc {
+            font-size: 0.85rem;
+            color: var(--fg-secondary);
+            max-width: 34rem;
+        }
+        .snapshot-badge {
+            flex-shrink: 0;
+            font-size: 0.75rem;
+            color: var(--accent-dark);
+            background: var(--accent-bg);
+            border-radius: 100px;
+            padding: 0.3rem 0.7rem;
+            border: 1px solid var(--border);
+        }
+        .snapshot-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+        .snapshot-item {
+            display: grid;
+            grid-template-columns: 8.5rem 1fr;
+            gap: 1rem;
+            align-items: start;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .snapshot-item:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .snapshot-key {
+            font-size: 0.8rem;
+            color: var(--fg-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .snapshot-value {
+            font-size: 0.9rem;
+            color: var(--fg);
+        }
+        .snapshot-value strong {
+            font-weight: 600;
+        }
+        .snapshot-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            margin-top: 0.9rem;
+        }
+        .snapshot-pill {
+            padding: 0.35rem 0.75rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--fg-secondary);
+        }
+        .snapshot-flow {
+            display: grid;
+            gap: 0.9rem;
+        }
+        .snapshot-block {
+            padding: 1rem 1.05rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .snapshot-block-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .snapshot-block-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--fg);
+        }
+        .snapshot-block-tag {
+            font-size: 0.72rem;
+            color: var(--fg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 0.2rem 0.55rem;
+            background: var(--bg-elevated);
+        }
+        .snapshot-block-copy {
+            font-size: 0.85rem;
+            color: var(--fg-secondary);
+            margin-bottom: 0.75rem;
+        }
+        .snapshot-block-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+        }
+        .snapshot-note {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.82rem;
+            color: var(--fg-muted);
+        }
+
         /* ── Two Column Layout ── */
         .two-col {
             display: grid;
@@ -503,6 +633,8 @@
         @media (max-width: 720px) {
             .two-col { grid-template-columns: 1fr; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
+            .snapshot-grid { grid-template-columns: 1fr; }
+            .snapshot-item { grid-template-columns: 1fr; gap: 0.35rem; }
             .hero-top { flex-direction: column; align-items: flex-start; }
             .records-header { flex-direction: column; align-items: flex-start; }
         }
@@ -580,6 +712,69 @@
                     <div class="stat-value">5</div>
                     <div class="stat-change down">↑ 2 较上周</div>
                 </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="section-header">
+                <div class="section-title-group">
+                    <span class="section-tag">Snapshot</span>
+                    <h2 class="section-title">Agent 配置</h2>
+                </div>
+            </div>
+            <div class="snapshot-grid">
+                <article class="snapshot-card">
+                    <div class="snapshot-card-header">
+                        <div>
+                            <h3 class="snapshot-card-title">运行配置</h3>
+                        </div>
+                    </div>
+                    <div class="snapshot-list">
+                        <div class="snapshot-item">
+                            <div class="snapshot-key">Model</div>
+                            <div class="snapshot-value"><strong>deepseek-chat</strong></div>
+                        </div>
+                        <div class="snapshot-item">
+                            <div class="snapshot-key">Temperature</div>
+                            <div class="snapshot-value"><strong>0.4</strong></div>
+                        </div>
+                        <div class="snapshot-item">
+                            <div class="snapshot-key">Effort</div>
+                            <div class="snapshot-value"><strong>high</strong></div>
+                        </div>
+                        <div class="snapshot-item">
+                            <div class="snapshot-key">Tool Loop Cap</div>
+                            <div class="snapshot-value"><strong>5 轮</strong></div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="snapshot-card">
+                    <div class="snapshot-card-header">
+                        <div>
+                            <h3 class="snapshot-card-title">启动快照</h3>
+                        </div>
+                    </div>
+                    <div class="snapshot-flow">
+                        <div class="snapshot-block">
+                            <div class="snapshot-block-top">
+                                <div class="snapshot-block-title">startup context</div>
+                            </div>
+                            <div class="snapshot-block-list">
+                                <span class="snapshot-pill">system prompt</span>
+                                <span class="snapshot-pill">answer rules</span>
+                                <span class="snapshot-pill">profile 摘要</span>
+                                <span class="snapshot-pill">可读文件索引</span>
+                                <span class="snapshot-pill">项目 / refs 文件名目录</span>
+                            </div>
+                        </div>
+                        <div class="snapshot-block">
+                            <div class="snapshot-block-top">
+                                <div class="snapshot-block-title">tools</div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
             </div>
         </section>
 

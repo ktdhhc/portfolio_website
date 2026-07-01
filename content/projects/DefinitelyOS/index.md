@@ -21,6 +21,8 @@ DefinitelyOS 是一个操作系统。真的。
 
 唯一的区别是：你看到的一切都是 AI 实时生成的。文件不存在，网页不存在，终端输出不存在。它们都是 LLM 的幻觉，但系统不会告诉你这一点。它只以操作系统的方式回应你。
 
+<img src="/images/DefinitelyOS/ScreenShot_2026-07-01_165534_282.png" alt="DefinitelyOS" style="max-width: 100%; border-radius: 12px;" />
+
 ---
 
 ## 它是怎么骗人的

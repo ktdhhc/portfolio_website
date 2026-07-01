@@ -30,7 +30,7 @@ const letterParagraphs = [
   `我是 Kaho，一个相信技术应当有温度的人。`,
   `这个空间是我与外界交互的一个窗口。在这里，我不仅想分享我的项目与技术方案，更想记录我对"智能"这个概念的逐渐理解，以及与之协作共生的过程。`,
   `我关注的方向是 AI 与认知科学的交叉地带，前者让我着迷于从巨量数据中涌现的能力，后者提醒我永远不要忽视人的价值。两者结合，才能做出真正打动人的产品。`,
-  `如果你想快速了解我的项目、经历或处事风格，可以继续浏览页面，或者直接通过 Agent 与我对话，我一直在。`,
+  `如果你想快速了解我的项目、经历或处事风格，可以继续浏览页面，或者直接通过 Agent 与我对话，我一直都在。`,
 ];
 ---
 
@@ -53,12 +53,12 @@ const letterParagraphs = [
 
       <div class="hero-back">
         <div class="hero-card">
-          <button type="button" class="card-back" data-hero-back>← 返回</button>
           <div class="card-content">
             <div class="card-body">
               {letterParagraphs.map((paragraph) => <p>{paragraph}</p>)}
             </div>
           </div>
+          <button type="button" class="card-back" data-hero-back>← 返回</button>
         </div>
       </div>
     </div>
@@ -108,16 +108,16 @@ const letterParagraphs = [
     inset: 0;
     z-index: 10;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 1rem;
     background: var(--bg);
     padding: 2rem;
   }
 
   .card-back {
-    position: absolute;
-    bottom: 3%;
-    left: 48%;
+    position: static;
     z-index: 11;
     padding: 0.5rem;
     border: none;
@@ -171,7 +171,23 @@ const letterParagraphs = [
   }
 
   @media (max-width: 768px) {
+    .hero-back {
+      transform: none;
+      opacity: 0;
+      transform: translateY(0.75rem);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
 
+    .hero.is-card-open .hero-back {
+      opacity: 1;
+      transform: translateY(0);
+      z-index: 3;
+    }
+
+    .hero.is-card-open .hero-front,
+    .hero.is-card-open .hero-front * {
+      pointer-events: none;
+    }
 
     .hero-card {
       padding: 1.5rem;
@@ -179,13 +195,22 @@ const letterParagraphs = [
 
     .card-content {
       aspect-ratio: auto;
-      min-height: min(70vh, 34rem);
-      padding: 2rem 1.5rem 3.5rem;
+      max-height: 80vh;
+      padding: 2rem 1.5rem 2.5rem;
+    }
+
+    .card-body {
+      overflow-y: auto;
+      max-height: calc(80vh - 5rem);
+    }
+
+    .card-body p {
+      font-size: 0.875rem;
+      line-height: 1.7;
     }
 
     .card-back {
-      left: 50%;
-      transform: translateX(-50%);
+      transform: none;
     }
   }
 </style>

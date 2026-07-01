@@ -9,15 +9,21 @@
     var backButton = hero ? hero.querySelector('[data-hero-back]') : null;
     if (!hero || !heroSpotlight || !heroZh || !heroFlipper) return;
 
+    var isMobile = window.innerWidth <= 768 || !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
     function showCard() {
       hero.classList.add('is-card-open');
-      heroFlipper.style.transform = 'rotateX(180deg)';
+      if (!isMobile) {
+        heroFlipper.style.transform = 'rotateX(180deg)';
+      }
       if (heroFront instanceof HTMLElement) heroFront.style.pointerEvents = 'none';
     }
 
     function hideCard() {
       hero.classList.remove('is-card-open');
-      heroFlipper.style.transform = 'rotateX(0deg)';
+      if (!isMobile) {
+        heroFlipper.style.transform = 'rotateX(0deg)';
+      }
       if (heroFront instanceof HTMLElement) heroFront.style.pointerEvents = '';
     }
 
@@ -33,10 +39,25 @@
       });
     }
 
+    var heroEn = hero ? hero.querySelector('.hero-en') : null;
+
     var canSpotlight = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     var useMobileToggle = window.innerWidth <= 768 || !canSpotlight;
     if (useMobileToggle) {
       var isRevealed = false;
+
+      // 初始状态：亮色层按钮可点击，亮色层本身不拦截点击；暗色层不可点击
+      if (heroEn instanceof HTMLElement) {
+        heroEn.style.pointerEvents = 'none';
+      }
+      if (heroZh instanceof HTMLElement) {
+        heroZh.style.pointerEvents = 'none';
+      }
+      var actionsMobile = heroZh ? heroZh.querySelector('.hero-actions-mobile') : null;
+      if (actionsMobile instanceof HTMLElement) {
+        actionsMobile.style.pointerEvents = 'auto';
+      }
+
       heroSpotlight.addEventListener('click', function (event) {
         var target = event.target;
         if (!(target instanceof Element)) return;
@@ -44,7 +65,25 @@
 
         isRevealed = !isRevealed;
         heroZh.style.opacity = isRevealed ? '0' : '1';
-        heroZh.style.pointerEvents = isRevealed ? 'none' : 'auto';
+
+        if (heroEn instanceof HTMLElement) {
+          heroEn.style.pointerEvents = isRevealed ? 'auto' : 'none';
+        }
+        var actionsEn = heroEn ? heroEn.querySelector('.hero-actions') : null;
+        if (actionsEn instanceof HTMLElement) {
+          actionsEn.style.pointerEvents = isRevealed ? 'auto' : 'none';
+        }
+        var aboutBtn = heroEn ? heroEn.querySelector('[data-hero-about]') : null;
+        if (aboutBtn instanceof HTMLElement) {
+          aboutBtn.style.pointerEvents = isRevealed ? 'auto' : 'none';
+        }
+
+        if (heroZh instanceof HTMLElement) {
+          heroZh.style.pointerEvents = 'none';
+        }
+        if (actionsMobile instanceof HTMLElement) {
+          actionsMobile.style.pointerEvents = isRevealed ? 'none' : 'auto';
+        }
       });
 
       return;
