@@ -76,7 +76,9 @@ const moduleCards = [
             <h3>{moduleCard.title}</h3>
           </div>
         </div>
-        <p class="module-copy" data-module-body>模块已连接，详情将在后续 issue 完成。</p>
+        <p class="module-unavailable" data-module-unavailable hidden></p>
+        <p class="module-copy" data-module-empty hidden></p>
+        <ul class="module-list" data-module-list hidden></ul>
       </article>
     ))}
   </section>
@@ -334,6 +336,46 @@ const moduleCards = [
   .module-copy,
   .module-unavailable {
     min-height: 1.7rem;
+  }
+
+  .module-list {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .module-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 0.95rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-button);
+    background: var(--bg);
+  }
+
+  .module-list-label,
+  .module-list-value {
+    font-size: 0.9rem;
+  }
+
+  .module-list-label {
+    color: var(--fg-secondary);
+    word-break: break-word;
+  }
+
+  .module-list-value {
+    flex-shrink: 0;
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  .module-list-item.tone-danger .module-list-label,
+  .module-list-item.tone-danger .module-list-value {
+    color: var(--accent-dark);
   }
 
   .logs-actions {

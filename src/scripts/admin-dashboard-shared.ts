@@ -29,6 +29,46 @@ export type OverviewResponse = StatsFailureResponse | {
   };
 };
 
+export type PagesStatsResponse = StatsFailureResponse | {
+  readonly ok: true;
+  readonly data: {
+    readonly items: readonly {
+      readonly path: string;
+      readonly count: number;
+    }[];
+  };
+};
+
+export type ProjectsStatsResponse = StatsFailureResponse | {
+  readonly ok: true;
+  readonly data: {
+    readonly items: readonly {
+      readonly targetId: string;
+      readonly count: number;
+    }[];
+  };
+};
+
+export type AgentSummaryStatsResponse = StatsFailureResponse | {
+  readonly ok: true;
+  readonly data: {
+    readonly items: readonly {
+      readonly keyword: string;
+      readonly count: number;
+    }[];
+  };
+};
+
+export type IssuesStatsResponse = StatsFailureResponse | {
+  readonly ok: true;
+  readonly data: {
+    readonly items: readonly {
+      readonly kind: 'degraded' | 'failed' | 'd1_write_failure';
+      readonly count: number;
+    }[];
+  };
+};
+
 export type LogsListItem = {
   readonly id: string;
   readonly createdAt: string;
@@ -102,6 +142,10 @@ function isLogsListItem(value: unknown): value is LogsListItem {
     && (value.answerStatus === 'success' || value.answerStatus === 'degraded' || value.answerStatus === 'failed');
 }
 
+function isCountItemRecord(value: unknown, key: 'path' | 'targetId' | 'keyword' | 'kind'): value is Record<'count', number> & Record<typeof key, string> {
+  return isRecord(value) && typeof value[key] === 'string' && typeof value.count === 'number';
+}
+
 function isLogsDetailItem(value: unknown): value is LogsDetailItem {
   return isRecord(value)
     && typeof value.id === 'string'
@@ -124,6 +168,43 @@ export function isOverviewResponse(value: unknown): value is OverviewResponse {
   if (!isRecord(value) || value.ok !== true || !isRecord(value.data) || !isRecord(value.data.metrics)) return false;
   return ['pageViews', 'pdfDownloads', 'agentTurns', 'jdAnalyses', 'avgPageDurationMs', 'agentFailures']
     .every((key) => isComparisonMetric(value.data.metrics[key]));
+}
+
+export function isPagesStatsResponse(value: unknown): value is PagesStatsResponse {
+  if (isStatsFailureResponse(value)) return true;
+  return isRecord(value)
+    && value.ok === true
+    && isRecord(value.data)
+    && Array.isArray(value.data.items)
+    && value.data.items.every((item) => isCountItemRecord(item, 'path'));
+}
+
+export function isProjectsStatsResponse(value: unknown): value is ProjectsStatsResponse {
+  if (isStatsFailureResponse(value)) return true;
+  return isRecord(value)
+    && value.ok === true
+    && isRecord(value.data)
+    && Array.isArray(value.data.items)
+    && value.data.items.every((item) => isCountItemRecord(item, 'targetId'));
+}
+
+export function isAgentSummaryStatsResponse(value: unknown): value is AgentSummaryStatsResponse {
+  if (isStatsFailureResponse(value)) return true;
+  return isRecord(value)
+    && value.ok === true
+    && isRecord(value.data)
+    && Array.isArray(value.data.items)
+    && value.data.items.every((item) => isCountItemRecord(item, 'keyword'));
+}
+
+export function isIssuesStatsResponse(value: unknown): value is IssuesStatsResponse {
+  if (isStatsFailureResponse(value)) return true;
+  return isRecord(value)
+    && value.ok === true
+    && isRecord(value.data)
+    && Array.isArray(value.data.items)
+    && value.data.items.every((item) => isCountItemRecord(item, 'kind'))
+    && value.data.items.every((item) => item.kind === 'degraded' || item.kind === 'failed' || item.kind === 'd1_write_failure');
 }
 
 export function isLogsListResponse(value: unknown): value is LogsListResponse {

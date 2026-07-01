@@ -47,5 +47,14 @@
     { "name": "SQLite", "group": "tool" },
     { "name": "统计分析", "group": "research" },
     { "name": "Matlab", "group": "research" }
+  ],
+  "projects":[
+    {"name": "Aindexer", "tagline": "面向科研文献的本地化 AI 工作台", "featured": true},
+    {"name": "DefinitelyOS", "tagline": "一个伪装成古早操作系统的 LLM 幻觉电脑", "featured": true},
+    {"name": "HEART-Bench", "tagline": "面向角色扮演型 Agent 的行为一致性评测体系，评估 LLM 将情境理解转化为具体行动的能力", "featured": true},
+    {"name": "Human-Like Agent", "tagline": "从认知科学与心理学文献出发，为陪伴型 Agent 的记忆、情绪与价值判断设计提供理论依据，并推动理论走向原型模块", "featured": false},
+    {"name": "Keyper", "tagline": "轻量级 LLM API Key 管理与探测桌面工具", "featured": false},
+    {"name": "MemCraft", "tagline": "面向长篇叙事文本的角色记忆数据构建工作台", "featured": true},
+    {"name": "记忆系统评测与分析", "tagline": "基于 KnowMe-Bench 对记忆系统进行全量测试，建立分层诊断方法论，发现 LLM 能力边界", "featured": false}
   ]
 }

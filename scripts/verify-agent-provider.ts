@@ -24,8 +24,8 @@ function envForProvider(provider: string): ProviderEnv {
     MIMO_API_KEY: process.env.MIMO_API_KEY,
     MIMO_BASE_URL: process.env.MIMO_BASE_URL,
     MIMO_MODEL: process.env.MIMO_MODEL,
-    CHAT_TEMPERATURE: process.env.CHAT_TEMPERATURE,
-    CHAT_THINKING_EFFORT: process.env.CHAT_THINKING_EFFORT,
+    TEMPERATURE: process.env.TEMPERATURE,
+    EFFORT: process.env.EFFORT,
   };
 }
 

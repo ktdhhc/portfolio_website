@@ -10,26 +10,23 @@ export interface ProviderEnv {
   MIMO_API_KEY?: string;
   MIMO_BASE_URL?: string;
   MIMO_MODEL?: string;
-  CHAT_TEMPERATURE?: string;
-  CHAT_THINKING_EFFORT?: string;
+  TEMPERATURE?: string;
+  EFFORT?: string;
 }
 
 type ProviderThinkingEffort = 'disabled' | 'high' | 'max';
 
-const defaultChatTemperature = 0.7;
-const defaultChatThinkingEffort: ProviderThinkingEffort = 'high';
-
-function parseChatTemperature(value: string | undefined): number {
-  if (!value) return defaultChatTemperature;
+function parseTemperature(value: string | undefined): number | undefined {
+  if (!value) return undefined;
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) {
-    throw new Error(`CHAT_TEMPERATURE must be a valid number, received: ${value}`);
+    throw new Error(`TEMPERATURE must be a valid number, received: ${value}`);
   }
   return parsed;
 }
 
-function parseChatThinkingEffort(value: string | undefined): ProviderThinkingEffort {
-  if (!value) return defaultChatThinkingEffort;
+function parseThinkingEffort(value: string | undefined): ProviderThinkingEffort | undefined {
+  if (!value) return undefined;
 
   switch (value.trim().toLowerCase()) {
     case 'disabled':
@@ -43,7 +40,7 @@ function parseChatThinkingEffort(value: string | undefined): ProviderThinkingEff
     case 'xhigh':
       return 'max';
     default:
-      throw new Error(`CHAT_THINKING_EFFORT must be one of disabled|off|high|max, received: ${value}`);
+      throw new Error(`EFFORT must be one of disabled|off|high|max, received: ${value}`);
   }
 }
 
@@ -63,8 +60,8 @@ function requireEnv(value: string | undefined, name: string): string {
 }
 
 export function getProvider(env: ProviderEnv): Provider {
-  const temperature = parseChatTemperature(env.CHAT_TEMPERATURE);
-  const thinkingEffort = parseChatThinkingEffort(env.CHAT_THINKING_EFFORT);
+  const temperature = parseTemperature(env.TEMPERATURE);
+  const thinkingEffort = parseThinkingEffort(env.EFFORT);
 
   switch (env.ACTIVE_PROVIDER || 'test') {
     case 'test':
@@ -75,8 +72,8 @@ export function getProvider(env: ProviderEnv): Provider {
         baseUrl: requireEnv(env.DEEPSEEK_BASE_URL, 'DEEPSEEK_BASE_URL'),
         model: requireEnv(env.DEEPSEEK_MODEL, 'DEEPSEEK_MODEL'),
         defaultTemperature: temperature,
-        defaultReasoningEffort: thinkingEffort === 'disabled' ? undefined : thinkingEffort,
-        defaultExtraBody: toThinkingExtraBody(thinkingEffort),
+        defaultReasoningEffort: thinkingEffort && thinkingEffort !== 'disabled' ? thinkingEffort : undefined,
+        defaultExtraBody: thinkingEffort ? toThinkingExtraBody(thinkingEffort) : undefined,
       });
     case 'mimo':
       return createOpenAiCompatibleProvider({
@@ -84,7 +81,7 @@ export function getProvider(env: ProviderEnv): Provider {
         baseUrl: requireEnv(env.MIMO_BASE_URL, 'MIMO_BASE_URL'),
         model: requireEnv(env.MIMO_MODEL, 'MIMO_MODEL'),
         defaultTemperature: temperature,
-        defaultExtraBody: toThinkingExtraBody(thinkingEffort),
+        defaultExtraBody: thinkingEffort ? toThinkingExtraBody(thinkingEffort) : undefined,
       });
     default:
       throw new Error(`Unknown ACTIVE_PROVIDER: ${env.ACTIVE_PROVIDER}`);

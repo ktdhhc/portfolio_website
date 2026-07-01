@@ -68,6 +68,10 @@ function makeTurn(overrides: Partial<AgentTurnRecord> = {}): AgentTurnRecord {
   };
 }
 
+function minutesAgoIso(minutes: number): string {
+  return new Date(Date.now() - minutes * 60_000).toISOString();
+}
+
 async function run(): Promise<void> {
   console.log('\n🔍 Stage 4 Admin Smoke 验证\n');
 
@@ -133,8 +137,7 @@ async function run(): Promise<void> {
   console.log('\n3. Stats Issues 端点');
   {
     const turnStore = new FakeAgentTurnStore();
-    // 使用一个确定在 week 窗口内的时间
-    const inWindowTime = '2026-06-27T10:00:00.000Z';
+    const inWindowTime = new Date().toISOString();
     turnStore.records.push(
       makeTurn({ answerStatus: 'degraded', createdAt: inWindowTime }),
       makeTurn({ answerStatus: 'degraded', createdAt: inWindowTime }),
@@ -160,11 +163,11 @@ async function run(): Promise<void> {
   {
     const turnStore = new FakeAgentTurnStore();
     for (let i = 0; i < 25; i++) {
-      turnStore.records.push(makeTurn({ id: String(i + 1), createdAt: `2026-06-28T${String(i).padStart(2, '0')}:00:00.000Z` }));
+      turnStore.records.push(makeTurn({ id: String(i + 1), createdAt: minutesAgoIso(i) }));
     }
     const env = { AGENT_TURN_STORE: turnStore };
 
-    // 列表（使用 today 窗口，确保所有记录在窗口内）
+    // 列表（使用相对当前时间的记录，确保命中 today 窗口）
     const resList = await adminLogs(makeContext(adminLogs, 'http://localhost/api/admin/logs?period=today&page=1&pageSize=10', 'GET', undefined, env));
     const dataList = await json(resList);
     assertEqual(dataList.ok, true, 'logs 列表返回 ok: true');
@@ -244,19 +247,19 @@ async function run(): Promise<void> {
       assistantAnswer: '测试回答',
       visitorUuid: 'uuid-12345678-abcd',
       agentSessionId: 'sess-12345678-abcd',
-      createdAt: '2026-06-27T10:00:00.000Z',
+      createdAt: new Date().toISOString(),
     }));
     const env = { AGENT_TURN_STORE: turnStore };
 
-    // JSON（使用 week 窗口确保记录在窗口内）
-    const resJson = await adminLogsExport(makeContext(adminLogsExport, 'http://localhost/api/admin/logs/export?format=json&period=week', 'GET', undefined, env));
+    // JSON（用 all 避免把 smoke 和自然周窗口耦合；窗口过滤已由专门测试覆盖）
+    const resJson = await adminLogsExport(makeContext(adminLogsExport, 'http://localhost/api/admin/logs/export?format=json&period=all', 'GET', undefined, env));
     assert(resJson.headers.get('Content-Type') === 'application/json', 'JSON 导出 Content-Type 正确');
     const jsonData = await resJson.json();
     assert(jsonData.length >= 1, 'JSON 导出返回数据');
     assert(typeof jsonData[0].id === 'string', 'JSON 导出包含 id');
 
     // CSV
-    const resCsv = await adminLogsExport(makeContext(adminLogsExport, 'http://localhost/api/admin/logs/export?format=csv&period=week', 'GET', undefined, env));
+    const resCsv = await adminLogsExport(makeContext(adminLogsExport, 'http://localhost/api/admin/logs/export?format=csv&period=all', 'GET', undefined, env));
     assert(resCsv.headers.get('Content-Type')?.includes('text/csv'), 'CSV 导出 Content-Type 正确');
     assert(resCsv.headers.get('Content-Disposition')?.includes('attachment'), 'CSV 导出 Content-Disposition 正确');
     const csvText = await resCsv.text();

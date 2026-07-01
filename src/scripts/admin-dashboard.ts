@@ -5,10 +5,14 @@ import {
   formatMetricValue,
   getComparisonState,
   getRequiredElement,
+  isAgentSummaryStatsResponse,
   isAdminAuthResponse,
+  isIssuesStatsResponse,
   isLogsDetailResponse,
   isLogsListResponse,
   isOverviewResponse,
+  isPagesStatsResponse,
+  isProjectsStatsResponse,
   isStatsFailureResponse,
   moduleEndpoints,
   type AdminAuthFailureReason,
@@ -18,19 +22,15 @@ import {
   type MetricKey,
   type ModuleKey,
 } from './admin-dashboard-shared';
-
-function fetchAdminJson(path: string, token: string, period: AdminStatsPeriod, extraQuery = '', customDates?: { start: string; end: string }): Promise<Response> {
-  const params: string[] = [];
-  if (customDates) {
-    params.push(`startDate=${customDates.start}`, `endDate=${customDates.end}`);
-  } else {
-    params.push(`period=${period}`);
-  }
-  if (extraQuery) params.push(extraQuery);
-  return fetch(`${path}?${params.join('&')}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-}
+import { deleteLogs, exportLogs, fetchAdminJson } from './admin-dashboard-http';
+import {
+  getLogsRefs,
+  renderLogDetail as renderLogsPanelDetail,
+  renderLogsList as renderLogsPanelList,
+  renderLogsUnavailable as renderLogsPanelUnavailable,
+  syncLogsButtons,
+} from './admin-dashboard-logs';
+import { renderModuleList, renderModuleUnavailable } from './admin-dashboard-ui';
 
 export function initAdminDashboard(): void {
   const setup = () => {
@@ -43,6 +43,8 @@ export function initAdminDashboard(): void {
     const periodButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-period]'));
     const logsPrevButton = getRequiredElement<HTMLButtonElement>(document, '[data-logs-prev]');
     const logsNextButton = getRequiredElement<HTMLButtonElement>(document, '[data-logs-next]');
+    const logsRefs = getLogsRefs();
+    const exportAllInput = getRequiredElement<HTMLInputElement>(document, '[data-export-all]');
     const customRangeContainer = getRequiredElement<HTMLElement>(document, '[data-custom-range]');
     const startDateInput = getRequiredElement<HTMLInputElement>(document, '#startDate');
     const endDateInput = getRequiredElement<HTMLInputElement>(document, '#endDate');
@@ -79,8 +81,11 @@ export function initAdminDashboard(): void {
     };
 
     const syncPagerButtons = (): void => {
-      logsPrevButton.disabled = isBusy || activeLogsPage <= 1;
-      logsNextButton.disabled = isBusy || activeLogsPage >= logsTotalPages;
+      syncLogsButtons(logsRefs, {
+        isBusy,
+        page: activeLogsPage,
+        totalPages: logsTotalPages,
+      });
     };
 
     const setBusy = (nextBusy: boolean): void => {
@@ -181,78 +186,37 @@ export function initAdminDashboard(): void {
     };
 
     const renderModuleBody = (key: Exclude<ModuleKey, 'overview' | 'logs'>, copy: string): void => {
-      const module = getRequiredElement<HTMLElement>(document, `[data-module="${key}"]`);
-      getRequiredElement<HTMLElement>(module, '[data-module-body]').textContent = copy;
+      if (copy === '暂不可用') {
+        renderModuleUnavailable(key);
+        return;
+      }
+      renderModuleList(key, [], copy);
     };
 
     const renderLogDetail = (item: LogsDetailItem | null): void => {
-      const detail = getRequiredElement<HTMLElement>(document, '[data-log-detail]');
-      const fields = getRequiredElement<HTMLElement>(document, '[data-log-detail-fields]');
-      fields.replaceChildren();
-
-      if (!item) {
-        detail.hidden = true;
-        return;
-      }
-
-      const entries: ReadonlyArray<readonly [string, string]> = [
-        ['创建时间', item.createdAt],
-        ['问题全文', item.userMessage],
-        ['回答全文', item.assistantAnswer],
-        ['turnType', item.turnType],
-        ['answerStatus', item.answerStatus],
-        ['durationMs', String(item.durationMs)],
-        ['toolTrace', `toolCalls ${item.toolTraceSummary.toolCalls}${item.toolTraceSummary.files.length > 0 ? ` | ${item.toolTraceSummary.files.join(', ')}` : ''}`],
-        ['visitorUuid', item.visitorUuidShort],
-        ['agentSessionId', item.agentSessionIdShort],
-      ];
-
-      for (const [label, value] of entries) {
-        const term = document.createElement('dt');
-        term.textContent = label;
-        const description = document.createElement('dd');
-        description.textContent = value;
-        fields.append(term, description);
-      }
-
-      detail.hidden = false;
+      renderLogsPanelDetail(logsRefs, item);
     };
 
     const renderLogsUnavailable = (): void => {
-      getRequiredElement<HTMLElement>(document, '[data-logs-unavailable]').hidden = false;
-      getRequiredElement<HTMLElement>(document, '[data-logs-content]').hidden = true;
       logsTotalPages = 1;
       syncPagerButtons();
-      renderLogDetail(null);
+      renderLogsPanelUnavailable(logsRefs);
     };
 
     const renderLogsList = (data: { items: readonly LogsListItem[]; total: number; page: number; totalPages: number }): void => {
-      getRequiredElement<HTMLElement>(document, '[data-logs-unavailable]').hidden = true;
-      getRequiredElement<HTMLElement>(document, '[data-logs-content]').hidden = false;
-      getRequiredElement<HTMLElement>(document, '[data-logs-total]').textContent = `共 ${data.total} 条记录`;
-      getRequiredElement<HTMLElement>(document, '[data-logs-page-info]').textContent = `第 ${data.page} / ${data.totalPages} 页`;
       logsTotalPages = data.totalPages;
       syncPagerButtons();
-
-      const list = getRequiredElement<HTMLElement>(document, '[data-logs-list]');
-      list.replaceChildren();
-      for (const item of data.items) {
-        const row = document.createElement('button');
-        row.type = 'button';
-        row.className = 'log-row';
-        row.dataset.logRow = item.id;
-        row.innerHTML = [
-          `<span class="log-row-meta">${item.createdAt}</span>`,
-          `<span class="log-row-message">${item.userMessage}</span>`,
-          `<span class="log-chip">${item.turnType}</span>`,
-          `<span class="log-chip status-${item.answerStatus}">${item.answerStatus}</span>`,
-        ].join('');
-        row.addEventListener('click', () => {
-          activeLogDetailId = item.id;
-          void loadLogDetail(item.id);
-        });
-        list.appendChild(row);
-      }
+      renderLogsPanelList(
+        logsRefs,
+        data,
+        (id) => {
+          activeLogDetailId = id;
+          void loadLogDetail(id);
+        },
+        (id) => {
+          void handleSingleDelete(id);
+        },
+      );
     };
 
     const handleUnauthorized = (): void => {
@@ -274,6 +238,93 @@ export function initAdminDashboard(): void {
         return;
       }
       renderLogDetail(payload.data.item);
+    };
+
+    const buildScopedQuery = (scope: 'current' | 'all'): URLSearchParams => {
+      const params = new URLSearchParams();
+      if (scope === 'all') {
+        params.set('period', 'all');
+        return params;
+      }
+      if (customDates) {
+        params.set('startDate', customDates.start);
+        params.set('endDate', customDates.end);
+        return params;
+      }
+      params.set('period', activePeriod);
+      return params;
+    };
+
+    const refreshAfterDelete = async (): Promise<void> => {
+      activeLogDetailId = null;
+      renderLogDetail(null);
+      await refreshDashboard();
+    };
+
+    const handleSingleDelete = async (id: string): Promise<void> => {
+      if (isBusy) {
+        return;
+      }
+      setBusy(true);
+      try {
+        await deleteLogs(`id=${encodeURIComponent(id)}`, activeToken, handleUnauthorized);
+      } finally {
+        setBusy(false);
+      }
+      await refreshAfterDelete();
+    };
+
+    const handleRangeDelete = async (): Promise<void> => {
+      if (isBusy || !customDates) {
+        return;
+      }
+      const shouldDelete = window.confirm(`确认删除 ${customDates.start} 至 ${customDates.end} 的提问记录吗？`);
+      if (!shouldDelete) {
+        return;
+      }
+      const params = new URLSearchParams();
+      params.set('rangeStart', customDates.start);
+      params.set('rangeEnd', customDates.end);
+      setBusy(true);
+      try {
+        await deleteLogs(params.toString(), activeToken, handleUnauthorized);
+      } finally {
+        setBusy(false);
+      }
+      resetLogsState();
+      await refreshDashboard();
+    };
+
+    const handleClearAll = async (): Promise<void> => {
+      if (isBusy) {
+        return;
+      }
+      const shouldClear = window.confirm('确认清空全部提问记录吗？');
+      if (!shouldClear) {
+        return;
+      }
+      const confirmation = window.prompt('请输入 DELETE 以确认清空全部提问记录', '');
+      if (confirmation !== 'DELETE') {
+        return;
+      }
+      const params = new URLSearchParams();
+      params.set('all', 'true');
+      params.set('confirm', confirmation);
+      setBusy(true);
+      try {
+        await deleteLogs(params.toString(), activeToken, handleUnauthorized);
+      } finally {
+        setBusy(false);
+      }
+      resetLogsState();
+      await refreshDashboard();
+    };
+
+    const handleExport = async (format: 'csv' | 'json'): Promise<void> => {
+      const scope = exportAllInput.checked ? 'all' : 'current';
+      const params = buildScopedQuery(scope);
+      params.set('format', format);
+      await exportLogs(params.toString(), activeToken, format, handleUnauthorized);
     };
 
     const refreshDashboard = async (): Promise<void> => {
@@ -315,7 +366,64 @@ export function initAdminDashboard(): void {
             continue;
           }
 
-          renderModuleBody(key, isStatsFailureResponse(payload) ? '暂不可用' : '模块已连接，详情将在后续 issue 完成。');
+          if (key === 'pages') {
+            if (!isPagesStatsResponse(payload) || isStatsFailureResponse(payload)) {
+              renderModuleUnavailable('pages');
+            } else {
+              renderModuleList('pages', payload.data.items.map((item) => ({
+                id: item.path,
+                label: item.path,
+                value: new Intl.NumberFormat('zh-CN').format(item.count),
+              })));
+            }
+            continue;
+          }
+
+          if (key === 'projects') {
+            if (!isProjectsStatsResponse(payload) || isStatsFailureResponse(payload)) {
+              renderModuleUnavailable('projects');
+            } else {
+              renderModuleList('projects', payload.data.items.map((item) => ({
+                id: item.targetId,
+                label: item.targetId,
+                value: new Intl.NumberFormat('zh-CN').format(item.count),
+              })));
+            }
+            continue;
+          }
+
+          if (key === 'agentSummary') {
+            if (!isAgentSummaryStatsResponse(payload) || isStatsFailureResponse(payload)) {
+              renderModuleUnavailable('agentSummary');
+            } else {
+              renderModuleList('agentSummary', payload.data.items.map((item) => ({
+                id: item.keyword,
+                label: item.keyword,
+                value: new Intl.NumberFormat('zh-CN').format(item.count),
+              })));
+            }
+            continue;
+          }
+
+          if (key === 'issues') {
+            if (!isIssuesStatsResponse(payload) || isStatsFailureResponse(payload)) {
+              renderModuleUnavailable('issues');
+            } else {
+              renderModuleList('issues', payload.data.items.map((item) => ({
+                id: item.kind,
+                label: item.kind === 'degraded'
+                  ? '回答降级'
+                  : item.kind === 'failed'
+                    ? '回答失败'
+                    : 'D1 写入失败',
+                value: new Intl.NumberFormat('zh-CN').format(item.count),
+                tone: item.kind === 'd1_write_failure' ? 'danger' : 'default',
+              })));
+            }
+            continue;
+          }
+
+          renderModuleBody(key, isStatsFailureResponse(payload) ? '暂不可用' : '暂无数据');
         }
       } finally {
         setBusy(false);
@@ -411,6 +519,18 @@ export function initAdminDashboard(): void {
       activeLogDetailId = null;
       renderLogDetail(null);
       void refreshDashboard();
+    });
+    logsRefs.rangeDeleteButton.addEventListener('click', () => {
+      void handleRangeDelete();
+    });
+    logsRefs.clearAllButton.addEventListener('click', () => {
+      void handleClearAll();
+    });
+    logsRefs.exportCsvButton.addEventListener('click', () => {
+      void handleExport('csv');
+    });
+    logsRefs.exportJsonButton.addEventListener('click', () => {
+      void handleExport('json');
     });
 
     updatePeriodButtons(activePeriod);

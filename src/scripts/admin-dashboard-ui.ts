@@ -1,5 +1,14 @@
 import { assertNever, formatComparisonCopy, formatMetricValue, getComparisonState, getRequiredElement, type AdminAuthFailureReason, type MetricKey } from './admin-dashboard-shared';
 
+type ModuleListKey = 'pages' | 'projects' | 'agentSummary' | 'issues';
+
+export type ModuleListItemView = {
+  readonly id: string;
+  readonly label: string;
+  readonly value: string;
+  readonly tone?: 'default' | 'danger';
+};
+
 export function setLoginError(loginError: HTMLParagraphElement, reason: AdminAuthFailureReason | 'expired' | null): void {
   if (reason === null) {
     loginError.hidden = true;
@@ -54,7 +63,54 @@ export function renderOverviewSuccess(activePeriod: 'today' | 'week' | 'month', 
   }
 }
 
-export function renderModuleBody(key: 'pages' | 'projects' | 'agentSummary' | 'issues', degraded: boolean): void {
+export function renderModuleUnavailable(key: ModuleListKey): void {
   const module = getRequiredElement<HTMLElement>(document, `[data-module="${key}"]`);
-  getRequiredElement<HTMLElement>(module, '[data-module-body]').textContent = degraded ? '暂不可用' : '模块已连接，详情将在后续 issue 完成。';
+  const unavailable = getRequiredElement<HTMLElement>(module, '[data-module-unavailable]');
+  const empty = getRequiredElement<HTMLElement>(module, '[data-module-empty]');
+  unavailable.hidden = false;
+  unavailable.textContent = '暂不可用';
+  empty.hidden = true;
+  empty.textContent = '';
+  const list = getRequiredElement<HTMLElement>(module, '[data-module-list]');
+  list.hidden = true;
+  list.replaceChildren();
+}
+
+export function renderModuleList(key: ModuleListKey, items: readonly ModuleListItemView[], emptyCopy = '暂无数据'): void {
+  const module = getRequiredElement<HTMLElement>(document, `[data-module="${key}"]`);
+  const unavailable = getRequiredElement<HTMLElement>(module, '[data-module-unavailable]');
+  const empty = getRequiredElement<HTMLElement>(module, '[data-module-empty]');
+  const list = getRequiredElement<HTMLUListElement>(module, '[data-module-list]');
+
+  unavailable.hidden = true;
+  unavailable.textContent = '';
+  if (items.length === 0) {
+    empty.hidden = false;
+    empty.textContent = emptyCopy;
+    list.hidden = true;
+    list.replaceChildren();
+    return;
+  }
+
+  empty.hidden = true;
+  empty.textContent = '';
+  list.hidden = false;
+  list.replaceChildren(
+    ...items.map((item) => {
+      const row = document.createElement('li');
+      row.className = `module-list-item${item.tone === 'danger' ? ' tone-danger' : ''}`;
+      row.dataset.moduleItem = item.id;
+
+      const label = document.createElement('span');
+      label.className = 'module-list-label';
+      label.textContent = item.label;
+
+      const value = document.createElement('span');
+      value.className = 'module-list-value';
+      value.textContent = item.value;
+
+      row.append(label, value);
+      return row;
+    }),
+  );
 }

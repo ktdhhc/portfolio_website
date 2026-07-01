@@ -47,6 +47,9 @@ npm run test:schema
 # 阶段 3 数据层 smoke test
 npm run test:stage3
 
+# 阶段 4 admin smoke test
+npm run test:stage4
+
 # Playwright UI 模式
 npm run test:ui
 ```
@@ -151,12 +154,13 @@ summary: string           # 必填，供 Agent 文件索引
 
 ## 当前状态
 
-阶段 3 已完成：
+阶段 4 已完成：
 
 - Candidate Agent 无记忆问答主链路已上线
 - `Behavior Event` 已覆盖页面浏览、PDF 下载、项目点击、外链点击与 `agent_open`
 - `Agent Turn` 已记录普通提问与 JD 粘贴分析
-- UUID 限频与全局限频已接通
-- D1 退化时主链路保持可用
+- UUID 限频与全局限频已接通，D1 退化时主链路保持可用
+- `/admin` 已接通单 `ADMIN_TOKEN` 登录、overview 统计、四个榜单模块、提问记录列表/详情/分页、单条删除、范围删除、全清、CSV/JSON 导出与自定义日期范围
+- admin 相关默认验证命令为 `npm run test:stage4` + admin Playwright 回归
 
 当前仓库保留运行所需的源码、测试、迁移和部署配置；规划与过程型文档仅保留在本地工作区，不随仓库同步。

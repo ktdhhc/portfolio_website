@@ -10,7 +10,7 @@ tags:
   - LLM
   - DeepSeek
   - 创意项目
-featured: false
+featured: true
 ---
 
 ## 这是什么
