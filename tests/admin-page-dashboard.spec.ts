@@ -98,7 +98,7 @@ test('023-05: 单个 stats 模块降级时只在该模块显示暂不可用', as
   await expect(page.locator('[data-module="projects"]')).not.toContainText('暂不可用');
 });
 
-test('029-01: pages 模块渲染当前窗口的热门页面列表而不是占位文案', async ({ page }) => {
+test('029-01: 热门页面模块渲染排行卡，显示序号、路径与访问次数', async ({ page }) => {
   await stubTrack(page);
   await stubNonOverviewStats(page, {
     pages: {
@@ -127,15 +127,19 @@ test('029-01: pages 模块渲染当前窗口的热门页面列表而不是占位
   await page.getByRole('button', { name: '进入面板' }).click();
 
   const pagesModule = page.locator('[data-module="pages"]');
-  await expect(pagesModule.locator('[data-module-list]')).toBeVisible();
-  await expect(pagesModule.locator('[data-module-item="/"]')).toContainText('/');
-  await expect(pagesModule.locator('[data-module-item="/"]')).toContainText('12');
-  await expect(pagesModule.locator('[data-module-item="/resume"]')).toContainText('/resume');
-  await expect(pagesModule.locator('[data-module-item="/resume"]')).toContainText('7');
-  await expect(pagesModule).not.toContainText('模块已连接，详情将在后续 issue 完成。');
+  const rankItems = pagesModule.locator('[data-rank-item]');
+
+  await expect(pagesModule.locator('[data-rank-list]')).toBeVisible();
+  await expect(rankItems).toHaveCount(2);
+  await expect(rankItems.nth(0)).toContainText('1');
+  await expect(rankItems.nth(0)).toContainText('/');
+  await expect(rankItems.nth(0)).toContainText('12');
+  await expect(rankItems.nth(1)).toContainText('2');
+  await expect(rankItems.nth(1)).toContainText('/resume');
+  await expect(rankItems.nth(1)).toContainText('7');
 });
 
-test('029-02: projects、agent-summary 与 issues 模块渲染真实列表', async ({ page }) => {
+test('029-02: 项目点击排行渲染项目标题、序号与点击次数', async ({ page }) => {
   await stubTrack(page);
   await stubNonOverviewStats(page, {
     projects: {
@@ -182,14 +186,185 @@ test('029-02: projects、agent-summary 与 issues 模块渲染真实列表', asy
   await page.getByLabel('管理员 Token').fill('secret-admin-token');
   await page.getByRole('button', { name: '进入面板' }).click();
 
-  await expect(page.locator('[data-module="projects"] [data-module-item="aindexer"]')).toContainText('9');
-  await expect(page.locator('[data-module="projects"] [data-module-item="memcraft"]')).toContainText('4');
-  await expect(page.locator('[data-module="agentSummary"] [data-module-item="JD 分析"]')).toContainText('5');
-  await expect(page.locator('[data-module="agentSummary"] [data-module-item="技术栈"]')).toContainText('3');
-  await expect(page.locator('[data-module="issues"] [data-module-item="degraded"]')).toContainText('回答降级');
-  await expect(page.locator('[data-module="issues"] [data-module-item="failed"]')).toContainText('回答失败');
-  await expect(page.locator('[data-module="issues"] [data-module-item="d1_write_failure"]')).toContainText('D1 写入失败');
-  await expect(page.locator('[data-module="issues"] [data-module-item="d1_write_failure"]')).toContainText('4');
+  const projectItems = page.locator('[data-module="projects"] [data-rank-item]');
+
+  await expect(page.locator('[data-module="projects"] [data-rank-list]')).toBeVisible();
+  await expect(projectItems).toHaveCount(2);
+  await expect(projectItems.nth(0)).toContainText('1');
+  await expect(projectItems.nth(0)).toContainText('Aindexer');
+  await expect(projectItems.nth(0)).toContainText('9');
+  await expect(projectItems.nth(1)).toContainText('2');
+  await expect(projectItems.nth(1)).toContainText('MemCraft');
+  await expect(projectItems.nth(1)).toContainText('4');
+});
+
+test('029-02b: Agent 配置直接显示 startup context、可读文件索引与 tools', async ({ page }) => {
+  await stubTrack(page);
+  await stubNonOverviewStats(page, {
+    agentConfig: {
+      ok: true,
+      data: {
+        runtime: {
+          provider: 'deepseek',
+          model: 'deepseek-chat',
+          temperature: 0.4,
+          effort: 'high',
+          toolLoopCap: 5,
+        },
+        startupContext: {
+          files: ['resume.json', 'projects/aindexer/index.md'],
+        },
+        tools: ['read_file'],
+      },
+    },
+  });
+  await page.route('**/api/admin/auth', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+  });
+  await page.route('**/api/admin/stats/overview**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, data: { metrics: { pageViews: { current: 20, previous: 10 }, pdfDownloads: { current: 4, previous: 2 }, agentTurns: { current: 6, previous: 4 }, jdAnalyses: { current: 2, previous: 1 }, avgPageDurationMs: { current: 120000, previous: 60000 }, agentFailures: { current: 1, previous: 1 } } } }),
+    });
+  });
+
+  await page.goto('/admin/');
+  await page.getByLabel('管理员 Token').fill('secret-admin-token');
+  await page.getByRole('button', { name: '进入面板' }).click();
+
+  const agentConfigModule = page.locator('[data-module="agent-config"]');
+  const systemPromptTag = agentConfigModule.getByText('system prompt');
+  await expect(agentConfigModule).toContainText('运行配置');
+  await expect(agentConfigModule).toContainText('deepseek-chat');
+  await expect(systemPromptTag).toBeVisible();
+  await expect(systemPromptTag).toHaveCSS('padding-left', '12px');
+  await expect(systemPromptTag).toHaveCSS('border-top-style', 'solid');
+  await expect(agentConfigModule.getByText('answer rules')).toBeVisible();
+  await expect(agentConfigModule.getByText('read_file')).toBeVisible();
+});
+
+test('029-02ba: 可读文件索引默认折叠，展开后显示文件列表', async ({ page }) => {
+  await stubTrack(page);
+  await stubNonOverviewStats(page, {
+    agentConfig: {
+      ok: true,
+      data: {
+        runtime: {
+          provider: 'deepseek',
+          model: 'deepseek-chat',
+          temperature: 0.4,
+          effort: 'high',
+          toolLoopCap: 5,
+        },
+        startupContext: {
+          files: ['resume.json', 'projects/aindexer/index.md'],
+        },
+        tools: ['read_file'],
+      },
+    },
+  });
+  await page.route('**/api/admin/auth', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+  });
+  await page.route('**/api/admin/stats/overview**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, data: { metrics: { pageViews: { current: 20, previous: 10 }, pdfDownloads: { current: 4, previous: 2 }, agentTurns: { current: 6, previous: 4 }, jdAnalyses: { current: 2, previous: 1 }, avgPageDurationMs: { current: 120000, previous: 60000 }, agentFailures: { current: 1, previous: 1 } } } }),
+    });
+  });
+
+  await page.goto('/admin/');
+  await page.getByLabel('管理员 Token').fill('secret-admin-token');
+  await page.getByRole('button', { name: '进入面板' }).click();
+
+  const agentConfigModule = page.locator('[data-module="agent-config"]');
+  const fileIndexToggle = agentConfigModule.getByRole('button', { name: '可读文件索引（2 个）' });
+
+  await expect(fileIndexToggle).toBeVisible();
+  await expect(agentConfigModule.getByText('resume.json')).not.toBeVisible();
+  await expect(agentConfigModule.getByText('projects/aindexer/index.md')).not.toBeVisible();
+
+  await fileIndexToggle.click();
+
+  await expect(agentConfigModule.getByText('resume.json')).toBeVisible();
+  await expect(agentConfigModule.getByText('projects/aindexer/index.md')).toBeVisible();
+});
+
+test('029-02c: 高频问题模块渲染词云标签与次数', async ({ page }) => {
+  await stubTrack(page);
+  await stubNonOverviewStats(page, {
+    agentSummary: {
+      ok: true,
+      data: {
+        items: [
+          { keyword: 'JD 分析', count: 5 },
+          { keyword: '技术栈', count: 3 },
+        ],
+      },
+    },
+  });
+  await page.route('**/api/admin/auth', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+  });
+  await page.route('**/api/admin/stats/overview**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, data: { metrics: { pageViews: { current: 20, previous: 10 }, pdfDownloads: { current: 4, previous: 2 }, agentTurns: { current: 6, previous: 4 }, jdAnalyses: { current: 2, previous: 1 }, avgPageDurationMs: { current: 120000, previous: 60000 }, agentFailures: { current: 1, previous: 1 } } } }),
+    });
+  });
+
+  await page.goto('/admin/');
+  await page.getByLabel('管理员 Token').fill('secret-admin-token');
+  await page.getByRole('button', { name: '进入面板' }).click();
+
+  const summaryModule = page.locator('[data-module="agentSummary"]');
+  await expect(summaryModule.locator('[data-cloud-list]')).toBeVisible();
+  await expect(summaryModule.locator('[data-cloud-tag="JD 分析"]')).toContainText('JD 分析');
+  await expect(summaryModule.locator('[data-cloud-tag="JD 分析"]')).toContainText('5');
+  await expect(summaryModule.locator('[data-cloud-tag="技术栈"]')).toContainText('技术栈');
+  await expect(summaryModule.locator('[data-cloud-tag="技术栈"]')).toContainText('3');
+});
+
+test('029-02d: 失败与降级模块渲染专用问题列表与次数', async ({ page }) => {
+  await stubTrack(page);
+  await stubNonOverviewStats(page, {
+    issues: {
+      ok: true,
+      data: {
+        items: [
+          { kind: 'degraded', count: 2 },
+          { kind: 'failed', count: 1 },
+          { kind: 'd1_write_failure', count: 4 },
+        ],
+      },
+    },
+  });
+  await page.route('**/api/admin/auth', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+  });
+  await page.route('**/api/admin/stats/overview**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, data: { metrics: { pageViews: { current: 20, previous: 10 }, pdfDownloads: { current: 4, previous: 2 }, agentTurns: { current: 6, previous: 4 }, jdAnalyses: { current: 2, previous: 1 }, avgPageDurationMs: { current: 120000, previous: 60000 }, agentFailures: { current: 1, previous: 1 } } } }),
+    });
+  });
+
+  await page.goto('/admin/');
+  await page.getByLabel('管理员 Token').fill('secret-admin-token');
+  await page.getByRole('button', { name: '进入面板' }).click();
+
+  const issuesModule = page.locator('[data-module="issues"]');
+  await expect(issuesModule.locator('[data-issue-list]')).toBeVisible();
+  await expect(issuesModule.locator('[data-issue-item="degraded"]')).toContainText('回答降级');
+  await expect(issuesModule.locator('[data-issue-item="degraded"]')).toContainText('2');
+  await expect(issuesModule.locator('[data-issue-item="failed"]')).toContainText('回答失败');
+  await expect(issuesModule.locator('[data-issue-item="failed"]')).toContainText('1');
+  await expect(issuesModule.locator('[data-issue-item="d1_write_failure"]')).toContainText('D1 写入失败');
+  await expect(issuesModule.locator('[data-issue-item="d1_write_failure"]')).toContainText('4');
 });
 
 test('029-03: 四个非 overview 模块在无数据时显示空态', async ({ page }) => {
@@ -299,6 +474,9 @@ test('029-04: 四个非 overview 模块随 today|month|custom 时间窗口一起
   await page.route('**/api/admin/logs**', async (route) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { items: [], total: 0, page: 1, pageSize: 20, totalPages: 1 } }) });
   });
+  await page.route('**/api/admin/stats/agent-config**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { runtime: { provider: 'test', model: null, temperature: null, effort: null, toolLoopCap: 5 }, startupContext: { files: [] }, tools: ['read_file'] } }) });
+  });
 
   await page.goto('/admin/');
   await page.getByLabel('管理员 Token').fill('secret-admin-token');
@@ -359,6 +537,6 @@ test('029-05: 新榜单模块遇到 db_unavailable 时只在当前模块显示�
 
   await expect(page.locator('[data-module="issues"]')).toContainText('暂不可用');
   await expect(page.locator('[data-module="pages"]')).toContainText('/');
-  await expect(page.locator('[data-module="projects"]')).toContainText('aindexer');
+  await expect(page.locator('[data-module="projects"]')).toContainText('Aindexer');
   await expect(page.locator('[data-module="agentSummary"]')).toContainText('JD 分析');
 });

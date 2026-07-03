@@ -4,6 +4,7 @@
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant' | 'tool';
   content: string;
+  reasoning_content?: string;
   name?: string;
   tool_call_id?: string;
   tool_calls?: ToolCall[];
@@ -33,6 +34,7 @@ export interface ChatRequest {
 
 export interface ChatResponse {
   content: string;
+  thinkingContent?: string;
   tool_calls?: ToolCall[];
 }
 

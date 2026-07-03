@@ -4,6 +4,7 @@ import { extname, join, normalize } from 'node:path';
 import { onRequestPost as adminAuth } from '../functions/api/admin/auth';
 import { onRequestGet as adminLogs, onRequestDelete as adminLogsDelete } from '../functions/api/admin/logs';
 import { onRequestGet as adminLogsExport } from '../functions/api/admin/logs-export';
+import { onRequestGet as adminAgentConfig } from '../functions/api/admin/stats/agent-config';
 import { onRequestGet as adminAgentSummary } from '../functions/api/admin/stats/agent-summary';
 import { onRequestGet as adminIssues } from '../functions/api/admin/stats/issues';
 import { onRequestGet as adminOverview } from '../functions/api/admin/stats/overview';
@@ -177,6 +178,7 @@ const server = createServer(async (req, res) => {
 
       const adminStatsHandlers: Record<string, typeof adminOverview> = {
         '/api/admin/stats/overview': adminOverview,
+        '/api/admin/stats/agent-config': adminAgentConfig,
         '/api/admin/stats/pages': adminPages,
         '/api/admin/stats/projects': adminProjects,
         '/api/admin/stats/agent-summary': adminAgentSummary,

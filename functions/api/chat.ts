@@ -6,6 +6,7 @@ import { readAgentFile, readFileTool } from './_tools/read-file';
 import { agentMaterials, readableAgentFileIds } from './_generated/agent-materials';
 import type { StoreEnv, AgentTurnRecord, AgentTurnStatus, RateLimitResult } from './_store/types';
 import { resolveStores } from './_store/d1';
+import { maxToolRounds } from './_config/agent-constants';
 
 interface ChatRequestBody {
   messages?: ChatMessage[];
@@ -13,8 +14,6 @@ interface ChatRequestBody {
   agentSessionId?: string;
   turnType?: string;
 }
-
-const maxToolRounds = 5;
 
 function firstMeaningfulLine(content: string, fileId?: string): string {
   // 对于项目 index.md 文件，提取 name 和 tagline 拼接显示
@@ -139,6 +138,7 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
         const startTime = Date.now();
         let finalAnswer = '';
         const toolFiles: string[] = [];
+        const canonicalTurnMessages: Array<Record<string, unknown>> = [];
         let status: AgentTurnStatus = 'success';
 
         try {
@@ -150,11 +150,33 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
 
             if (!response.tool_calls || response.tool_calls.length === 0) {
               finalAnswer = response.content;
+              const finalAssistantMessage: Record<string, unknown> = {
+                role: 'assistant',
+                content: response.content,
+              };
+              if (response.thinkingContent) {
+                finalAssistantMessage.reasoning_content = response.thinkingContent;
+              }
+              canonicalTurnMessages.push(finalAssistantMessage);
+              if (response.thinkingContent) {
+                yield sseEvent({ type: 'thinking', content: response.thinkingContent });
+              }
               yield sseEvent({ type: 'delta', content: response.content });
+              yield sseEvent({ type: 'canonical_turn', messages: canonicalTurnMessages });
               yield sseEvent({ type: 'done' });
               return;
             }
 
+            const assistantToolMessage: Record<string, unknown> = {
+              role: 'assistant',
+              content: response.content,
+              tool_calls: response.tool_calls,
+            };
+            if (response.thinkingContent) {
+              assistantToolMessage.reasoning_content = response.thinkingContent;
+              yield sseEvent({ type: 'thinking', content: response.thinkingContent });
+            }
+            canonicalTurnMessages.push(assistantToolMessage);
             messages.push({ role: 'assistant', content: response.content, tool_calls: response.tool_calls });
 
             for (const toolCall of response.tool_calls) {
@@ -172,16 +194,19 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
 
                 yield sseEvent({ type: 'tool_done', content: args.file });
 
-                messages.push({
+                const toolMessage = {
                   role: 'tool',
                   name: 'read_file',
                   tool_call_id: toolCall.id,
                   content: fileContent,
-                });
+                };
+                messages.push(toolMessage);
+                canonicalTurnMessages.push(toolMessage);
               } catch {
                 status = 'degraded';
                 finalAnswer = '查阅部分资料时遇到问题，我会基于当前已读取的信息继续回答。';
                 yield sseEvent({ type: 'delta', content: finalAnswer });
+                yield sseEvent({ type: 'canonical_turn', messages: canonicalTurnMessages });
                 yield sseEvent({ type: 'done' });
                 return;
               }
@@ -191,6 +216,7 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
           status = 'degraded';
           finalAnswer = '已达到资料查阅上限，我会基于当前已读取的信息收尾回答。';
           yield sseEvent({ type: 'delta', content: finalAnswer });
+          yield sseEvent({ type: 'canonical_turn', messages: canonicalTurnMessages });
           yield sseEvent({ type: 'done' });
         } catch (err) {
           status = 'failed';

@@ -23,6 +23,13 @@ function extractErrorFromSse(body: string): string {
   return '';
 }
 
+function extractEventsFromSse(body: string): Array<Record<string, unknown>> {
+  return body
+    .split('\n\n')
+    .filter((event) => event.startsWith('data:'))
+    .map((event) => JSON.parse(event.replace(/^data:\s*/, '')) as Record<string, unknown>);
+}
+
 async function callChat(message: string) {
   return onRequestPost({
     request: new Request('http://localhost/api/chat', {
@@ -115,10 +122,11 @@ test('010-08: 首页 Agent CTA 开始对话会跳转到 /agent', async ({ page }
   await expect(page).toHaveURL(/\/agent\/?$/);
 });
 
-test('010-09: /agent 页面导航栏简历菜单包含 PDF 下载链接', async ({ page }) => {
+test('010-09: /agent 页面导航栏包含简历入口', async ({ page }) => {
   await page.goto('/agent/');
-  await expect(page.locator('#resume-menu')).toContainText('PDF 下载');
-  await expect(page.locator('#resume-menu')).not.toContainText('PDF 待补充');
+  const resumeLink = page.locator('nav').getByRole('link', { name: '简历' });
+  await expect(resumeLink).toBeVisible();
+  await expect(resumeLink).toHaveAttribute('href', '/resume/');
 });
 
 // ─────────────────────────────
@@ -273,6 +281,67 @@ test('013-03: SSE delta 前会显示思考过程折叠块', async ({ page }) => 
   await expect(page.locator('.chat-messages')).toContainText('基于资料的回答');
 });
 
+test('013-03c: 没有真实 thinking 时，/agent 仍显示固定思考文案 fallback', async ({ page }) => {
+  await page.route('**/api/chat', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'text/event-stream',
+      body: [
+        'data: {"type":"status","content":"正在查阅 resume.json"}\n\n',
+        'data: {"type":"tool_done","content":"resume.json"}\n\n',
+        'data: {"type":"delta","content":"基于资料的回答。"}\n\n',
+        'data: {"type":"done"}\n\n',
+      ].join(''),
+    });
+  });
+  await page.goto('/agent/');
+  await page.locator('.chat-input').fill('介绍一下');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('已读取 resume.json，正在基于资料综合分析并组织回答。');
+});
+
+test('013-03a: 收到 thinking 事件时，/agent 会显示真实思维链内容', async ({ page }) => {
+  await page.route('**/api/chat', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'text/event-stream',
+      body: [
+        'data: {"type":"status","content":"正在查阅 resume.json"}\n\n',
+        'data: {"type":"tool_done","content":"resume.json"}\n\n',
+        'data: {"type":"thinking","content":"我先确认资料范围，再整理和问题最相关的经历。"}\n\n',
+        'data: {"type":"delta","content":"基于资料的回答。"}\n\n',
+        'data: {"type":"done"}\n\n',
+      ].join(''),
+    });
+  });
+  await page.goto('/agent/');
+  await page.locator('.chat-input').fill('介绍一下');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.thinking-block')).toBeVisible();
+  await expect(page.locator('.chat-messages')).toContainText('我先确认资料范围，再整理和问题最相关的经历。');
+  await expect(page.locator('.chat-messages')).toContainText('基于资料的回答');
+});
+
+test('013-03b: 收到真实 thinking 后，不再注入固定思考文案', async ({ page }) => {
+  await page.route('**/api/chat', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'text/event-stream',
+      body: [
+        'data: {"type":"status","content":"正在查阅 resume.json"}\n\n',
+        'data: {"type":"tool_done","content":"resume.json"}\n\n',
+        'data: {"type":"thinking","content":"我先确认资料范围，再整理和问题最相关的经历。"}\n\n',
+        'data: {"type":"delta","content":"基于资料的回答。"}\n\n',
+        'data: {"type":"done"}\n\n',
+      ].join(''),
+    });
+  });
+  await page.goto('/agent/');
+  await page.locator('.chat-input').fill('介绍一下');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).not.toContainText('已读取 resume.json，正在基于资料综合分析并组织回答。');
+});
+
 test('013-06: 连续两次提问时，每个 Agent Turn 各自显示自己的 tool chip', async ({ page }) => {
   let turn = 0;
   await page.route('**/api/chat', async (route) => {
@@ -365,6 +434,16 @@ test('013-05: tool-use 流程中 SSE 包含 status、tool_done、delta、done �
   expect(body).toContain('"type":"tool_done"');
   expect(body).toContain('"type":"delta"');
   expect(body).toContain('"type":"done"');
+});
+
+test('013-05a: provider 提供真实思维链时，/api/chat 会先发 thinking 再发 delta', async () => {
+  const response = await callChat('请展示真实思维链');
+  expect(response.status).toBe(200);
+  const body = await response.text();
+  expect(body).toContain('"type":"thinking"');
+  expect(body.indexOf('"type":"thinking"')).toBeGreaterThan(-1);
+  expect(body.indexOf('"type":"delta"')).toBeGreaterThan(-1);
+  expect(body.indexOf('"type":"thinking"')).toBeLessThan(body.indexOf('"type":"delta"'));
 });
 
 // ─────────────────────────────
@@ -584,4 +663,238 @@ test('018-06: 跨天后全局限频计数重置', async () => {
   fakeRateLimit.advanceTime(25 * 60 * 60 * 1000);
   result = await fakeRateLimit.checkAndIncrement('test-uuid-day-c');
   expect(result.allowed).toBe(true);
+});
+
+// ─────────────────────────────
+// Issue 035: 同页多轮对话主链路（基线）
+// ─────────────────────────────
+
+test('035-01: 同一页第二次提问时，请求体会带上前一轮正式对话历史', async ({ page }) => {
+  const requests: Array<{ messages: Array<{ role: string; content: string }> }> = [];
+
+  await page.route('**/api/chat', async (route) => {
+    requests.push(route.request().postDataJSON() as { messages: Array<{ role: string; content: string }> });
+    const turn = requests.length;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ content: turn === 1 ? '第一轮回答' : '第二轮回答' }),
+    });
+  });
+
+  await page.goto('/agent/');
+
+  await page.locator('.chat-input').fill('第一问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('第一轮回答');
+
+  await page.locator('.chat-input').fill('第二问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('第二轮回答');
+
+  expect(requests).toHaveLength(2);
+  expect(requests[1].messages).toEqual([
+    { role: 'user', content: '第一问' },
+    { role: 'assistant', content: '第一轮回答' },
+    { role: 'user', content: '第二问' },
+  ]);
+});
+
+test('035-02: 第一轮是 SSE 回答时，第二次提问仍会带上前一轮正式对话历史', async ({ page }) => {
+  const requests: Array<{ messages: Array<{ role: string; content: string }> }> = [];
+
+  await page.route('**/api/chat', async (route) => {
+    requests.push(route.request().postDataJSON() as { messages: Array<{ role: string; content: string }> });
+    const turn = requests.length;
+    if (turn === 1) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/event-stream',
+        body: [
+          'data: {"type":"delta","content":"第一轮流式回答"}\n\n',
+          'data: {"type":"done"}\n\n',
+        ].join(''),
+      });
+      return;
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ content: '第二轮回答' }),
+    });
+  });
+
+  await page.goto('/agent/');
+
+  await page.locator('.chat-input').fill('第一问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('第一轮流式回答');
+
+  await page.locator('.chat-input').fill('第二问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('第二轮回答');
+
+  expect(requests).toHaveLength(2);
+  expect(requests[1].messages).toEqual([
+    { role: 'user', content: '第一问' },
+    { role: 'assistant', content: '第一轮流式回答' },
+    { role: 'user', content: '第二问' },
+  ]);
+});
+
+test('035-03: JD 分析会带上当前页已有的正式对话历史，而不是独立成一次性分析', async ({ page }) => {
+  const requests: Array<{ messages: Array<{ role: string; content: string }> }> = [];
+
+  await page.route('**/api/chat', async (route) => {
+    requests.push(route.request().postDataJSON() as { messages: Array<{ role: string; content: string }> });
+    const turn = requests.length;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ content: turn === 1 ? '第一轮回答' : 'JD 分析结果' }),
+    });
+  });
+
+  await page.goto('/agent/');
+
+  await page.locator('.chat-input').fill('先介绍一下候选人');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('第一轮回答');
+
+  await page.getByRole('button', { name: 'JD 分析' }).click();
+  await page.locator('.jd-textarea').fill('需要 AI Agent 产品工程师');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('JD 分析结果');
+
+  expect(requests).toHaveLength(2);
+  expect(requests[1].messages).toEqual([
+    { role: 'user', content: '先介绍一下候选人' },
+    { role: 'assistant', content: '第一轮回答' },
+    { role: 'user', content: '请基于以下岗位描述分析候选人的匹配点、风险点和建议追问：\n\n需要 AI Agent 产品工程师' },
+  ]);
+});
+
+test('035-04: 刷新页面后，新的提问作为新的 Agent Session 开始，不继承刷新前历史', async ({ page }) => {
+  const requests: Array<{ messages: Array<{ role: string; content: string }> }> = [];
+
+  await page.route('**/api/chat', async (route) => {
+    requests.push(route.request().postDataJSON() as { messages: Array<{ role: string; content: string }> });
+    const turn = requests.length;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ content: turn === 1 ? '刷新前回答' : '刷新后回答' }),
+    });
+  });
+
+  await page.goto('/agent/');
+
+  await page.locator('.chat-input').fill('刷新前问题');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('刷新前回答');
+
+  await page.reload();
+
+  await page.locator('.chat-input').fill('刷新后问题');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('刷新后回答');
+
+  expect(requests).toHaveLength(2);
+  expect(requests[1].messages).toEqual([
+    { role: 'user', content: '刷新后问题' },
+  ]);
+});
+
+// ─────────────────────────────
+// Issue 036: 思考模式与工具调用的协议级历史回放
+// ─────────────────────────────
+
+test('036-01: /api/chat 在一轮工具调用完成后额外返回 canonical turn 事件', async () => {
+  const response = await callChat('请介绍 Aindexer 的项目细节');
+  expect(response.status).toBe(200);
+
+  const body = await response.text();
+  const events = extractEventsFromSse(body);
+  const canonicalTurn = events.find((event) => event.type === 'canonical_turn') as
+    | { type: string; messages?: Array<Record<string, unknown>> }
+    | undefined;
+
+  expect(canonicalTurn).toBeDefined();
+  expect(canonicalTurn?.messages).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        role: 'assistant',
+        tool_calls: expect.any(Array),
+      }),
+      expect.objectContaining({
+        role: 'tool',
+        name: 'read_file',
+        tool_call_id: 'fake-read-aindexer',
+      }),
+      expect.objectContaining({
+        role: 'assistant',
+        content: expect.stringContaining('Aindexer 是面向科研文献的本地化 AI 工作台'),
+      }),
+    ]),
+  );
+});
+
+test('036-02: 当前页收到 canonical turn 后，下一轮请求会回放 assistant reasoning 与 tool 消息', async ({ page }) => {
+  const requests: Array<{ messages: Array<Record<string, unknown>> }> = [];
+
+  await page.route('**/api/chat', async (route) => {
+    requests.push(route.request().postDataJSON() as { messages: Array<Record<string, unknown>> });
+    const turn = requests.length;
+    if (turn === 1) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/event-stream',
+        body: [
+          'data: {"type":"status","content":"正在查阅 resume.json"}\n\n',
+          'data: {"type":"tool_done","content":"resume.json"}\n\n',
+          'data: {"type":"thinking","content":"我先查阅简历，再组织正式回答。"}\n\n',
+          'data: {"type":"delta","content":"基于简历的正式回答"}\n\n',
+          'data: {"type":"canonical_turn","messages":[{"role":"assistant","content":"","reasoning_content":"我先查阅简历，再组织正式回答。","tool_calls":[{"id":"tool-1","function":{"name":"read_file","arguments":"{\\"file\\":\\"resume.json\\"}"}}]},{"role":"tool","name":"read_file","tool_call_id":"tool-1","content":"resume full content"},{"role":"assistant","content":"基于简历的正式回答"}]}\n\n',
+          'data: {"type":"done"}\n\n',
+        ].join(''),
+      });
+      return;
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ content: '第二轮回答' }),
+    });
+  });
+
+  await page.goto('/agent/');
+
+  await page.locator('.chat-input').fill('第一问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('基于简历的正式回答');
+
+  await page.locator('.chat-input').fill('第二问');
+  await page.locator('.send-btn').click();
+  await expect(page.locator('.chat-messages')).toContainText('第二轮回答');
+
+  expect(requests).toHaveLength(2);
+  expect(requests[1].messages).toEqual([
+    { role: 'user', content: '第一问' },
+    {
+      role: 'assistant',
+      content: '',
+      reasoning_content: '我先查阅简历，再组织正式回答。',
+      tool_calls: [
+        {
+          id: 'tool-1',
+          function: { name: 'read_file', arguments: '{"file":"resume.json"}' },
+        },
+      ],
+    },
+    { role: 'tool', name: 'read_file', tool_call_id: 'tool-1', content: 'resume full content' },
+    { role: 'assistant', content: '基于简历的正式回答' },
+    { role: 'user', content: '第二问' },
+  ]);
 });

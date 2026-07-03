@@ -5,11 +5,13 @@ import {
   formatMetricValue,
   getComparisonState,
   getRequiredElement,
+  isAgentConfigResponse,
   isAgentSummaryStatsResponse,
   isAdminAuthResponse,
   isIssuesStatsResponse,
   isLogsDetailResponse,
   isLogsListResponse,
+  isLogsSessionDetailResponse,
   isOverviewResponse,
   isPagesStatsResponse,
   isProjectsStatsResponse,
@@ -19,18 +21,22 @@ import {
   type AdminStatsPeriod,
   type LogsDetailItem,
   type LogsListItem,
+  type LogsSessionDetail,
+  type LogsSessionTurnItem,
   type MetricKey,
   type ModuleKey,
 } from './admin-dashboard-shared';
+import { renderAgentConfig, renderAgentConfigUnavailable } from './admin-dashboard-agent-config';
 import { deleteLogs, exportLogs, fetchAdminJson } from './admin-dashboard-http';
 import {
   getLogsRefs,
   renderLogDetail as renderLogsPanelDetail,
   renderLogsList as renderLogsPanelList,
+  renderLogSessionDetail as renderLogsPanelSessionDetail,
   renderLogsUnavailable as renderLogsPanelUnavailable,
   syncLogsButtons,
 } from './admin-dashboard-logs';
-import { renderModuleList, renderModuleUnavailable } from './admin-dashboard-ui';
+import { renderIssueModuleList, renderModuleList, renderModuleUnavailable, renderRankModuleList, renderTagCloudModule } from './admin-dashboard-ui';
 
 export function initAdminDashboard(): void {
   const setup = () => {
@@ -48,6 +54,18 @@ export function initAdminDashboard(): void {
     const customRangeContainer = getRequiredElement<HTMLElement>(document, '[data-custom-range]');
     const startDateInput = getRequiredElement<HTMLInputElement>(document, '#startDate');
     const endDateInput = getRequiredElement<HTMLInputElement>(document, '#endDate');
+    const projectNamesBySlug = (() => {
+      const raw = dashboardView.dataset.projectNameMap;
+      if (!raw) return {} as Record<string, string>;
+      try {
+        const parsed = JSON.parse(raw) as Record<string, unknown>;
+        return Object.fromEntries(
+          Object.entries(parsed).filter((entry): entry is [string, string] => typeof entry[1] === 'string'),
+        );
+      } catch {
+        return {} as Record<string, string>;
+      }
+    })();
     let activePeriod: AdminStatsPeriod = 'week';
     let activeToken = '';
     let isBusy = false;
@@ -197,6 +215,12 @@ export function initAdminDashboard(): void {
       renderLogsPanelDetail(logsRefs, item);
     };
 
+    const renderLogSessionDetail = (data: { session: LogsSessionDetail; turns: readonly LogsSessionTurnItem[] } | null): void => {
+      renderLogsPanelSessionDetail(logsRefs, data, (turnId) => {
+        void loadTurnDetail(turnId);
+      });
+    };
+
     const renderLogsUnavailable = (): void => {
       logsTotalPages = 1;
       syncPagerButtons();
@@ -227,6 +251,20 @@ export function initAdminDashboard(): void {
     };
 
     const loadLogDetail = async (id: string): Promise<void> => {
+      const response = await fetchAdminJson(moduleEndpoints.logs, activeToken, activePeriod, `sessionId=${encodeURIComponent(id)}`, customDates);
+      if (response.status === 401) {
+        handleUnauthorized();
+        return;
+      }
+
+      const payload = await response.json();
+      if (!isLogsSessionDetailResponse(payload) || isStatsFailureResponse(payload) || activeLogDetailId !== id) {
+        return;
+      }
+      renderLogSessionDetail(payload.data);
+    };
+
+    const loadTurnDetail = async (id: string): Promise<void> => {
       const response = await fetchAdminJson(moduleEndpoints.logs, activeToken, activePeriod, `id=${encodeURIComponent(id)}`, customDates);
       if (response.status === 401) {
         handleUnauthorized();
@@ -234,7 +272,7 @@ export function initAdminDashboard(): void {
       }
 
       const payload = await response.json();
-      if (!isLogsDetailResponse(payload) || isStatsFailureResponse(payload) || activeLogDetailId !== id) {
+      if (!isLogsDetailResponse(payload) || isStatsFailureResponse(payload)) {
         return;
       }
       renderLogDetail(payload.data.item);
@@ -258,6 +296,7 @@ export function initAdminDashboard(): void {
     const refreshAfterDelete = async (): Promise<void> => {
       activeLogDetailId = null;
       renderLogDetail(null);
+      renderLogSessionDetail(null);
       await refreshDashboard();
     };
 
@@ -267,7 +306,7 @@ export function initAdminDashboard(): void {
       }
       setBusy(true);
       try {
-        await deleteLogs(`id=${encodeURIComponent(id)}`, activeToken, handleUnauthorized);
+        await deleteLogs(`sessionId=${encodeURIComponent(id)}`, activeToken, handleUnauthorized);
       } finally {
         setBusy(false);
       }
@@ -330,14 +369,16 @@ export function initAdminDashboard(): void {
     const refreshDashboard = async (): Promise<void> => {
       setBusy(true);
       try {
-        const responses = await Promise.all(
+        const outcomes = await Promise.allSettled(
           Object.entries(moduleEndpoints).map(async ([key, path]) => {
             const extraQuery = key === 'logs' ? `page=${activeLogsPage}&pageSize=20` : '';
             return [key, await fetchAdminJson(path, activeToken, activePeriod, extraQuery, customDates)] as const;
           }),
         );
 
-        for (const [key, response] of responses) {
+        for (const outcome of outcomes) {
+          if (outcome.status === 'rejected') continue;
+          const [key, response] = outcome.value;
           if (response.status === 401) {
             handleUnauthorized();
             return;
@@ -349,6 +390,15 @@ export function initAdminDashboard(): void {
               renderOverviewFailure();
             } else {
               renderOverviewSuccess(payload.data.metrics);
+            }
+            continue;
+          }
+
+          if (key === 'agentConfig') {
+            if (!isAgentConfigResponse(payload) || isStatsFailureResponse(payload)) {
+              renderAgentConfigUnavailable();
+            } else {
+              renderAgentConfig(payload);
             }
             continue;
           }
@@ -370,10 +420,13 @@ export function initAdminDashboard(): void {
             if (!isPagesStatsResponse(payload) || isStatsFailureResponse(payload)) {
               renderModuleUnavailable('pages');
             } else {
-              renderModuleList('pages', payload.data.items.map((item) => ({
+              const maxCount = payload.data.items[0]?.count ?? 0;
+              renderRankModuleList('pages', payload.data.items.map((item, index) => ({
                 id: item.path,
                 label: item.path,
                 value: new Intl.NumberFormat('zh-CN').format(item.count),
+                rank: index + 1,
+                ratio: maxCount > 0 ? item.count / maxCount : 0,
               })));
             }
             continue;
@@ -383,10 +436,13 @@ export function initAdminDashboard(): void {
             if (!isProjectsStatsResponse(payload) || isStatsFailureResponse(payload)) {
               renderModuleUnavailable('projects');
             } else {
-              renderModuleList('projects', payload.data.items.map((item) => ({
+              const maxCount = payload.data.items[0]?.count ?? 0;
+              renderRankModuleList('projects', payload.data.items.map((item, index) => ({
                 id: item.targetId,
-                label: item.targetId,
+                label: projectNamesBySlug[item.targetId] ?? item.targetId,
                 value: new Intl.NumberFormat('zh-CN').format(item.count),
+                rank: index + 1,
+                ratio: maxCount > 0 ? item.count / maxCount : 0,
               })));
             }
             continue;
@@ -396,7 +452,7 @@ export function initAdminDashboard(): void {
             if (!isAgentSummaryStatsResponse(payload) || isStatsFailureResponse(payload)) {
               renderModuleUnavailable('agentSummary');
             } else {
-              renderModuleList('agentSummary', payload.data.items.map((item) => ({
+              renderTagCloudModule('agentSummary', payload.data.items.map((item) => ({
                 id: item.keyword,
                 label: item.keyword,
                 value: new Intl.NumberFormat('zh-CN').format(item.count),
@@ -409,7 +465,7 @@ export function initAdminDashboard(): void {
             if (!isIssuesStatsResponse(payload) || isStatsFailureResponse(payload)) {
               renderModuleUnavailable('issues');
             } else {
-              renderModuleList('issues', payload.data.items.map((item) => ({
+              renderIssueModuleList('issues', payload.data.items.map((item) => ({
                 id: item.kind,
                 label: item.kind === 'degraded'
                   ? '回答降级'
@@ -417,7 +473,7 @@ export function initAdminDashboard(): void {
                     ? '回答失败'
                     : 'D1 写入失败',
                 value: new Intl.NumberFormat('zh-CN').format(item.count),
-                tone: item.kind === 'd1_write_failure' ? 'danger' : 'default',
+                severity: item.kind === 'degraded' ? 'warn' : 'error',
               })));
             }
             continue;
@@ -511,6 +567,7 @@ export function initAdminDashboard(): void {
       activeLogsPage -= 1;
       activeLogDetailId = null;
       renderLogDetail(null);
+      renderLogSessionDetail(null);
       void refreshDashboard();
     });
     logsNextButton.addEventListener('click', () => {
@@ -518,6 +575,7 @@ export function initAdminDashboard(): void {
       activeLogsPage += 1;
       activeLogDetailId = null;
       renderLogDetail(null);
+      renderLogSessionDetail(null);
       void refreshDashboard();
     });
     logsRefs.rangeDeleteButton.addEventListener('click', () => {

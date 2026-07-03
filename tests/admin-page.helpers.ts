@@ -25,6 +25,7 @@ export async function stubNonOverviewStats(page: Page, options?: {
   readonly projects?: object;
   readonly agentSummary?: object;
   readonly issues?: object;
+  readonly agentConfig?: object;
 }): Promise<void> {
   await page.route('**/api/admin/stats/pages**', async (route) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(options?.pages ?? { ok: true, data: { items: [] } }) });
@@ -37,5 +38,15 @@ export async function stubNonOverviewStats(page: Page, options?: {
   });
   await page.route('**/api/admin/stats/issues**', async (route) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(options?.issues ?? { ok: true, data: { items: [] } }) });
+  });
+  await page.route('**/api/admin/stats/agent-config**', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(options?.agentConfig ?? {
+      ok: true,
+      data: {
+        runtime: { provider: 'test', model: null, temperature: null, effort: null, toolLoopCap: 5 },
+        startupContext: { files: ['resume.json'] },
+        tools: ['read_file'],
+      },
+    }) });
   });
 }

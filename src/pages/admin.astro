@@ -2,11 +2,17 @@
 import Base from '../layouts/Base.astro';
 import AdminDashboardView from '../components/admin/AdminDashboardView.astro';
 import AdminLoginCard from '../components/admin/AdminLoginCard.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+const projectNamesBySlug = Object.fromEntries(
+  projects.map((project) => [project.id, project.data.name]),
+);
 ---
 
 <Base title="Admin Dashboard — Kaho" robots="noindex,nofollow">
   <AdminLoginCard />
-  <AdminDashboardView />
+  <AdminDashboardView projectNamesBySlug={projectNamesBySlug} />
 </Base>
 
 <script>

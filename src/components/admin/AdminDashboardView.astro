@@ -1,4 +1,8 @@
 ---
+const { projectNamesBySlug = {} } = Astro.props as {
+  readonly projectNamesBySlug?: Record<string, string>;
+};
+
 const overviewCards = [
   { key: 'pageViews', label: '页面访问' },
   { key: 'pdfDownloads', label: '简历下载' },
@@ -16,7 +20,12 @@ const moduleCards = [
 ] as const;
 ---
 
-<section class="dashboard-view" data-view="dashboard" style="display:none">
+<section
+  class="dashboard-view"
+  data-view="dashboard"
+  data-project-name-map={JSON.stringify(projectNamesBySlug)}
+  style="display:none"
+>
   <nav class="admin-nav">
     <div class="admin-nav-inner">
       <a href="/" class="nav-logo">Kaho</a>
@@ -67,6 +76,26 @@ const moduleCards = [
     </div>
   </section>
 
+  <section class="container module-section" data-module="agent-config">
+    <div class="section-header">
+      <div>
+        <span class="section-tag">Snapshot</span>
+        <h3>Agent 配置</h3>
+      </div>
+    </div>
+    <p class="module-unavailable" data-module-unavailable hidden>暂不可用</p>
+    <div class="snapshot-grid" data-agent-config-grid>
+      <article class="snapshot-card">
+        <h4 class="snapshot-card-title">运行配置</h4>
+        <div class="snapshot-list" data-runtime-list></div>
+      </article>
+      <article class="snapshot-card">
+        <h4 class="snapshot-card-title">启动快照</h4>
+        <div class="snapshot-flow" data-startup-list></div>
+      </article>
+    </div>
+  </section>
+
   <section class="container module-grid">
     {moduleCards.map((moduleCard) => (
       <article class="module-card" data-module={moduleCard.key}>
@@ -113,6 +142,8 @@ const moduleCards = [
       </div>
       <article class="log-detail" data-log-detail hidden>
         <h4>记录详情</h4>
+        <div data-log-session-summary></div>
+        <div data-log-session-turns></div>
         <dl data-log-detail-fields></dl>
       </article>
     </div>
@@ -346,7 +377,7 @@ const moduleCards = [
     list-style: none;
   }
 
-  .module-list-item {
+  :global(.dashboard-view .module-list-item) {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -357,25 +388,178 @@ const moduleCards = [
     background: var(--bg);
   }
 
-  .module-list-label,
-  .module-list-value {
+  :global(.dashboard-view .module-list-label),
+  :global(.dashboard-view .module-list-value) {
     font-size: 0.9rem;
   }
 
-  .module-list-label {
+  :global(.dashboard-view .module-list-label) {
     color: var(--fg-secondary);
     word-break: break-word;
   }
 
-  .module-list-value {
+  :global(.dashboard-view .module-list-value) {
     flex-shrink: 0;
     color: var(--fg);
     font-weight: 600;
   }
 
-  .module-list-item.tone-danger .module-list-label,
-  .module-list-item.tone-danger .module-list-value {
+  :global(.dashboard-view .module-list-item.tone-danger .module-list-label),
+  :global(.dashboard-view .module-list-item.tone-danger .module-list-value) {
     color: var(--accent-dark);
+  }
+
+  .module-list.rank-list {
+    gap: 0;
+  }
+
+  :global(.dashboard-view .module-list.rank-list .rank-item) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 0;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  :global(.dashboard-view .module-list.rank-list .rank-item:last-child) {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  :global(.dashboard-view .rank-num) {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-muted);
+    border-radius: 6px;
+    color: var(--fg-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  :global(.dashboard-view .rank-num.top) {
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+  }
+
+  :global(.dashboard-view .rank-info) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  :global(.dashboard-view .rank-name) {
+    color: var(--fg);
+    font-size: 0.9rem;
+    font-weight: 500;
+    word-break: break-word;
+  }
+
+  :global(.dashboard-view .rank-bar) {
+    width: 60px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  :global(.dashboard-view .rank-bar-fill) {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+  }
+
+  :global(.dashboard-view .rank-value) {
+    width: 40px;
+    text-align: right;
+    color: var(--fg-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .module-list.cloud-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  :global(.dashboard-view .cloud-tag) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: var(--bg);
+    color: var(--fg-secondary);
+    font-size: 0.85rem;
+  }
+
+  :global(.dashboard-view .cloud-tag-count) {
+    padding: 0.1rem 0.4rem;
+    border-radius: 100px;
+    background: var(--accent-bg);
+    color: var(--accent-dark);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .module-list.issue-list {
+    gap: 0;
+  }
+
+  :global(.dashboard-view .issue-item) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 0;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  :global(.dashboard-view .issue-item:last-child) {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  :global(.dashboard-view .issue-dot) {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  :global(.dashboard-view .issue-dot.error) {
+    background: var(--accent-dark);
+  }
+
+  :global(.dashboard-view .issue-dot.warn) {
+    background: var(--accent);
+  }
+
+  :global(.dashboard-view .issue-content) {
+    flex: 1;
+  }
+
+  :global(.dashboard-view .issue-title) {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  :global(.dashboard-view .issue-count) {
+    color: var(--fg-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
   }
 
   .logs-actions {
@@ -413,7 +597,7 @@ const moduleCards = [
     margin-top: 1rem;
   }
 
-  .log-row {
+  :global(.dashboard-view .log-row) {
     display: grid;
     grid-template-columns: minmax(0, 180px) minmax(0, 1fr) auto auto;
     gap: 0.75rem;
@@ -428,16 +612,16 @@ const moduleCards = [
     cursor: pointer;
   }
 
-  .log-row-meta,
-  .log-row-message {
+  :global(.dashboard-view .log-row-meta),
+  :global(.dashboard-view .log-row-message) {
     font-size: 0.88rem;
   }
 
-  .log-row-message {
+  :global(.dashboard-view .log-row-message) {
     color: var(--fg-secondary);
   }
 
-  .log-chip {
+  :global(.dashboard-view .log-chip) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -449,13 +633,13 @@ const moduleCards = [
     font-size: 0.8rem;
   }
 
-  .log-chip.status-success {
+  :global(.dashboard-view .log-chip.status-success) {
     background: var(--bg-muted);
     color: var(--fg-secondary);
   }
 
-  .log-chip.status-degraded,
-  .log-chip.status-failed {
+  :global(.dashboard-view .log-chip.status-degraded),
+  :global(.dashboard-view .log-chip.status-failed) {
     background: var(--accent-bg);
     color: var(--accent-dark);
   }
@@ -486,11 +670,11 @@ const moduleCards = [
     font-size: 0.9rem;
   }
 
-  .log-detail dt {
+  :global(.dashboard-view .log-detail dt) {
     color: var(--fg-muted);
   }
 
-  .log-detail dd {
+  :global(.dashboard-view .log-detail dd) {
     margin: 0;
     white-space: pre-wrap;
   }
@@ -499,6 +683,169 @@ const moduleCards = [
     margin-bottom: 1rem;
     color: var(--accent-dark);
     font-size: 0.9rem;
+  }
+
+  /* ── Agent Config Snapshot ── */
+  .snapshot-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .snapshot-card {
+    padding: 1.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+  }
+
+  .snapshot-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+  }
+
+  .snapshot-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  :global(.dashboard-view .snapshot-item) {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 1rem;
+    align-items: start;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  :global(.dashboard-view .snapshot-item:last-child) {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  :global(.dashboard-view .snapshot-key) {
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  :global(.dashboard-view .snapshot-value) {
+    font-size: 0.9rem;
+    color: var(--fg);
+  }
+
+  :global(.dashboard-view .snapshot-value strong) {
+    font-weight: 600;
+  }
+
+  .snapshot-flow {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  :global(.dashboard-view .snapshot-block) {
+    padding: 1rem 1.05rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  :global(.dashboard-view .snapshot-block-top) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
+
+  :global(.dashboard-view .snapshot-block-title) {
+    color: var(--fg);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  :global(.dashboard-view .snapshot-block-toggle) {
+    border: none;
+    padding: 0;
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  :global(.dashboard-view .snapshot-block-toggle[aria-expanded="false"]::before) {
+    content: '▸ ';
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+
+  :global(.dashboard-view .snapshot-block-toggle[aria-expanded="true"]::before) {
+    content: '▾ ';
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+
+  :global(.dashboard-view .snapshot-block summary) {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--fg);
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+  }
+
+  :global(.dashboard-view .snapshot-block summary::-webkit-details-marker) {
+    display: none;
+  }
+
+  :global(.dashboard-view .snapshot-block summary::before) {
+    content: '▸ ';
+    font-size: 0.8rem;
+    color: var(--fg-muted);
+  }
+
+  :global(.dashboard-view .snapshot-block[open] summary::before) {
+    content: '▾ ';
+  }
+
+  :global(.dashboard-view .snapshot-pills) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.9rem;
+  }
+
+  :global(.dashboard-view .snapshot-pill) {
+    padding: 0.35rem 0.75rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--fg-secondary);
+  }
+
+  :global(.dashboard-view .snapshot-pill.context-name) {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--fg-secondary);
+    font-weight: 500;
+  }
+
+  @media (max-width: 720px) {
+    .snapshot-grid {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.dashboard-view .snapshot-item) {
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+    }
   }
 
   @media (max-width: 720px) {
@@ -510,7 +857,7 @@ const moduleCards = [
       font-size: 2rem;
     }
 
-    .log-row {
+    :global(.dashboard-view .log-row) {
       grid-template-columns: 1fr;
     }
 

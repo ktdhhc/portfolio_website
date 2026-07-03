@@ -86,6 +86,13 @@ export class FakeAgentTurnStore implements AgentTurnStore {
     return 1;
   }
 
+  async deleteTurnsBySessionId(sessionId: string, window: PeriodWindow): Promise<number> {
+    if (this.shouldFailDelete) throw new StoreUnavailableError();
+    const before = this.records.length;
+    this.records = this.records.filter((record) => record.agentSessionId !== sessionId || record.createdAt < window.startInclusive || record.createdAt >= window.endExclusive);
+    return before - this.records.length;
+  }
+
   async deleteTurnsByRange(window: PeriodWindow): Promise<number> {
     if (this.shouldFailDelete) throw new StoreUnavailableError();
     const before = this.records.length;

@@ -1,6 +1,7 @@
 import type { Provider } from './types';
 import { fakeProvider } from './fake';
 import { createOpenAiCompatibleProvider } from './openai-compatible';
+import { maxToolRounds } from '../_config/agent-constants';
 
 export interface ProviderEnv {
   ACTIVE_PROVIDER?: string;
@@ -12,6 +13,15 @@ export interface ProviderEnv {
   MIMO_MODEL?: string;
   TEMPERATURE?: string;
   EFFORT?: string;
+}
+
+/** Admin 面板展示用的 Agent 运行配置快照。 */
+export interface ResolvedAgentConfig {
+  readonly provider: string;
+  readonly model: string | null;
+  readonly temperature: number | null;
+  readonly effort: string | null;
+  readonly toolLoopCap: number;
 }
 
 type ProviderThinkingEffort = 'disabled' | 'high' | 'max';
@@ -42,6 +52,20 @@ function parseThinkingEffort(value: string | undefined): ProviderThinkingEffort 
     default:
       throw new Error(`EFFORT must be one of disabled|off|high|max, received: ${value}`);
   }
+}
+
+/** 解析当前环境变量，返回 Agent 运行配置快照。不创建 provider 实例。 */
+export function resolveAgentConfig(env: ProviderEnv): ResolvedAgentConfig {
+  const provider = env.ACTIVE_PROVIDER || 'test';
+  const temperature = parseTemperature(env.TEMPERATURE) ?? null;
+  const rawEffort = parseThinkingEffort(env.EFFORT);
+  const effort: string | null = rawEffort ?? null;
+
+  let model: string | null = null;
+  if (provider === 'deepseek') model = env.DEEPSEEK_MODEL ?? null;
+  else if (provider === 'mimo') model = env.MIMO_MODEL ?? null;
+
+  return { provider, model, temperature, effort, toolLoopCap: maxToolRounds };
 }
 
 function toThinkingExtraBody(effort: ProviderThinkingEffort): Readonly<Record<string, unknown>> {

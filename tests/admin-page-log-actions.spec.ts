@@ -36,7 +36,15 @@ async function stubLogsList(page: Parameters<typeof test>[0]['page'], label = '�
       body: JSON.stringify({
         ok: true,
         data: {
-          items: [{ id: 'turn-1', createdAt: '2026-06-28T11:00:00.000Z', userMessage: label, turnType: 'chat', answerStatus: 'success' }],
+          items: [{
+            id: 'session-1',
+            visitorUuidShort: 'visitor-',
+            agentSessionIdShort: 'session-',
+            startedAt: '2026-06-28T10:00:00.000Z',
+            lastTurnAt: '2026-06-28T11:00:00.000Z',
+            turnCount: 1,
+            latestUserMessage: label,
+          }],
           total: 1,
           page: 1,
           pageSize: 20,
@@ -47,7 +55,7 @@ async function stubLogsList(page: Parameters<typeof test>[0]['page'], label = '�
   });
 }
 
-test('025-ui-01: 单条删除不弹 confirm，成功后刷新 logs 与 overview/issues', async ({ page }) => {
+test('025-ui-01: 会话删除不弹 confirm，成功后刷新 logs 与 overview/issues', async ({ page }) => {
   let deleteUrl = '';
   let overviewRequests = 0;
   let issuesRequests = 0;
@@ -73,8 +81,9 @@ test('025-ui-01: 单条删除不弹 confirm，成功后刷新 logs 与 overview/
   await page.route('**/api/admin/stats/pages**', async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { items: [] } }) }));
   await page.route('**/api/admin/stats/projects**', async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { items: [] } }) }));
   await page.route('**/api/admin/stats/agent-summary**', async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { items: [] } }) }));
+  await page.route('**/api/admin/stats/agent-config**', async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { runtime: { provider: 'test', model: null, temperature: null, effort: null, toolLoopCap: 5 }, startupContext: { files: [] }, tools: ['read_file'] } }) }));
   await stubLogsList(page, '删除前');
-  await page.route('**/api/admin/logs?id=turn-1', async (route) => {
+  await page.route('**/api/admin/logs?sessionId=session-1', async (route) => {
     deleteUrl = route.request().url();
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, deleted: 1 }) });
   });
@@ -82,10 +91,10 @@ test('025-ui-01: 单条删除不弹 confirm，成功后刷新 logs 与 overview/
   await page.goto('/admin/');
   await page.getByLabel('管理员 Token').fill('secret-admin-token');
   await page.getByRole('button', { name: '进入面板' }).click();
-  await page.locator('[data-log-delete="turn-1"]').click();
+  await page.locator('[data-log-delete="session-1"]').click();
 
   expect(confirmShown).toBe(false);
-  expect(deleteUrl).toContain('/api/admin/logs?id=turn-1');
+  expect(deleteUrl).toContain('/api/admin/logs?sessionId=session-1');
   await expect.poll(() => overviewRequests).toBeGreaterThanOrEqual(2);
   await expect.poll(() => issuesRequests).toBeGreaterThanOrEqual(2);
 });
@@ -140,7 +149,7 @@ test('026-ui-01: 导出按钮默认导出当前范围，并支持全部导出且
   await stubAdminShell(page);
   await page.route('**/api/admin/logs?*page=1&pageSize=20*', async (route) => {
     logsGetRequests += 1;
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { items: [{ id: 'turn-1', createdAt: '2026-06-28T11:00:00.000Z', userMessage: '当前列表', turnType: 'chat', answerStatus: 'success' }], total: 1, page: 1, pageSize: 20, totalPages: 1 } }) });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, data: { items: [{ id: 'session-1', visitorUuidShort: 'visitor-', agentSessionIdShort: 'session-', startedAt: '2026-06-28T10:00:00.000Z', lastTurnAt: '2026-06-28T11:00:00.000Z', turnCount: 1, latestUserMessage: '当前列表' }], total: 1, page: 1, pageSize: 20, totalPages: 1 } }) });
   });
   await page.route('**/api/admin/logs/export?*', async (route) => {
     exportRequests.push(route.request().url());
@@ -158,7 +167,7 @@ test('026-ui-01: 导出按钮默认导出当前范围，并支持全部导出且
   await page.goto('/admin/');
   await page.getByLabel('管理员 Token').fill('secret-admin-token');
   await page.getByRole('button', { name: '进入面板' }).click();
-  await expect(page.locator('[data-logs-total]')).toContainText('共 1 条记录');
+  await expect(page.locator('[data-logs-total]')).toContainText('共 1 段会话');
   const beforeText = await page.locator('[data-logs-total]').textContent();
   await page.getByRole('button', { name: '导出 CSV' }).click();
   await page.getByRole('button', { name: '导出 JSON' }).click();

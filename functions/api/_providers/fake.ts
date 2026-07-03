@@ -38,13 +38,20 @@ export const fakeProvider: Provider = {
       };
     }
 
-    if (text.includes('provider 超时')) {
-      throw new Error('Provider timeout');
-    }
+  if (text.includes('provider 超时')) {
+    throw new Error('Provider timeout');
+  }
 
-    if (text.includes('薪资') || text.includes('私人住址')) {
-      return {
-        content: '不能替候选人承诺薪资、到岗时间或其他现实事项，也不披露私人敏感信息。建议直接联系候选人确认这些问题。',
+  if (text.includes('真实思维链')) {
+    return {
+      thinkingContent: '我先确认问题范围，再基于当前资料决定是否需要继续读取文件。',
+      content: '这是基于真实思维链示例返回的最终回答。',
+    };
+  }
+
+  if (text.includes('薪资') || text.includes('私人住址')) {
+    return {
+      content: '不能替候选人承诺薪资、到岗时间或其他现实事项，也不披露私人敏感信息。建议直接联系候选人确认这些问题。',
       };
     }
 

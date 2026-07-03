@@ -1,4 +1,19 @@
-import { getRequiredElement, type LogsDetailItem, type LogsListItem } from './admin-dashboard-shared';
+import { getRequiredElement, type LogsDetailItem, type LogsListItem, type LogsSessionDetail, type LogsSessionTurnItem } from './admin-dashboard-shared';
+
+function formatShanghaiTime(iso: string): string {
+  const parts = new Intl.DateTimeFormat('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date(iso));
+
+  const map = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}`;
+}
 
 type LogsRefs = {
   readonly unavailable: HTMLElement;
@@ -7,6 +22,8 @@ type LogsRefs = {
   readonly pageInfo: HTMLElement;
   readonly list: HTMLElement;
   readonly detail: HTMLElement;
+  readonly sessionSummary: HTMLElement;
+  readonly sessionTurns: HTMLElement;
   readonly detailFields: HTMLElement;
   readonly prevButton: HTMLButtonElement;
   readonly nextButton: HTMLButtonElement;
@@ -24,6 +41,8 @@ export function getLogsRefs(): LogsRefs {
     pageInfo: getRequiredElement<HTMLElement>(document, '[data-logs-page-info]'),
     list: getRequiredElement<HTMLElement>(document, '[data-logs-list]'),
     detail: getRequiredElement<HTMLElement>(document, '[data-log-detail]'),
+    sessionSummary: getRequiredElement<HTMLElement>(document, '[data-log-session-summary]'),
+    sessionTurns: getRequiredElement<HTMLElement>(document, '[data-log-session-turns]'),
     detailFields: getRequiredElement<HTMLElement>(document, '[data-log-detail-fields]'),
     prevButton: getRequiredElement<HTMLButtonElement>(document, '[data-logs-prev]'),
     nextButton: getRequiredElement<HTMLButtonElement>(document, '[data-logs-next]'),
@@ -44,6 +63,8 @@ export function syncLogsButtons(refs: LogsRefs, state: { isBusy: boolean; page: 
 }
 
 export function renderLogDetail(refs: LogsRefs, item: LogsDetailItem | null): void {
+  refs.sessionSummary.replaceChildren();
+  refs.sessionTurns.replaceChildren();
   refs.detailFields.replaceChildren();
   if (!item) {
     refs.detail.hidden = true;
@@ -73,6 +94,35 @@ export function renderLogDetail(refs: LogsRefs, item: LogsDetailItem | null): vo
   refs.detail.hidden = false;
 }
 
+export function renderLogSessionDetail(
+  refs: LogsRefs,
+  data: { session: LogsSessionDetail; turns: readonly LogsSessionTurnItem[] } | null,
+  onTurnSelect?: (id: string) => void,
+): void {
+  refs.sessionSummary.replaceChildren();
+  refs.sessionTurns.replaceChildren();
+  refs.detailFields.replaceChildren();
+  if (!data) {
+    refs.detail.hidden = true;
+    return;
+  }
+
+  refs.sessionSummary.textContent = `${data.session.visitorUuidShort} ${data.session.agentSessionIdShort} ${data.session.turnCount}`;
+  for (const turn of data.turns) {
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'log-row';
+    row.dataset.sessionTurn = turn.id;
+    row.textContent = turn.userMessage;
+    row.addEventListener('click', () => {
+      onTurnSelect?.(turn.id);
+    });
+    refs.sessionTurns.appendChild(row);
+  }
+
+  refs.detail.hidden = false;
+}
+
 export function renderLogsUnavailable(refs: LogsRefs): void {
   refs.unavailable.hidden = false;
   refs.content.hidden = true;
@@ -87,7 +137,7 @@ export function renderLogsList(
 ): void {
   refs.unavailable.hidden = true;
   refs.content.hidden = false;
-  refs.total.textContent = `共 ${data.total} 条记录`;
+  refs.total.textContent = `共 ${data.total} 段会话`;
   refs.pageInfo.textContent = `第 ${data.page} / ${data.totalPages} 页`;
   refs.list.replaceChildren();
 
@@ -97,10 +147,10 @@ export function renderLogsList(
     row.className = 'log-row';
     row.dataset.logRow = item.id;
     row.innerHTML = [
-      `<span class="log-row-meta">${item.createdAt}</span>`,
-      `<span class="log-row-message">${item.userMessage}</span>`,
-      `<span class="log-chip">${item.turnType}</span>`,
-      `<span class="log-chip status-${item.answerStatus}">${item.answerStatus}</span>`,
+      `<span class="log-row-meta">${formatShanghaiTime(item.lastTurnAt)}</span>`,
+      `<span class="log-row-message">${item.latestUserMessage}</span>`,
+      `<span class="log-chip">${item.turnCount} 轮</span>`,
+      `<span class="log-chip status-success">${item.agentSessionIdShort}</span>`,
     ].join('');
     row.addEventListener('click', () => onSelect(item.id));
 

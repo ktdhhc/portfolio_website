@@ -7,6 +7,7 @@ const periodLabels = {
 export const ADMIN_TOKEN_KEY = 'portfolio_admin_token';
 export const moduleEndpoints = {
   overview: '/api/admin/stats/overview',
+  agentConfig: '/api/admin/stats/agent-config',
   pages: '/api/admin/stats/pages',
   projects: '/api/admin/stats/projects',
   agentSummary: '/api/admin/stats/agent-summary',
@@ -71,10 +72,12 @@ export type IssuesStatsResponse = StatsFailureResponse | {
 
 export type LogsListItem = {
   readonly id: string;
-  readonly createdAt: string;
-  readonly userMessage: string;
-  readonly turnType: string;
-  readonly answerStatus: 'success' | 'degraded' | 'failed';
+  readonly visitorUuidShort: string;
+  readonly agentSessionIdShort: string;
+  readonly startedAt: string;
+  readonly lastTurnAt: string;
+  readonly turnCount: number;
+  readonly latestUserMessage: string;
 };
 
 export type LogsDetailItem = {
@@ -93,6 +96,23 @@ export type LogsDetailItem = {
   readonly agentSessionIdShort: string;
 };
 
+export type LogsSessionDetail = {
+  readonly id: string;
+  readonly visitorUuidShort: string;
+  readonly agentSessionIdShort: string;
+  readonly startedAt: string;
+  readonly lastTurnAt: string;
+  readonly turnCount: number;
+};
+
+export type LogsSessionTurnItem = {
+  readonly id: string;
+  readonly createdAt: string;
+  readonly userMessage: string;
+  readonly turnType: string;
+  readonly answerStatus: 'success' | 'degraded' | 'failed';
+};
+
 export type LogsListResponse = StatsFailureResponse | {
   readonly ok: true;
   readonly data: {
@@ -108,6 +128,31 @@ export type LogsDetailResponse = StatsFailureResponse | {
   readonly ok: true;
   readonly data: {
     readonly item: LogsDetailItem | null;
+  };
+};
+
+export type LogsSessionDetailResponse = StatsFailureResponse | {
+  readonly ok: true;
+  readonly data: {
+    readonly session: LogsSessionDetail;
+    readonly turns: readonly LogsSessionTurnItem[];
+  };
+};
+
+export type AgentConfigResponse = StatsFailureResponse | {
+  readonly ok: true;
+  readonly data: {
+    readonly runtime: {
+      readonly provider: string;
+      readonly model: string | null;
+      readonly temperature: number | null;
+      readonly effort: string | null;
+      readonly toolLoopCap: number;
+    };
+    readonly startupContext: {
+      readonly files: readonly string[];
+    };
+    readonly tools: readonly string[];
   };
 };
 
@@ -134,6 +179,27 @@ function isComparisonMetric(value: unknown): value is ComparisonMetric {
 }
 
 function isLogsListItem(value: unknown): value is LogsListItem {
+  return isRecord(value)
+    && typeof value.id === 'string'
+    && typeof value.visitorUuidShort === 'string'
+    && typeof value.agentSessionIdShort === 'string'
+    && typeof value.startedAt === 'string'
+    && typeof value.lastTurnAt === 'string'
+    && typeof value.turnCount === 'number'
+    && typeof value.latestUserMessage === 'string';
+}
+
+function isLogsSessionDetail(value: unknown): value is LogsSessionDetail {
+  return isRecord(value)
+    && typeof value.id === 'string'
+    && typeof value.visitorUuidShort === 'string'
+    && typeof value.agentSessionIdShort === 'string'
+    && typeof value.startedAt === 'string'
+    && typeof value.lastTurnAt === 'string'
+    && typeof value.turnCount === 'number';
+}
+
+function isLogsSessionTurnItem(value: unknown): value is LogsSessionTurnItem {
   return isRecord(value)
     && typeof value.id === 'string'
     && typeof value.createdAt === 'string'
@@ -226,6 +292,34 @@ export function isLogsDetailResponse(value: unknown): value is LogsDetailRespons
     && value.ok === true
     && isRecord(value.data)
     && (value.data.item === null || isLogsDetailItem(value.data.item));
+}
+
+export function isLogsSessionDetailResponse(value: unknown): value is LogsSessionDetailResponse {
+  if (isStatsFailureResponse(value)) return true;
+  return isRecord(value)
+    && value.ok === true
+    && isRecord(value.data)
+    && isLogsSessionDetail(value.data.session)
+    && Array.isArray(value.data.turns)
+    && value.data.turns.every(isLogsSessionTurnItem);
+}
+
+export function isAgentConfigResponse(value: unknown): value is AgentConfigResponse {
+  if (isStatsFailureResponse(value)) return true;
+  if (!isRecord(value) || value.ok !== true) return false;
+  if (!isRecord(value.data)) return false;
+  const { runtime, startupContext, tools } = value.data as Record<string, unknown>;
+  return isRecord(runtime)
+    && typeof runtime.provider === 'string'
+    && (runtime.model === null || typeof runtime.model === 'string')
+    && (runtime.temperature === null || typeof runtime.temperature === 'number')
+    && (runtime.effort === null || typeof runtime.effort === 'string')
+    && typeof runtime.toolLoopCap === 'number'
+    && isRecord(startupContext)
+    && Array.isArray(startupContext.files)
+    && startupContext.files.every((f: unknown) => typeof f === 'string')
+    && Array.isArray(tools)
+    && tools.every((t: unknown) => typeof t === 'string');
 }
 
 export function getRequiredElement<T extends Element>(root: Document | Element, selector: string): T {

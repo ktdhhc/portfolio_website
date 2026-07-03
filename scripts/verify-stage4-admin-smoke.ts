@@ -8,7 +8,8 @@
  * 4. /api/admin/logs 分页 + 字段集
  * 5. DELETE /api/admin/logs 单条/范围/全清三种路径
  * 6. GET /api/admin/logs/export CSV + JSON 两种格式
- * 7. D1 不可用时 stats 端点返回 db_unavailable
+ * 7. /api/admin/stats/agent-config 返回 runtime + startupContext + tools
+ * 8. D1 不可用时 stats 端点返回 db_unavailable
  *
  * 使用 fake store，不依赖真实 D1。
  */
@@ -16,6 +17,7 @@
 import { onRequestPost as adminAuth } from '../functions/api/admin/auth';
 import { onRequestGet as adminOverview } from '../functions/api/admin/stats/overview';
 import { onRequestGet as adminIssues } from '../functions/api/admin/stats/issues';
+import { onRequestGet as adminAgentConfig } from '../functions/api/admin/stats/agent-config';
 import { onRequestGet as adminLogs, onRequestDelete as adminLogsDelete } from '../functions/api/admin/logs';
 import { onRequestGet as adminLogsExport } from '../functions/api/admin/logs-export';
 import { FakeAgentTurnStore, FakeBehaviorEventStore, FakeRateLimitStore } from '../functions/api/_store/fake';
@@ -266,7 +268,37 @@ async function run(): Promise<void> {
     assert(csvText.startsWith('id,created_at,turn_type,'), 'CSV 以 10 列头开始');
   }
 
-  // ─── 7. D1 不可用降级 ───
+  // ─── 7. Agent Config ───
+  console.log('\n7. Agent Config 端点');
+  {
+    const env = {};
+
+    const res = await adminAgentConfig(makeContext(adminAgentConfig, 'http://localhost/api/admin/stats/agent-config', 'GET', undefined, env));
+    const data = await json(res);
+    assertEqual(data.ok, true, 'agent-config 返回 ok: true');
+
+    // runtime
+    assert(typeof data.data.runtime.provider === 'string', 'runtime 包含 provider');
+    assert(typeof data.data.runtime.toolLoopCap === 'number', 'runtime 包含 toolLoopCap');
+    assertEqual(data.data.runtime.toolLoopCap, 5, 'toolLoopCap 为 5');
+    // test provider 下 model 为 null
+    assertEqual(data.data.runtime.model, null, 'test provider 下 model 为 null');
+
+    // startup context
+    assert(Array.isArray(data.data.startupContext.files), 'startupContext.files 为数组');
+    assert(data.data.startupContext.files.length > 0, 'startupContext.files 非空');
+    assert(data.data.startupContext.files.includes('resume.json'), 'startupContext.files 包含 resume.json');
+
+    // tools
+    assert(Array.isArray(data.data.tools), 'tools 为数组');
+    assert(data.data.tools.includes('read_file'), 'tools 包含 read_file');
+
+    // A3: 不暴露 API Key
+    const jsonStr = JSON.stringify(data);
+    assert(!jsonStr.includes('api_key') && !jsonStr.includes('API_KEY') && !jsonStr.includes('apiKey'), '返回值不包含 API Key');
+  }
+
+  // ─── 8. D1 不可用降级 ───
   console.log('\n7. D1 不可用降级');
   {
     const eventStore = new FakeBehaviorEventStore();

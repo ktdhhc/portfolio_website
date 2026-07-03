@@ -90,6 +90,20 @@ test('025-04: fake store deleteAllTurns 清空所有记录', async () => {
   expect(store.records).toHaveLength(0);
 });
 
+test('038-03: fake store deleteTurnsBySessionId 删除指定 Agent Session 下的所有记录', async () => {
+  const store = new FakeAgentTurnStore();
+  await store.insertTurn(makeTurn({ id: 'turn-1', agentSessionId: 'session-1', createdAt: '2026-06-28T10:00:00.000Z' }));
+  await store.insertTurn(makeTurn({ id: 'turn-2', agentSessionId: 'session-1', createdAt: '2026-06-28T11:00:00.000Z' }));
+  await store.insertTurn(makeTurn({ id: 'turn-3', agentSessionId: 'session-2', createdAt: '2026-06-28T12:00:00.000Z' }));
+
+  const window = { startInclusive: '2026-06-28T00:00:00.000Z', endExclusive: '2026-06-29T00:00:00.000Z' };
+  const deleted = await store.deleteTurnsBySessionId('session-1', window);
+
+  expect(deleted).toBe(2);
+  expect(store.records).toHaveLength(1);
+  expect(store.records[0].id).toBe('turn-3');
+});
+
 // ─── API 级测试 ───
 
 test('025-05: DELETE /api/admin/logs?id=<id> 删除单条记录', async () => {
@@ -135,6 +149,22 @@ test('025-07: DELETE /api/admin/logs?all=true&confirm=DELETE 全清', async () =
   expect(data.ok).toBe(true);
   expect(data.deleted).toBe(2);
   expect(store.records).toHaveLength(0);
+});
+
+test('038-04: DELETE /api/admin/logs?sessionId=<id> 删除整段 Agent Session', async () => {
+  const store = new FakeAgentTurnStore();
+  await store.insertTurn(makeTurn({ id: 'turn-1', agentSessionId: 'session-1', createdAt: '2026-06-28T10:00:00.000Z' }));
+  await store.insertTurn(makeTurn({ id: 'turn-2', agentSessionId: 'session-1', createdAt: '2026-06-28T11:00:00.000Z' }));
+  await store.insertTurn(makeTurn({ id: 'turn-3', agentSessionId: 'session-2', createdAt: '2026-06-28T12:00:00.000Z' }));
+
+  const ctx = makeDeleteContext(store, 'http://localhost/api/admin/logs?sessionId=session-1&period=all');
+  const res = await onRequestDelete(ctx);
+  const data = await (res as Response).json();
+
+  expect(data.ok).toBe(true);
+  expect(data.deleted).toBe(2);
+  expect(store.records).toHaveLength(1);
+  expect(store.records[0].agentSessionId).toBe('session-2');
 });
 
 test('025-08: DELETE /api/admin/logs?all=true 缺少 confirm 返回错误', async () => {

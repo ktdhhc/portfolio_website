@@ -499,6 +499,7 @@ const resumePdfAvailable = hasResumePdf();
 
     const visitorUuid = getOrCreateVisitorUuid();
     const agentSessionId = crypto.randomUUID();
+    const conversationHistory = [];
 
     function track(event) {
       try {
@@ -585,6 +586,24 @@ const resumePdfAvailable = hasResumePdf();
       content.className = 'thinking-content';
       const p = document.createElement('p');
       p.textContent = '已读取 ' + files.join('、') + '，正在基于资料综合分析并组织回答。';
+      content.appendChild(p);
+      el.appendChild(summary);
+      el.appendChild(content);
+      messages.appendChild(el);
+      scroll();
+    }
+
+    function addThinkingText(text) {
+      const el = document.createElement('details');
+      el.className = 'thinking-block';
+      el.open = false;
+      const summary = document.createElement('summary');
+      summary.className = 'thinking-summary';
+      summary.textContent = '思考过程';
+      const content = document.createElement('div');
+      content.className = 'thinking-content';
+      const p = document.createElement('p');
+      p.textContent = text;
       content.appendChild(p);
       el.appendChild(summary);
       el.appendChild(content);
@@ -762,7 +781,7 @@ const resumePdfAvailable = hasResumePdf();
             visitorUuid,
             agentSessionId,
             turnType: turnType || 'chat',
-            messages: [{ role: 'user', content: text }],
+            messages: [...conversationHistory, { role: 'user', content: text }],
           }),
         });
 
@@ -774,6 +793,10 @@ const resumePdfAvailable = hasResumePdf();
           const data = await res.json();
           const bubble = addAgent();
           bubble.innerHTML = renderMarkdown(data.content);
+          conversationHistory.push(
+            { role: 'user', content: text },
+            { role: 'assistant', content: data.content },
+          );
           setBusy(false);
           input.focus();
           return;
@@ -782,6 +805,9 @@ const resumePdfAvailable = hasResumePdf();
         let agentBubble = null;
         let toolRow = null;
         let doneFiles = [];
+        let thinkingText = '';
+        let finalAgentContent = '';
+        let canonicalTurnMessages = null;
         const decoder = new TextDecoder();
         const reader = res.body.getReader();
         let buffer = '';
@@ -802,14 +828,23 @@ const resumePdfAvailable = hasResumePdf();
             markToolDone(event.content, toolRow);
             doneFiles.push(event.content);
           }
+          if (event.type === 'thinking') {
+            thinkingText = typeof event.content === 'string' ? event.content.trim() : '';
+          }
+          if (event.type === 'canonical_turn') {
+            canonicalTurnMessages = Array.isArray(event.messages) ? event.messages : null;
+          }
           if (event.type === 'delta') {
             if (!agentBubble) {
               removeTyping();
-              if (doneFiles.length > 0) {
+              if (thinkingText) {
+                addThinkingText(thinkingText);
+              } else if (doneFiles.length > 0) {
                 addThinking(doneFiles);
               }
               agentBubble = addAgent();
             }
+            finalAgentContent += event.content;
             await stream(agentBubble, event.content, 16);
           }
           if (event.type === 'error') {
@@ -835,6 +870,15 @@ const resumePdfAvailable = hasResumePdf();
         }
 
         if (!agentBubble) removeTyping();
+
+        if (canonicalTurnMessages && canonicalTurnMessages.length > 0) {
+          conversationHistory.push({ role: 'user', content: text }, ...canonicalTurnMessages);
+        } else if (finalAgentContent) {
+          conversationHistory.push(
+            { role: 'user', content: text },
+            { role: 'assistant', content: finalAgentContent },
+          );
+        }
 
         setBusy(false);
         input.focus();

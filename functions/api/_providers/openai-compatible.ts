@@ -16,6 +16,7 @@ interface OpenAiToolCall {
 
 interface OpenAiMessage {
   content?: string;
+  reasoning_content?: string;
   tool_calls?: OpenAiToolCall[];
 }
 
@@ -80,6 +81,7 @@ export function createOpenAiCompatibleProvider(config: OpenAiProviderConfig): Pr
 
       return {
         content: message.content || '',
+        thinkingContent: message.reasoning_content,
         tool_calls: message.tool_calls as ToolCall[] | undefined,
       };
     },

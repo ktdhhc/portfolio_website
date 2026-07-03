@@ -265,6 +265,18 @@ function createD1AgentTurnStore(db: D1Database): AgentTurnStore {
       }
     },
 
+    async deleteTurnsBySessionId(sessionId: string, window: PeriodWindow): Promise<number> {
+      try {
+        const result = await db
+          .prepare(`DELETE FROM agent_turns WHERE agent_session_id = ? AND created_at >= ? AND created_at < ?`)
+          .bind(sessionId, window.startInclusive, window.endExclusive)
+          .run();
+        return result.meta?.changes ?? 0;
+      } catch (error) {
+        throw new StoreUnavailableError(undefined, { cause: error });
+      }
+    },
+
     async deleteTurnsByRange(window: PeriodWindow): Promise<number> {
       try {
         const result = await db
