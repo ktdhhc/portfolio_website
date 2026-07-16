@@ -1,7 +1,7 @@
 /// <reference types="@cloudflare/workers-types" />
 
 import { StoreUnavailableError } from '../../_store/errors';
-import { resolveWindow } from '../_period';
+import { InvalidDateRangeError, resolveWindow } from '../_period';
 import { type StatsResponse, aggregateByKey, dbUnavailableResponse, getStoresSnapshot, okResponse } from './_shared';
 import { type AdminEnv, toJsonResponse } from '../_shared';
 
@@ -30,6 +30,9 @@ export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
     const response: StatsResponse<PagesStatsData> = okResponse(data);
     return toJsonResponse(response);
   } catch (error) {
+    if (error instanceof InvalidDateRangeError) {
+      return toJsonResponse({ ok: false, reason: 'invalid_date_range' }, 400);
+    }
     if (error instanceof StoreUnavailableError) {
       return toJsonResponse(dbUnavailableResponse());
     }

@@ -133,7 +133,7 @@ export function renderLogsList(
   refs: LogsRefs,
   data: { items: readonly LogsListItem[]; total: number; page: number; totalPages: number },
   onSelect: (id: string) => void,
-  onDelete: (id: string) => void,
+  onDelete: (id: string, turnCount: number) => void,
 ): void {
   refs.unavailable.hidden = true;
   refs.content.hidden = false;
@@ -146,12 +146,19 @@ export function renderLogsList(
     row.type = 'button';
     row.className = 'log-row';
     row.dataset.logRow = item.id;
-    row.innerHTML = [
-      `<span class="log-row-meta">${formatShanghaiTime(item.lastTurnAt)}</span>`,
-      `<span class="log-row-message">${item.latestUserMessage}</span>`,
-      `<span class="log-chip">${item.turnCount} 轮</span>`,
-      `<span class="log-chip status-success">${item.agentSessionIdShort}</span>`,
-    ].join('');
+    const meta = document.createElement('span');
+    meta.className = 'log-row-meta';
+    meta.textContent = formatShanghaiTime(item.lastTurnAt);
+    const message = document.createElement('span');
+    message.className = 'log-row-message';
+    message.textContent = item.latestUserMessage;
+    const turnCount = document.createElement('span');
+    turnCount.className = 'log-chip';
+    turnCount.textContent = `${item.turnCount} 轮`;
+    const sessionId = document.createElement('span');
+    sessionId.className = 'log-chip status-success';
+    sessionId.textContent = item.agentSessionIdShort;
+    row.append(meta, message, turnCount, sessionId);
     row.addEventListener('click', () => onSelect(item.id));
 
     const actions = document.createElement('span');
@@ -163,7 +170,7 @@ export function renderLogsList(
     deleteButton.textContent = '删除';
     deleteButton.addEventListener('click', (event) => {
       event.stopPropagation();
-      onDelete(item.id);
+      onDelete(item.id, item.turnCount);
     });
     actions.appendChild(deleteButton);
     row.appendChild(actions);

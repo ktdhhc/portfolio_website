@@ -63,6 +63,22 @@ export const fakeProvider: Provider = {
 
     const toolMessages = request.messages.filter((m) => m.role === 'tool');
     const lastTool = toolMessages[toolMessages.length - 1];
+    if (text.includes('思考模式工具调用') && lastTool) {
+      const assistantToolCall = [...request.messages]
+        .reverse()
+        .find((message) => message.role === 'assistant' && message.tool_calls?.length);
+      if (!assistantToolCall?.reasoning_content) {
+        throw new Error('reasoning_content is required when replaying a tool call');
+      }
+    }
+    if (text.includes('完整输出') && lastTool?.name === 'read_file') {
+      return { content: lastTool.content };
+    }
+    if (lastTool?.name === 'read_file' && lastTool.content.includes('# Aindexer 开发笔记')) {
+      return {
+        content: 'Aindexer 的开发过程经历了多轮版本迭代，并逐步沉淀出本地化架构、资料分层读取和桌面端落地经验。',
+      };
+    }
     if (lastTool?.name === 'read_file' && lastTool.content.includes('Aindexer')) {
       return {
         content:
@@ -70,9 +86,25 @@ export const fakeProvider: Provider = {
       };
     }
 
+    if (text.includes('Aindexer 开发笔记')) {
+      return {
+        content: '',
+        tool_calls: [
+          {
+            id: 'fake-read-aindexer-development-notes',
+            function: {
+              name: 'read_file',
+              arguments: JSON.stringify({ file: 'projects/aindexer/refs/development-notes.md' }),
+            },
+          },
+        ],
+      };
+    }
+
     if (text.includes('Aindexer')) {
       return {
         content: '',
+        thinkingContent: text.includes('思考模式工具调用') ? '先读取 Aindexer 项目资料，再基于工具结果回答。' : undefined,
         tool_calls: [
           {
             id: 'fake-read-aindexer',

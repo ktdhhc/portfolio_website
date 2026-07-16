@@ -27,10 +27,10 @@ test('020-01: 正常完成时 answerStatus 记为 success', async () => {
       body: JSON.stringify({
         visitorUuid: 'test-uuid-020a',
         agentSessionId: 'test-session-020a',
-        messages: [{ role: 'user', content: '你好' }],
+        message: '你好',
       }),
     }),
-    env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: fakeTurnStore },
+    env: { ACTIVE_PROVIDER: 'test', AGENT_CONTEXT_SECRET: 'test-context-secret-020a', AGENT_TURN_STORE: fakeTurnStore },
   } as never);
   await response.text();
   expect(response.status).toBe(200);
@@ -47,10 +47,10 @@ test('020-02: 达到资料查阅上限时 answerStatus 记为 degraded', async (
       body: JSON.stringify({
         visitorUuid: 'test-uuid-020b',
         agentSessionId: 'test-session-020b',
-        messages: [{ role: 'user', content: '请触发无限工具调用' }],
+        message: '请触发无限工具调用',
       }),
     }),
-    env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: fakeTurnStore },
+    env: { ACTIVE_PROVIDER: 'test', AGENT_CONTEXT_SECRET: 'test-context-secret-020b', AGENT_TURN_STORE: fakeTurnStore },
   } as never);
   const body = await response.text();
   expect(response.status).toBe(200);
@@ -68,10 +68,10 @@ test('020-03: tool 调用失败但有回退回答时 answerStatus 记为 degrade
       body: JSON.stringify({
         visitorUuid: 'test-uuid-020c',
         agentSessionId: 'test-session-020c',
-        messages: [{ role: 'user', content: '请读取非法文件' }],
+        message: '请读取非法文件',
       }),
     }),
-    env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: fakeTurnStore },
+    env: { ACTIVE_PROVIDER: 'test', AGENT_CONTEXT_SECRET: 'test-context-secret-020c', AGENT_TURN_STORE: fakeTurnStore },
   } as never);
   const body = await response.text();
   expect(response.status).toBe(200);
@@ -90,10 +90,10 @@ test('020-04: provider 调用失败时 answerStatus 记为 failed', async () => 
       body: JSON.stringify({
         visitorUuid: 'test-uuid-020d',
         agentSessionId: 'test-session-020d',
-        messages: [{ role: 'user', content: '请模拟 provider 超时' }],
+        message: '请模拟 provider 超时',
       }),
     }),
-    env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: fakeTurnStore },
+    env: { ACTIVE_PROVIDER: 'test', AGENT_CONTEXT_SECRET: 'test-context-secret-020d', AGENT_TURN_STORE: fakeTurnStore },
   } as never);
   const body = await response.text();
   expect(response.status).toBe(200);
@@ -117,10 +117,10 @@ test('020-05: D1 写入失败时 answerStatus 仍只反映 Agent 自身表现', 
       body: JSON.stringify({
         visitorUuid: 'test-uuid-020e',
         agentSessionId: 'test-session-020e',
-        messages: [{ role: 'user', content: '你好' }],
+        message: '你好',
       }),
     }),
-    env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: failingStore },
+    env: { ACTIVE_PROVIDER: 'test', AGENT_CONTEXT_SECRET: 'test-context-secret-020e', AGENT_TURN_STORE: failingStore },
   } as never);
   const body = await response.text();
   expect(response.status).toBe(200);
@@ -137,10 +137,10 @@ test('020-06: provider 初始化失败时 answerStatus 记为 failed', async () 
       body: JSON.stringify({
         visitorUuid: 'test-uuid-020f',
         agentSessionId: 'test-session-020f',
-        messages: [{ role: 'user', content: '你好' }],
+        message: '你好',
       }),
     }),
-    env: { ACTIVE_PROVIDER: 'unknown-provider', AGENT_TURN_STORE: fakeTurnStore },
+    env: { ACTIVE_PROVIDER: 'unknown-provider', AGENT_CONTEXT_SECRET: 'test-context-secret-020f', AGENT_TURN_STORE: fakeTurnStore },
   } as never);
   const body = await response.text();
   expect(response.status).toBe(200);

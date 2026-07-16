@@ -2,8 +2,8 @@
 
 import { StoreUnavailableError } from '../../_store/errors';
 import { type AdminEnv, toJsonResponse } from '../_shared';
-import { resolveWindow } from '../_period';
-import { type ComparisonMetric, type StatsResponse, averageDuration, dbUnavailableResponse, getStoresSnapshot, okResponse } from './_shared';
+import { InvalidDateRangeError, resolveWindow } from '../_period';
+import { type ComparisonMetric, type NullableComparisonMetric, type StatsResponse, averageDuration, dbUnavailableResponse, getStoresSnapshot, okResponse } from './_shared';
 
 type OverviewStatsData = {
   readonly metrics: {
@@ -11,12 +11,16 @@ type OverviewStatsData = {
     readonly pdfDownloads: ComparisonMetric;
     readonly agentTurns: ComparisonMetric;
     readonly jdAnalyses: ComparisonMetric;
-    readonly avgPageDurationMs: ComparisonMetric;
+    readonly avgPageDurationMs: NullableComparisonMetric;
     readonly agentFailures: ComparisonMetric;
   };
 };
 
 function comparisonMetric(current: number, previous: number): ComparisonMetric {
+  return { current, previous };
+}
+
+function nullableComparisonMetric(current: number | null, previous: number | null): NullableComparisonMetric {
   return { current, previous };
 }
 
@@ -44,7 +48,7 @@ export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
           snapshot.currentTurns.filter((turn) => turn.turnType === 'jd_analysis').length,
           snapshot.previousTurns.filter((turn) => turn.turnType === 'jd_analysis').length,
         ),
-        avgPageDurationMs: comparisonMetric(averageDuration(currentPageDurations), averageDuration(previousPageDurations)),
+        avgPageDurationMs: nullableComparisonMetric(averageDuration(currentPageDurations), averageDuration(previousPageDurations)),
         agentFailures: comparisonMetric(
           snapshot.currentTurns.filter((turn) => turn.answerStatus !== 'success').length,
           snapshot.previousTurns.filter((turn) => turn.answerStatus !== 'success').length,
@@ -55,6 +59,9 @@ export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
     const response: StatsResponse<OverviewStatsData> = okResponse(data);
     return toJsonResponse(response);
   } catch (error) {
+    if (error instanceof InvalidDateRangeError) {
+      return toJsonResponse({ ok: false, reason: 'invalid_date_range' }, 400);
+    }
     if (error instanceof StoreUnavailableError) {
       return toJsonResponse(dbUnavailableResponse());
     }

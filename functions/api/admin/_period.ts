@@ -4,6 +4,13 @@ const shanghaiOffsetMs = 8 * 60 * 60 * 1000;
 
 export type AdminStatsPeriod = (typeof adminStatsPeriods)[number];
 
+export class InvalidDateRangeError extends Error {
+  constructor() {
+    super('invalid_date_range');
+    this.name = 'InvalidDateRangeError';
+  }
+}
+
 export type ComparisonWindow = {
   readonly current: {
     readonly startInclusive: string;
@@ -21,7 +28,7 @@ function toShanghaiShifted(date: Date): Date {
 
 function addDays(date: Date, days: number): Date {
   const copy = new Date(date);
-  copy.setDate(copy.getDate() + days);
+  copy.setUTCDate(copy.getUTCDate() + days);
   return copy;
 }
 
@@ -35,10 +42,10 @@ function startOfDay(date: Date): Date {
 }
 
 function startOfWeek(date: Date): Date {
-  const dayStart = startOfDay(date);
-  const weekDay = dayStart.getDay();
+  const shifted = toShanghaiShifted(date);
+  const weekDay = shifted.getUTCDay();
   const diff = weekDay === 0 ? -6 : 1 - weekDay;
-  return addDays(dayStart, diff);
+  return fromShanghaiParts(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate() + diff);
 }
 
 function startOfMonth(date: Date): Date {
@@ -51,6 +58,19 @@ function previousMonthStart(date: Date): Date {
   return fromShanghaiParts(shifted.getUTCFullYear(), shifted.getUTCMonth() - 1, 1);
 }
 
+function parseShanghaiDate(value: string): Date {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) throw new InvalidDateRangeError();
+  const year = Number(match[1]);
+  const month = Number(match[2]) - 1;
+  const day = Number(match[3]);
+  const probe = new Date(Date.UTC(year, month, day));
+  if (probe.getUTCFullYear() !== year || probe.getUTCMonth() !== month || probe.getUTCDate() !== day) {
+    throw new InvalidDateRangeError();
+  }
+  return fromShanghaiParts(year, month, day);
+}
+
 export function parseAdminStatsPeriod(value: string | null): AdminStatsPeriod {
   if (value === 'today' || value === 'week' || value === 'month') {
     return value;
@@ -60,13 +80,13 @@ export function parseAdminStatsPeriod(value: string | null): AdminStatsPeriod {
 }
 
 export function getCustomWindow(startDate: string, endDate: string): ComparisonWindow {
-  const start = new Date(startDate + 'T00:00:00');
-  const end = new Date(endDate + 'T00:00:00');
+  const start = parseShanghaiDate(startDate);
+  const end = parseShanghaiDate(endDate);
   if (start > end) {
-    throw new Error('startDate must be before or equal to endDate');
+    throw new InvalidDateRangeError();
   }
   // end 加一天，使其成为 exclusive 上界（包含 endDate 当天）
-  const endExclusive = new Date(end.getTime() + 24 * 60 * 60 * 1000);
+  const endExclusive = addDays(end, 1);
   const durationMs = endExclusive.getTime() - start.getTime();
   const previousEnd = start;
   const previousStart = new Date(previousEnd.getTime() - durationMs);
@@ -85,7 +105,8 @@ export function getCustomWindow(startDate: string, endDate: string): ComparisonW
 export function resolveWindow(url: URL): ComparisonWindow {
   const startDate = url.searchParams.get('startDate');
   const endDate = url.searchParams.get('endDate');
-  if (startDate && endDate) {
+  if (url.searchParams.has('startDate') || url.searchParams.has('endDate')) {
+    if (!startDate || !endDate) throw new InvalidDateRangeError();
     return getCustomWindow(startDate, endDate);
   }
   const period = parseAdminStatsPeriod(url.searchParams.get('period'));

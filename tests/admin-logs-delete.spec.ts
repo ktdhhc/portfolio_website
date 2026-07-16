@@ -121,13 +121,13 @@ test('025-05: DELETE /api/admin/logs?id=<id> 删除单条记录', async () => {
   expect(store.records[0].id).toBe('turn-2');
 });
 
-test('025-06: DELETE /api/admin/logs?rangeStart=&rangeEnd= 按范围删除', async () => {
+test('025-06: DELETE /api/admin/logs?rangeStart=&rangeEnd= 按包含首尾日期的范围删除', async () => {
   const store = new FakeAgentTurnStore();
   await store.insertTurn(makeTurn({ id: 'turn-1', createdAt: '2026-06-28T10:00:00.000Z' }));
   await store.insertTurn(makeTurn({ id: 'turn-2', createdAt: '2026-06-29T10:00:00.000Z' }));
   await store.insertTurn(makeTurn({ id: 'turn-3', createdAt: '2026-06-30T10:00:00.000Z' }));
 
-  const ctx = makeDeleteContext(store, 'http://localhost/api/admin/logs?rangeStart=2026-06-28T00:00:00.000Z&rangeEnd=2026-06-30T00:00:00.000Z');
+  const ctx = makeDeleteContext(store, 'http://localhost/api/admin/logs?rangeStart=2026-06-28&rangeEnd=2026-06-29');
   const res = await onRequestDelete(ctx);
   const data = await (res as Response).json();
 
@@ -135,6 +135,50 @@ test('025-06: DELETE /api/admin/logs?rangeStart=&rangeEnd= 按范围删除', asy
   expect(data.deleted).toBe(2);
   expect(store.records).toHaveLength(1);
   expect(store.records[0].id).toBe('turn-3');
+});
+
+test('042-01: date-only 同日范围删除包含完整上海自然日', async () => {
+  const store = new FakeAgentTurnStore();
+  await store.insertTurn(makeTurn({ id: 'before', agentSessionId: 'session-before', createdAt: '2026-06-27T15:59:59.999Z' }));
+  await store.insertTurn(makeTurn({ id: 'start', agentSessionId: 'session-start', createdAt: '2026-06-27T16:00:00.000Z' }));
+  await store.insertTurn(makeTurn({ id: 'end-before', agentSessionId: 'session-end-before', createdAt: '2026-06-28T15:59:59.999Z' }));
+  await store.insertTurn(makeTurn({ id: 'next-day', agentSessionId: 'session-next-day', createdAt: '2026-06-28T16:00:00.000Z' }));
+
+  const deleteResponse = await onRequestDelete(makeDeleteContext(
+    store,
+    'http://localhost/api/admin/logs?rangeStart=2026-06-28&rangeEnd=2026-06-28',
+  ));
+  const deletePayload = await deleteResponse.json() as { ok: boolean; deleted: number };
+
+  const listResponse = await onRequestGet(makeContext(
+    store,
+    'http://localhost/api/admin/logs?startDate=2026-06-27&endDate=2026-06-29',
+  ));
+  const listPayload = await listResponse.json() as { ok: boolean; data: { items: Array<{ id: string }> } };
+
+  expect(deletePayload).toEqual({ ok: true, deleted: 2 });
+  expect(listPayload.data.items.map((item) => item.id).sort()).toEqual(['session-before', 'session-next-day']);
+});
+
+test('042-02: date-only 范围缺少任一边界时返回 400 且不删除记录', async () => {
+  const store = new FakeAgentTurnStore();
+  await store.insertTurn(makeTurn({ id: 'turn-1', agentSessionId: 'session-1', createdAt: '2026-06-28T10:00:00.000Z' }));
+
+  const deleteResponse = await onRequestDelete(makeDeleteContext(
+    store,
+    'http://localhost/api/admin/logs?rangeStart=2026-06-28',
+  ));
+  const deletePayload = await deleteResponse.json();
+
+  const listResponse = await onRequestGet(makeContext(
+    store,
+    'http://localhost/api/admin/logs?startDate=2026-06-28&endDate=2026-06-28',
+  ));
+  const listPayload = await listResponse.json() as { data: { items: Array<{ id: string }> } };
+
+  expect(deleteResponse.status).toBe(400);
+  expect(deletePayload).toEqual({ ok: false, reason: 'invalid_date_range' });
+  expect(listPayload.data.items.map((item) => item.id)).toEqual(['session-1']);
 });
 
 test('025-07: DELETE /api/admin/logs?all=true&confirm=DELETE 全清', async () => {
@@ -151,13 +195,13 @@ test('025-07: DELETE /api/admin/logs?all=true&confirm=DELETE 全清', async () =
   expect(store.records).toHaveLength(0);
 });
 
-test('038-04: DELETE /api/admin/logs?sessionId=<id> 删除整段 Agent Session', async () => {
+test('038-04: DELETE /api/admin/logs?sessionId=<id>&confirm=true 删除整段多轮 Agent Session', async () => {
   const store = new FakeAgentTurnStore();
   await store.insertTurn(makeTurn({ id: 'turn-1', agentSessionId: 'session-1', createdAt: '2026-06-28T10:00:00.000Z' }));
   await store.insertTurn(makeTurn({ id: 'turn-2', agentSessionId: 'session-1', createdAt: '2026-06-28T11:00:00.000Z' }));
   await store.insertTurn(makeTurn({ id: 'turn-3', agentSessionId: 'session-2', createdAt: '2026-06-28T12:00:00.000Z' }));
 
-  const ctx = makeDeleteContext(store, 'http://localhost/api/admin/logs?sessionId=session-1&period=all');
+  const ctx = makeDeleteContext(store, 'http://localhost/api/admin/logs?sessionId=session-1&period=all&confirm=true');
   const res = await onRequestDelete(ctx);
   const data = await (res as Response).json();
 
@@ -165,6 +209,28 @@ test('038-04: DELETE /api/admin/logs?sessionId=<id> 删除整段 Agent Session',
   expect(data.deleted).toBe(2);
   expect(store.records).toHaveLength(1);
   expect(store.records[0].agentSessionId).toBe('session-2');
+});
+
+test('043-04: 服务端按 Session 全量轮数要求多轮删除确认', async () => {
+  const store = new FakeAgentTurnStore();
+  await store.insertTurn(makeTurn({ id: 'turn-1', agentSessionId: 'session-cross-window', createdAt: '2026-06-27T10:00:00.000Z' }));
+  await store.insertTurn(makeTurn({ id: 'turn-2', agentSessionId: 'session-cross-window', createdAt: '2026-06-28T10:00:00.000Z' }));
+
+  const unconfirmedResponse = await onRequestDelete(makeDeleteContext(
+    store,
+    'http://localhost/api/admin/logs?sessionId=session-cross-window',
+  ));
+  const unconfirmedPayload = await unconfirmedResponse.json();
+
+  expect(unconfirmedPayload).toEqual({ ok: false, reason: 'confirm_required', count: 2 });
+  expect(store.records).toHaveLength(2);
+
+  const confirmedResponse = await onRequestDelete(makeDeleteContext(
+    store,
+    'http://localhost/api/admin/logs?sessionId=session-cross-window&confirm=true',
+  ));
+  await expect(confirmedResponse.json()).resolves.toEqual({ ok: true, deleted: 2 });
+  expect(store.records).toHaveLength(0);
 });
 
 test('025-08: DELETE /api/admin/logs?all=true 缺少 confirm 返回错误', async () => {

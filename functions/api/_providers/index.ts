@@ -5,6 +5,7 @@ import { maxToolRounds } from '../_config/agent-constants';
 
 export interface ProviderEnv {
   ACTIVE_PROVIDER?: string;
+  AGENT_CONTEXT_SECRET?: string;
   DEEPSEEK_API_KEY?: string;
   DEEPSEEK_BASE_URL?: string;
   DEEPSEEK_MODEL?: string;

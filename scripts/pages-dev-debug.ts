@@ -81,6 +81,7 @@ function resolveStaticFile(pathname: string): string | undefined {
 }
 
 loadDotEnv();
+process.env.AGENT_CONTEXT_SECRET ||= 'local-development-context-secret';
 
 const startPort = Number(process.env.PORT || '4321');
 const explicitPort = Boolean(process.env.PORT);

@@ -2,14 +2,16 @@
 
 import { getProvider, type ProviderEnv } from './_providers/index';
 import type { ChatMessage } from './_providers/types';
-import { readAgentFile, readFileTool } from './_tools/read-file';
+import { getAgentFilePublicName, readAgentFile, readFileTool } from './_tools/read-file';
 import { agentMaterials, readableAgentFileIds } from './_generated/agent-materials';
 import type { StoreEnv, AgentTurnRecord, AgentTurnStatus, RateLimitResult } from './_store/types';
 import { resolveStores } from './_store/d1';
 import { maxToolRounds } from './_config/agent-constants';
+import { openAgentContext, sealAgentContext } from './_context/context-token';
 
 interface ChatRequestBody {
-  messages?: ChatMessage[];
+  message?: string;
+  contextToken?: string;
   visitorUuid?: string;
   agentSessionId?: string;
   turnType?: string;
@@ -52,10 +54,36 @@ function buildMainContext(): ChatMessage[] {
         agentMaterials['agent/answer-rules.md'],
         `候选人 profile 摘要：\n${agentMaterials['profile.json']}`,
         `可通过 read_file 工具读取的文件索引：\n${fileIndex}`,
-        '当访客询问任何具体项目时，你必须直接读取对应的项目文件（如 projects/{slug}/index.md）。不要假设你已经知道答案。只有在读取了相关文件后才能回答项目细节。',
+        '当访客询问任何具体项目时，你必须直接读取对应的项目文件（如 projects/{slug}/index.md）。如果问题需要综合多个项目、简历或参考资料，请先判断所需文件，并在同一轮中一次发起多个 read_file 调用；不要默认一轮只读一个文件。只有在读取了必要资料后才能回答。',
       ].join('\n\n'),
     },
   ];
+}
+
+const materialDumpRefusal = '不能直接提供整份参考资料或大段原文。你可以提出具体问题，我会基于资料进行概括、说明或使用必要的短句引用。';
+
+function normalizeExcerpt(value: string): string {
+  return value.replace(/\s+/g, ' ').trim();
+}
+
+function protectReferenceMaterial(answer: string): string {
+  if (/projects\/[\w-]+\/(?:refs\/)?[^\s)]+\.md/i.test(answer) || answer.includes('read_file')) {
+    return materialDumpRefusal;
+  }
+
+  const normalizedAnswer = normalizeExcerpt(answer);
+  if (normalizedAnswer.length < 240) return answer;
+
+  const referenceMaterials = readableAgentFileIds
+    .filter((file) => file.includes('/refs/'))
+    .map((file) => normalizeExcerpt(agentMaterials[file]));
+  for (let offset = 0; offset + 240 <= normalizedAnswer.length; offset += 120) {
+    const excerpt = normalizedAnswer.slice(offset, offset + 240);
+    if (referenceMaterials.some((material) => material.includes(excerpt))) {
+      return materialDumpRefusal;
+    }
+  }
+  return answer;
 }
 
 function toJsonResponse(payload: unknown, status = 200) {
@@ -97,17 +125,50 @@ function createStreamResponse(
 }
 
 export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (context) => {
-  const body = (await context.request.json()) as ChatRequestBody;
-
-  if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
-    return toJsonResponse({ error: 'messages is required' }, 400);
+  const contentLength = Number(context.request.headers.get('content-length'));
+  if (Number.isFinite(contentLength) && contentLength > 1_000_000) {
+    return toJsonResponse({ error: 'request_too_large' }, 413);
+  }
+  const requestText = await context.request.text();
+  if (requestText.length > 1_000_000) {
+    return toJsonResponse({ error: 'request_too_large' }, 413);
+  }
+  let body: ChatRequestBody;
+  try {
+    body = JSON.parse(requestText) as ChatRequestBody;
+  } catch {
+    return toJsonResponse({ error: 'invalid_json' }, 400);
   }
 
-  const requestMessages = body.messages;
-  const userMessage = requestMessages[requestMessages.length - 1]?.content ?? '';
+  if (Object.prototype.hasOwnProperty.call(body, 'messages')) {
+    return toJsonResponse({ error: 'messages is not allowed' }, 400);
+  }
+
+  const hasCurrentMessage = typeof body.message === 'string' && body.message.trim().length > 0;
+  if (!hasCurrentMessage) {
+    return toJsonResponse({ error: 'message is required' }, 400);
+  }
+  if (body.message!.length > 30_000 || (body.contextToken?.length ?? 0) > 750_000) {
+    return toJsonResponse({ error: 'request_too_large' }, 413);
+  }
+
+  if (hasCurrentMessage && !context.env.AGENT_CONTEXT_SECRET) {
+    return toJsonResponse({ error: 'AGENT_CONTEXT_SECRET is required' }, 500);
+  }
+
   const visitorUuid = body.visitorUuid ?? 'anonymous';
   const agentSessionId = body.agentSessionId ?? 'unknown';
   const turnType = body.turnType ?? 'chat';
+  let priorMessages: ChatMessage[] = [];
+  if (body.contextToken) {
+    try {
+      priorMessages = await openAgentContext(context.env.AGENT_CONTEXT_SECRET!, body.contextToken, { visitorUuid, agentSessionId });
+    } catch {
+      return toJsonResponse({ error: 'invalid_context' }, 400);
+    }
+  }
+  const userMessage = body.message!.trim();
+  const requestMessages: ChatMessage[] = [...priorMessages, { role: 'user', content: userMessage }];
   const stores = resolveStores(context.env);
   const turnStore = stores.agentTurnStore;
   const rateLimitStore = stores.rateLimitStore;
@@ -138,7 +199,7 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
         const startTime = Date.now();
         let finalAnswer = '';
         const toolFiles: string[] = [];
-        const canonicalTurnMessages: Array<Record<string, unknown>> = [];
+        const canonicalTurnMessages: ChatMessage[] = [];
         let status: AgentTurnStatus = 'success';
 
         try {
@@ -149,35 +210,36 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
             const response = await provider.chat({ messages, tools: [readFileTool] });
 
             if (!response.tool_calls || response.tool_calls.length === 0) {
-              finalAnswer = response.content;
-              const finalAssistantMessage: Record<string, unknown> = {
+              finalAnswer = protectReferenceMaterial(response.content);
+              const finalAssistantMessage: ChatMessage = {
                 role: 'assistant',
-                content: response.content,
+                content: finalAnswer,
               };
               if (response.thinkingContent) {
                 finalAssistantMessage.reasoning_content = response.thinkingContent;
               }
               canonicalTurnMessages.push(finalAssistantMessage);
-              if (response.thinkingContent) {
-                yield sseEvent({ type: 'thinking', content: response.thinkingContent });
-              }
-              yield sseEvent({ type: 'delta', content: response.content });
-              yield sseEvent({ type: 'canonical_turn', messages: canonicalTurnMessages });
+              yield sseEvent({ type: 'delta', content: finalAnswer });
+              const token = await sealAgentContext(context.env.AGENT_CONTEXT_SECRET!, {
+                visitorUuid,
+                agentSessionId,
+                messages: [...requestMessages, ...canonicalTurnMessages],
+              });
+              yield sseEvent({ type: 'context', token });
               yield sseEvent({ type: 'done' });
               return;
             }
 
-            const assistantToolMessage: Record<string, unknown> = {
+            const assistantToolMessage: ChatMessage = {
               role: 'assistant',
               content: response.content,
               tool_calls: response.tool_calls,
             };
             if (response.thinkingContent) {
               assistantToolMessage.reasoning_content = response.thinkingContent;
-              yield sseEvent({ type: 'thinking', content: response.thinkingContent });
             }
             canonicalTurnMessages.push(assistantToolMessage);
-            messages.push({ role: 'assistant', content: response.content, tool_calls: response.tool_calls });
+            messages.push(assistantToolMessage);
 
             for (const toolCall of response.tool_calls) {
               if (toolCall.function.name !== 'read_file') {
@@ -187,14 +249,14 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
                 const args = JSON.parse(toolCall.function.arguments) as { file?: string };
                 if (!args.file) throw new Error('read_file requires file');
 
-                yield sseEvent({ type: 'status', content: `正在查阅 ${args.file}` });
-
                 const fileContent = readAgentFile(args.file);
+                const publicName = getAgentFilePublicName(args.file);
+                yield sseEvent({ type: 'source', name: publicName, state: 'started' });
                 toolFiles.push(args.file);
 
-                yield sseEvent({ type: 'tool_done', content: args.file });
+                yield sseEvent({ type: 'source', name: publicName, state: 'completed' });
 
-                const toolMessage = {
+                const toolMessage: ChatMessage = {
                   role: 'tool',
                   name: 'read_file',
                   tool_call_id: toolCall.id,
@@ -206,7 +268,12 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
                 status = 'degraded';
                 finalAnswer = '查阅部分资料时遇到问题，我会基于当前已读取的信息继续回答。';
                 yield sseEvent({ type: 'delta', content: finalAnswer });
-                yield sseEvent({ type: 'canonical_turn', messages: canonicalTurnMessages });
+                const token = await sealAgentContext(context.env.AGENT_CONTEXT_SECRET!, {
+                  visitorUuid,
+                  agentSessionId,
+                  messages: [...requestMessages, { role: 'assistant', content: finalAnswer }],
+                });
+                yield sseEvent({ type: 'context', token });
                 yield sseEvent({ type: 'done' });
                 return;
               }
@@ -216,7 +283,12 @@ export const onRequestPost: PagesFunction<ProviderEnv & StoreEnv> = async (conte
           status = 'degraded';
           finalAnswer = '已达到资料查阅上限，我会基于当前已读取的信息收尾回答。';
           yield sseEvent({ type: 'delta', content: finalAnswer });
-          yield sseEvent({ type: 'canonical_turn', messages: canonicalTurnMessages });
+          const token = await sealAgentContext(context.env.AGENT_CONTEXT_SECRET!, {
+            visitorUuid,
+            agentSessionId,
+            messages: [...requestMessages, ...canonicalTurnMessages, { role: 'assistant', content: finalAnswer }],
+          });
+          yield sseEvent({ type: 'context', token });
           yield sseEvent({ type: 'done' });
         } catch (err) {
           status = 'failed';

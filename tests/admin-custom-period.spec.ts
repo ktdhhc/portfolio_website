@@ -46,7 +46,7 @@ test('custom-04: resolveWindow 无自定义日期走 period 路径', () => {
 
 test('custom-05: resolveWindow start > end 返回错误', () => {
   const url = new URL('http://localhost/api/admin/stats/overview?startDate=2026-06-20&endDate=2026-06-15');
-  expect(() => resolveWindow(url)).toThrow('startDate must be before or equal to endDate');
+  expect(() => resolveWindow(url)).toThrow('invalid_date_range');
 });
 
 // ─── 切片 6: API 端点消费自定义日期 ───

@@ -22,11 +22,14 @@ export type MetricKey = 'pageViews' | 'pdfDownloads' | 'agentTurns' | 'jdAnalyse
 
 export type AdminAuthResponse = { readonly ok: true } | { readonly ok: false; readonly reason: AdminAuthFailureReason };
 export type StatsFailureResponse = { readonly ok: false; readonly reason: 'db_unavailable' };
-export type ComparisonMetric = { readonly current: number; readonly previous: number };
+export type NumericComparisonMetric = { readonly current: number; readonly previous: number };
+export type ComparisonMetric = { readonly current: number | null; readonly previous: number | null };
 export type OverviewResponse = StatsFailureResponse | {
   readonly ok: true;
   readonly data: {
-    readonly metrics: Record<MetricKey, ComparisonMetric>;
+    readonly metrics: Record<Exclude<MetricKey, 'avgPageDurationMs'>, NumericComparisonMetric> & {
+      readonly avgPageDurationMs: ComparisonMetric;
+    };
   };
 };
 
@@ -178,6 +181,12 @@ function isComparisonMetric(value: unknown): value is ComparisonMetric {
   return isRecord(value) && typeof value.current === 'number' && typeof value.previous === 'number';
 }
 
+function isNullableComparisonMetric(value: unknown): value is ComparisonMetric {
+  return isRecord(value)
+    && (value.current === null || typeof value.current === 'number')
+    && (value.previous === null || typeof value.previous === 'number');
+}
+
 function isLogsListItem(value: unknown): value is LogsListItem {
   return isRecord(value)
     && typeof value.id === 'string'
@@ -232,8 +241,11 @@ function isLogsDetailItem(value: unknown): value is LogsDetailItem {
 export function isOverviewResponse(value: unknown): value is OverviewResponse {
   if (isStatsFailureResponse(value)) return true;
   if (!isRecord(value) || value.ok !== true || !isRecord(value.data) || !isRecord(value.data.metrics)) return false;
+  const metrics = value.data.metrics;
   return ['pageViews', 'pdfDownloads', 'agentTurns', 'jdAnalyses', 'avgPageDurationMs', 'agentFailures']
-    .every((key) => isComparisonMetric(value.data.metrics[key]));
+    .every((key) => key === 'avgPageDurationMs'
+      ? isNullableComparisonMetric(metrics[key])
+      : isComparisonMetric(metrics[key]));
 }
 
 export function isPagesStatsResponse(value: unknown): value is PagesStatsResponse {
@@ -328,7 +340,8 @@ export function getRequiredElement<T extends Element>(root: Document | Element, 
   return element;
 }
 
-export function formatMetricValue(key: MetricKey, value: number): string {
+export function formatMetricValue(key: MetricKey, value: number | null): string {
+  if (value === null) return '暂无有效数据';
   if (key !== 'avgPageDurationMs') return new Intl.NumberFormat('zh-CN').format(value);
   if (value <= 0) return '0s';
   const totalSeconds = Math.round(value / 1000);
@@ -339,12 +352,14 @@ export function formatMetricValue(key: MetricKey, value: number): string {
 }
 
 export function getComparisonState(key: MetricKey, metric: ComparisonMetric): 'up' | 'down' | 'neutral' {
+  if (metric.current === null || metric.previous === null) return 'neutral';
   if (metric.current === metric.previous) return 'neutral';
   const isImprovement = key === 'agentFailures' ? metric.current < metric.previous : metric.current > metric.previous;
   return isImprovement ? 'up' : 'down';
 }
 
 export function formatComparisonCopy(key: MetricKey, period: AdminStatsPeriod, metric: ComparisonMetric): string {
+  if (metric.current === null || metric.previous === null) return '暂无可比数据';
   const label = periodLabels[period];
   const state = getComparisonState(key, metric);
   if (state === 'neutral') return `— 与${label}持平`;

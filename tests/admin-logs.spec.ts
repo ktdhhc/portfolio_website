@@ -196,6 +196,22 @@ test('024-04: store 不可用时 /api/admin/logs 返回 db_unavailable', async (
   await expect(response.json()).resolves.toEqual({ ok: false, reason: 'db_unavailable' });
 });
 
+test('041-06: GET /api/admin/logs 对非法日期返回统一 400', async () => {
+  const response = await getAdminLogs({
+    request: new Request('http://localhost/api/admin/logs?startDate=2026-03-02&endDate=2026-03-01', {
+      method: 'GET',
+      headers: { Authorization: 'Bearer secret-admin-token' },
+    }),
+    env: {
+      ADMIN_TOKEN: 'secret-admin-token',
+      AGENT_TURN_STORE: new FakeAgentTurnStore(),
+    },
+  } as never);
+
+  expect(response.status).toBe(400);
+  await expect(response.json()).resolves.toEqual({ ok: false, reason: 'invalid_date_range' });
+});
+
 test('038-01: GET /api/admin/logs?sessionId=<id> 返回会话摘要与该会话下的 turn 列表', async () => {
   const turnStore = new FakeAgentTurnStore();
   turnStore.records = [

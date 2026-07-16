@@ -116,10 +116,10 @@ async function run() {
         body: JSON.stringify({
           visitorUuid: 'smoke-uuid-2',
           agentSessionId: 'smoke-session-2',
-          messages: [{ role: 'user', content: '你好' }],
+          message: '你好',
         }),
       }),
-      env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: turnStore, RATE_LIMIT_STORE: rateLimit },
+      env: { ACTIVE_PROVIDER: 'test', AGENT_CONTEXT_SECRET: 'stage3-smoke-secret-2', AGENT_TURN_STORE: turnStore, RATE_LIMIT_STORE: rateLimit },
     } as never);
     await res.text();
     assert(res.status === 200, 'chat 返回 200');
@@ -137,10 +137,10 @@ async function run() {
         body: JSON.stringify({
           visitorUuid: 'smoke-uuid-3',
           agentSessionId: 'smoke-session-3',
-          messages: [{ role: 'user', content: '你好' }],
+          message: '你好',
         }),
       }),
-      env: { ACTIVE_PROVIDER: 'test', RATE_LIMIT_STORE: rateLimit },
+      env: { ACTIVE_PROVIDER: 'test', AGENT_CONTEXT_SECRET: 'stage3-smoke-secret-3', RATE_LIMIT_STORE: rateLimit },
     } as never);
     await res.text();
     assert(res.status === 200, 'chat 返回 200');
@@ -163,10 +163,10 @@ async function run() {
         body: JSON.stringify({
           visitorUuid: 'smoke-uuid-4',
           agentSessionId: 'smoke-session-4',
-          messages: [{ role: 'user', content: '你好' }],
+          message: '你好',
         }),
       }),
-      env: { ACTIVE_PROVIDER: 'test', AGENT_TURN_STORE: failingTurnStore, RATE_LIMIT_STORE: failingRateLimit },
+      env: { ACTIVE_PROVIDER: 'test', AGENT_CONTEXT_SECRET: 'stage3-smoke-secret-4', AGENT_TURN_STORE: failingTurnStore, RATE_LIMIT_STORE: failingRateLimit },
     } as never);
     const body = await res.text();
     assert(res.status === 200, 'D1 失败时 chat 仍返回 200');

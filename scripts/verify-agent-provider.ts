@@ -18,6 +18,7 @@ function loadDotEnv() {
 function envForProvider(provider: string): ProviderEnv {
   return {
     ACTIVE_PROVIDER: provider,
+    AGENT_CONTEXT_SECRET: process.env.AGENT_CONTEXT_SECRET || 'local-provider-smoke-context-secret',
     DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
     DEEPSEEK_BASE_URL: process.env.DEEPSEEK_BASE_URL,
     DEEPSEEK_MODEL: process.env.DEEPSEEK_MODEL,
@@ -35,13 +36,9 @@ async function verify(provider: string) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        messages: [
-          {
-            role: 'user',
-            content:
-              '请先使用 read_file 读取 projects/aindexer/index.md，然后只用一句话回答：Aindexer 的技术栈是什么？',
-          },
-        ],
+        visitorUuid: 'provider-smoke-visitor',
+        agentSessionId: 'provider-smoke-session',
+        message: '请先使用 read_file 读取 projects/aindexer/index.md，然后只用一句话回答：Aindexer 的技术栈是什么？',
       }),
     }),
     env: envForProvider(provider),

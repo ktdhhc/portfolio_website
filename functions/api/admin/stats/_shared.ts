@@ -19,6 +19,11 @@ export type ComparisonMetric = {
   readonly previous: number;
 };
 
+export type NullableComparisonMetric = {
+  readonly current: number | null;
+  readonly previous: number | null;
+};
+
 export type StoresSnapshot = {
   readonly currentEvents: readonly BehaviorEventRecord[];
   readonly previousEvents: readonly BehaviorEventRecord[];
@@ -57,9 +62,13 @@ export function sumDurations(events: readonly BehaviorEventRecord[]): number {
   return events.reduce((sum, event) => sum + (event.durationMs ?? 0), 0);
 }
 
-export function averageDuration(events: readonly BehaviorEventRecord[]): number {
-  if (events.length === 0) return 0;
-  return Math.round(sumDurations(events) / events.length);
+export function averageDuration(events: readonly BehaviorEventRecord[]): number | null {
+  const effectiveEvents = events.filter((event) => typeof event.durationMs === 'number'
+    && Number.isFinite(event.durationMs)
+    && event.durationMs >= 0
+    && event.durationMs <= 300_000);
+  if (effectiveEvents.length === 0) return null;
+  return Math.round(sumDurations(effectiveEvents) / effectiveEvents.length);
 }
 
 async function readEventWindow(store: BehaviorEventStore, window: PeriodWindow): Promise<readonly BehaviorEventRecord[]> {

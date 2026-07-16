@@ -3,7 +3,7 @@
 import { resolveStores } from '../_store/d1';
 import { StoreUnavailableError } from '../_store/errors';
 import type { AgentTurnRecord } from '../_store/types';
-import { resolveWindow } from './_period';
+import { getCustomWindow, InvalidDateRangeError, resolveWindow } from './_period';
 import { type AdminEnv, toJsonResponse } from './_shared';
 
 type LogsFailureResponse = {
@@ -234,6 +234,9 @@ export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
     };
     return toJsonResponse(response);
   } catch (error) {
+    if (error instanceof InvalidDateRangeError) {
+      return toJsonResponse({ ok: false, reason: 'invalid_date_range' }, 400);
+    }
     if (error instanceof StoreUnavailableError) {
       return toJsonResponse(dbUnavailableResponse());
     }
@@ -247,7 +250,10 @@ type DeleteResponse = LogsFailureResponse | {
 } | {
   readonly ok: false;
   readonly reason: 'confirm_required';
+  readonly count?: number;
 };
+
+const allTurnsWindow = { startInclusive: '2000-01-01T00:00:00.000Z', endExclusive: '2100-01-01T00:00:00.000Z' };
 
 export const onRequestDelete: PagesFunction<AdminEnv> = async (context) => {
   try {
@@ -258,23 +264,30 @@ export const onRequestDelete: PagesFunction<AdminEnv> = async (context) => {
     // 单条删除
     const id = url.searchParams.get('id');
     if (id) {
-      const window = { startInclusive: '2000-01-01T00:00:00.000Z', endExclusive: '2100-01-01T00:00:00.000Z' };
-      const deleted = await stores.agentTurnStore.deleteTurnById(id, window);
+      const deleted = await stores.agentTurnStore.deleteTurnById(id, allTurnsWindow);
       return toJsonResponse({ ok: true, deleted } satisfies DeleteResponse);
     }
 
     if (sessionId) {
-      const window = { startInclusive: '2000-01-01T00:00:00.000Z', endExclusive: '2100-01-01T00:00:00.000Z' };
-      const deleted = await stores.agentTurnStore.deleteTurnsBySessionId(sessionId, window);
+      const count = (await stores.agentTurnStore.listTurns(allTurnsWindow))
+        .filter((turn) => turn.agentSessionId === sessionId)
+        .length;
+      if (count > 1 && url.searchParams.get('confirm') !== 'true') {
+        return toJsonResponse({ ok: false, reason: 'confirm_required', count } satisfies DeleteResponse);
+      }
+      const deleted = await stores.agentTurnStore.deleteTurnsBySessionId(sessionId, allTurnsWindow);
       return toJsonResponse({ ok: true, deleted } satisfies DeleteResponse);
     }
 
     // 范围删除
     const rangeStart = url.searchParams.get('rangeStart');
     const rangeEnd = url.searchParams.get('rangeEnd');
+    if (url.searchParams.has('rangeStart') !== url.searchParams.has('rangeEnd') || (url.searchParams.has('rangeStart') && (!rangeStart || !rangeEnd))) {
+      throw new InvalidDateRangeError();
+    }
     if (rangeStart && rangeEnd) {
-      const window = { startInclusive: rangeStart, endExclusive: rangeEnd };
-      const deleted = await stores.agentTurnStore.deleteTurnsByRange(window);
+      const { current } = getCustomWindow(rangeStart, rangeEnd);
+      const deleted = await stores.agentTurnStore.deleteTurnsByRange(current);
       return toJsonResponse({ ok: true, deleted } satisfies DeleteResponse);
     }
 
@@ -291,6 +304,9 @@ export const onRequestDelete: PagesFunction<AdminEnv> = async (context) => {
 
     return toJsonResponse({ ok: false, reason: 'confirm_required' } satisfies DeleteResponse);
   } catch (error) {
+    if (error instanceof InvalidDateRangeError) {
+      return toJsonResponse({ ok: false, reason: 'invalid_date_range' }, 400);
+    }
     if (error instanceof StoreUnavailableError) {
       return toJsonResponse({ ok: false, reason: 'db_unavailable' } satisfies DeleteResponse);
     }

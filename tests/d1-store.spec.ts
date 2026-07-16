@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { DatabaseSync, type SQLInputValue } from 'node:sqlite';
 import { createD1Stores } from '../functions/api/_store/d1';
+import { onRequestDelete as deleteAdminLogs, onRequestGet as getAdminLogs } from '../functions/api/admin/logs';
 
 function makeDb(): DatabaseSync {
   const db = new DatabaseSync(':memory:');
@@ -57,9 +58,9 @@ function wrapAsD1(db: DatabaseSync) {
               db.exec('BEGIN');
               try {
                 const stmt = db.prepare(sql);
-                stmt.run(...params);
+                const result = stmt.run(...params);
                 db.exec('COMMIT');
-                return { success: true };
+                return { success: true, meta: { changes: Number(result.changes) } };
               } catch (e) {
                 db.exec('ROLLBACK');
                 throw e;
@@ -252,4 +253,41 @@ test('d1-09: D1 agent_turns 支持分页 logs 与按 id 读取详情', async () 
   });
   expect(detail?.assistantAnswer).toBe('回答-2');
   expect(detail?.toolTrace).toEqual({ toolCalls: 1, files: ['resume.json'] });
+});
+
+test('042-03: date-only 上海范围删除在 D1 seam 返回真实删除数', async () => {
+  const db = wrapAsD1(makeDb());
+  const stores = createD1Stores(db as never);
+  for (const [sessionId, createdAt] of [
+    ['session-before', '2026-06-27T15:59:59.999Z'],
+    ['session-start', '2026-06-27T16:00:00.000Z'],
+    ['session-end-before', '2026-06-28T15:59:59.999Z'],
+    ['session-next-day', '2026-06-28T16:00:00.000Z'],
+  ] as const) {
+    await stores.agentTurnStore.insertTurn({
+      visitorUuid: `visitor-${sessionId}`,
+      agentSessionId: sessionId,
+      turnType: 'chat',
+      userMessage: sessionId,
+      assistantAnswer: '回答',
+      answerStatus: 'success',
+      durationMs: 100,
+      createdAt,
+    });
+  }
+
+  const deleteResponse = await deleteAdminLogs({
+    request: new Request('http://localhost/api/admin/logs?rangeStart=2026-06-28&rangeEnd=2026-06-28', { method: 'DELETE' }),
+    env: { DB: db },
+  } as never);
+  const deletePayload = await deleteResponse.json();
+
+  const listResponse = await getAdminLogs({
+    request: new Request('http://localhost/api/admin/logs?startDate=2026-06-27&endDate=2026-06-29', { method: 'GET' }),
+    env: { DB: db },
+  } as never);
+  const listPayload = await listResponse.json() as { data: { items: Array<{ id: string }> } };
+
+  expect(deletePayload).toEqual({ ok: true, deleted: 2 });
+  expect(listPayload.data.items.map((item) => item.id).sort()).toEqual(['session-before', 'session-next-day']);
 });

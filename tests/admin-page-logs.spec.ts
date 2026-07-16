@@ -366,3 +366,44 @@ test('038-02: 点击会话行后，详情区先显示会话摘要与该会话下
   await expect(page.locator('[data-session-turn="1"]')).toContainText('第一个会话的第一问');
   await expect(page.locator('[data-session-turn="2"]')).toContainText('第一个会话的第二问');
 });
+
+test('039-01: 访客提交的 HTML 在会话列表中只作为文本显示', async ({ page }) => {
+  const maliciousMessage = `</span><img src=x onerror="window.__adminLogXss = localStorage.getItem('portfolio_admin_token')"><script>window.__adminLogScript = true</script>`;
+
+  await stubAdminShell(page);
+  await page.route('**/api/admin/logs**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        data: {
+          items: [{
+            id: 'session-malicious',
+            visitorUuidShort: 'visitor-',
+            agentSessionIdShort: 'session-',
+            startedAt: '2026-06-28T10:00:00.000Z',
+            lastTurnAt: '2026-06-28T11:00:00.000Z',
+            turnCount: 1,
+            latestUserMessage: maliciousMessage,
+          }],
+          total: 1,
+          page: 1,
+          pageSize: 20,
+          totalPages: 1,
+        },
+      }),
+    });
+  });
+
+  await page.goto('/admin/');
+  await page.getByLabel('管理员 Token').fill('secret-admin-token');
+  await page.getByRole('button', { name: '进入面板' }).click();
+
+  const row = page.locator('[data-log-row="session-malicious"]');
+  await expect(row.locator('.log-row-message')).toHaveText(maliciousMessage);
+  await expect(row.locator('img, script')).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, '__adminLogXss'))).toBeUndefined();
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, '__adminLogScript'))).toBeUndefined();
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('portfolio_admin_token'))).toBe('secret-admin-token');
+});

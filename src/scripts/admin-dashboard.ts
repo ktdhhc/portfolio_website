@@ -27,7 +27,7 @@ import {
   type ModuleKey,
 } from './admin-dashboard-shared';
 import { renderAgentConfig, renderAgentConfigUnavailable } from './admin-dashboard-agent-config';
-import { deleteLogs, exportLogs, fetchAdminJson } from './admin-dashboard-http';
+import { DeleteConfirmationRequiredError, deleteLogs, exportLogs, fetchAdminJson } from './admin-dashboard-http';
 import {
   getLogsRefs,
   renderLogDetail as renderLogsPanelDetail,
@@ -188,7 +188,7 @@ export function initAdminDashboard(): void {
       getRequiredElement<HTMLElement>(module, '[data-overview-grid]').hidden = true;
     };
 
-    const renderOverviewSuccess = (metrics: Record<MetricKey, { current: number; previous: number }>): void => {
+    const renderOverviewSuccess = (metrics: Record<MetricKey, { current: number | null; previous: number | null }>): void => {
       const module = getRequiredElement<HTMLElement>(document, '[data-module="overview"]');
       getRequiredElement<HTMLElement>(module, '[data-module-unavailable]').hidden = true;
       getRequiredElement<HTMLElement>(module, '[data-overview-grid]').hidden = false;
@@ -237,8 +237,8 @@ export function initAdminDashboard(): void {
           activeLogDetailId = id;
           void loadLogDetail(id);
         },
-        (id) => {
-          void handleSingleDelete(id);
+        (id, turnCount) => {
+          void handleSingleDelete(id, turnCount);
         },
       );
     };
@@ -295,18 +295,50 @@ export function initAdminDashboard(): void {
 
     const refreshAfterDelete = async (): Promise<void> => {
       activeLogDetailId = null;
+      activeLogsPage = 1;
       renderLogDetail(null);
       renderLogSessionDetail(null);
       await refreshDashboard();
     };
 
-    const handleSingleDelete = async (id: string): Promise<void> => {
+    const reportDeleteResult = (deleted: number): boolean => {
+      if (deleted === 0) {
+        window.alert('未找到可删除记录');
+        return false;
+      }
+      window.alert(`已删除 ${deleted} 轮提问记录`);
+      return true;
+    };
+
+    const handleSingleDelete = async (id: string, turnCount: number): Promise<void> => {
       if (isBusy) {
         return;
       }
+      let confirmed = false;
+      if (turnCount > 1) {
+        confirmed = window.confirm(`确认删除这段会话的 ${turnCount} 轮提问记录吗？`);
+        if (!confirmed) return;
+      }
       setBusy(true);
       try {
-        await deleteLogs(`sessionId=${encodeURIComponent(id)}`, activeToken, handleUnauthorized);
+        const deleteSession = (withConfirmation: boolean) => deleteLogs(
+          `sessionId=${encodeURIComponent(id)}${withConfirmation ? '&confirm=true' : ''}`,
+          activeToken,
+          handleUnauthorized,
+        );
+        let result;
+        try {
+          result = await deleteSession(confirmed);
+        } catch (error) {
+          if (!(error instanceof DeleteConfirmationRequiredError)) throw error;
+          const count = error.count > 0 ? error.count : turnCount;
+          if (!window.confirm(`确认删除这段会话的 ${count} 轮提问记录吗？`)) return;
+          result = await deleteSession(true);
+        }
+        if (!reportDeleteResult(result.deleted)) return;
+      } catch {
+        window.alert('删除失败，请稍后重试');
+        return;
       } finally {
         setBusy(false);
       }
@@ -326,7 +358,11 @@ export function initAdminDashboard(): void {
       params.set('rangeEnd', customDates.end);
       setBusy(true);
       try {
-        await deleteLogs(params.toString(), activeToken, handleUnauthorized);
+        const result = await deleteLogs(params.toString(), activeToken, handleUnauthorized);
+        if (!reportDeleteResult(result.deleted)) return;
+      } catch {
+        window.alert('删除失败，请稍后重试');
+        return;
       } finally {
         setBusy(false);
       }
@@ -351,7 +387,11 @@ export function initAdminDashboard(): void {
       params.set('confirm', confirmation);
       setBusy(true);
       try {
-        await deleteLogs(params.toString(), activeToken, handleUnauthorized);
+        const result = await deleteLogs(params.toString(), activeToken, handleUnauthorized);
+        if (!reportDeleteResult(result.deleted)) return;
+      } catch {
+        window.alert('删除失败，请稍后重试');
+        return;
       } finally {
         setBusy(false);
       }

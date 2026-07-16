@@ -499,7 +499,7 @@ const resumePdfAvailable = hasResumePdf();
 
     const visitorUuid = getOrCreateVisitorUuid();
     const agentSessionId = crypto.randomUUID();
-    const conversationHistory = [];
+    let contextToken = '';
 
     function track(event) {
       try {
@@ -562,7 +562,9 @@ const resumePdfAvailable = hasResumePdf();
       const chip = document.createElement('span');
       chip.className = 'tool-chip';
       chip.dataset.file = file;
-      chip.innerHTML = '<span class="dot"></span>' + label;
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      chip.append(dot, document.createTextNode(label));
       nextRow.appendChild(chip);
       scroll();
       return nextRow;
@@ -581,29 +583,11 @@ const resumePdfAvailable = hasResumePdf();
       el.open = false;
       const summary = document.createElement('summary');
       summary.className = 'thinking-summary';
-      summary.textContent = '思考过程';
+      summary.textContent = '资料查阅';
       const content = document.createElement('div');
       content.className = 'thinking-content';
       const p = document.createElement('p');
       p.textContent = '已读取 ' + files.join('、') + '，正在基于资料综合分析并组织回答。';
-      content.appendChild(p);
-      el.appendChild(summary);
-      el.appendChild(content);
-      messages.appendChild(el);
-      scroll();
-    }
-
-    function addThinkingText(text) {
-      const el = document.createElement('details');
-      el.className = 'thinking-block';
-      el.open = false;
-      const summary = document.createElement('summary');
-      summary.className = 'thinking-summary';
-      summary.textContent = '思考过程';
-      const content = document.createElement('div');
-      content.className = 'thinking-content';
-      const p = document.createElement('p');
-      p.textContent = text;
       content.appendChild(p);
       el.appendChild(summary);
       el.appendChild(content);
@@ -781,7 +765,8 @@ const resumePdfAvailable = hasResumePdf();
             visitorUuid,
             agentSessionId,
             turnType: turnType || 'chat',
-            messages: [...conversationHistory, { role: 'user', content: text }],
+            message: text,
+            ...(contextToken ? { contextToken } : {}),
           }),
         });
 
@@ -793,10 +778,6 @@ const resumePdfAvailable = hasResumePdf();
           const data = await res.json();
           const bubble = addAgent();
           bubble.innerHTML = renderMarkdown(data.content);
-          conversationHistory.push(
-            { role: 'user', content: text },
-            { role: 'assistant', content: data.content },
-          );
           setBusy(false);
           input.focus();
           return;
@@ -805,9 +786,6 @@ const resumePdfAvailable = hasResumePdf();
         let agentBubble = null;
         let toolRow = null;
         let doneFiles = [];
-        let thinkingText = '';
-        let finalAgentContent = '';
-        let canonicalTurnMessages = null;
         const decoder = new TextDecoder();
         const reader = res.body.getReader();
         let buffer = '';
@@ -821,30 +799,26 @@ const resumePdfAvailable = hasResumePdf();
           if (!data) return;
           const event = JSON.parse(data);
 
-          if (event.type === 'status') {
-            toolRow = addToolChip(event.content, toolRow);
+          if (event.type === 'source' && typeof event.name === 'string') {
+            if (event.state === 'started') {
+              toolRow = addToolChip(`正在查阅 ${event.name}`, toolRow);
+            }
+            if (event.state === 'completed') {
+              markToolDone(event.name, toolRow);
+              doneFiles.push(event.name);
+            }
           }
-          if (event.type === 'tool_done') {
-            markToolDone(event.content, toolRow);
-            doneFiles.push(event.content);
-          }
-          if (event.type === 'thinking') {
-            thinkingText = typeof event.content === 'string' ? event.content.trim() : '';
-          }
-          if (event.type === 'canonical_turn') {
-            canonicalTurnMessages = Array.isArray(event.messages) ? event.messages : null;
+          if (event.type === 'context' && typeof event.token === 'string') {
+            contextToken = event.token;
           }
           if (event.type === 'delta') {
             if (!agentBubble) {
               removeTyping();
-              if (thinkingText) {
-                addThinkingText(thinkingText);
-              } else if (doneFiles.length > 0) {
+              if (doneFiles.length > 0) {
                 addThinking(doneFiles);
               }
               agentBubble = addAgent();
             }
-            finalAgentContent += event.content;
             await stream(agentBubble, event.content, 16);
           }
           if (event.type === 'error') {
@@ -870,15 +844,6 @@ const resumePdfAvailable = hasResumePdf();
         }
 
         if (!agentBubble) removeTyping();
-
-        if (canonicalTurnMessages && canonicalTurnMessages.length > 0) {
-          conversationHistory.push({ role: 'user', content: text }, ...canonicalTurnMessages);
-        } else if (finalAgentContent) {
-          conversationHistory.push(
-            { role: 'user', content: text },
-            { role: 'assistant', content: finalAgentContent },
-          );
-        }
 
         setBusy(false);
         input.focus();

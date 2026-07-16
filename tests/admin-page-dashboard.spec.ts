@@ -44,6 +44,31 @@ test('023-02: 登录成功后持久化 token 并渲染总览 stat 卡', async ({
   await expect(page.evaluate(() => localStorage.getItem('portfolio_admin_token'))).resolves.toBe('secret-admin-token');
 });
 
+test('044-02: 平均停留没有有效样本时显示暂无数据并保持 neutral', async ({ page }) => {
+  await stubTrack(page);
+  await stubNonOverviewStats(page);
+  await page.route('**/api/admin/auth', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) });
+  });
+  await page.route('**/api/admin/stats/overview**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, data: { metrics: { pageViews: { current: 0, previous: 0 }, pdfDownloads: { current: 0, previous: 0 }, agentTurns: { current: 0, previous: 0 }, jdAnalyses: { current: 0, previous: 0 }, avgPageDurationMs: { current: null, previous: null }, agentFailures: { current: 0, previous: 0 } } } }),
+    });
+  });
+
+  await page.goto('/admin/');
+  await page.getByLabel('管理员 Token').fill('secret-admin-token');
+  await page.getByRole('button', { name: '进入面板' }).click();
+
+  const durationCard = page.locator('[data-metric-card="avgPageDurationMs"]');
+  await expect(durationCard.locator('.stat-value')).toHaveText('暂无有效数据');
+  await expect(durationCard.locator('.stat-change')).toHaveText('暂无可比数据');
+  await expect(durationCard.locator('.stat-change')).toHaveClass(/neutral/);
+  await expect(page.locator('[data-module="overview"] [data-module-unavailable]')).toBeHidden();
+});
+
 test('023-04: 时间窗口切换会携带 today|week|month 并刷新总览数据', async ({ page }) => {
   const requestedPeriods: string[] = [];
 

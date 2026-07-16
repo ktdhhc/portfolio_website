@@ -40,6 +40,46 @@ async function withMockedNow<T>(iso: string, fn: () => Promise<T>): Promise<T> {
   }
 }
 
+async function withMockedUtcNow<T>(iso: string, fn: () => Promise<T>): Promise<T> {
+  const RealDate = Date;
+  const fixed = new RealDate(iso);
+  type MockDateArgs = [] | [string | number | Date] | [number, number, number?, number?, number?, number?, number?];
+  class MockUtcDate extends RealDate {
+    constructor(...args: MockDateArgs) {
+      if (args.length === 0) {
+        super(fixed.toISOString());
+        return;
+      }
+      if (args.length === 1) {
+        const value = args[0];
+        super(typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(value) ? `${value}Z` : value);
+        return;
+      }
+      const [year, month, date, hours, minutes, seconds, milliseconds] = args;
+      super(Date.UTC(year, month, date ?? 1, hours ?? 0, minutes ?? 0, seconds ?? 0, milliseconds ?? 0));
+    }
+    static override now(): number {
+      return fixed.getTime();
+    }
+    override getDay(): number {
+      return super.getUTCDay();
+    }
+    override getDate(): number {
+      return super.getUTCDate();
+    }
+    override setDate(value: number): number {
+      return super.setUTCDate(value);
+    }
+  }
+  // @ts-expect-error test-only Date override
+  globalThis.Date = MockUtcDate;
+  try {
+    return await fn();
+  } finally {
+    globalThis.Date = RealDate;
+  }
+}
+
 async function callStats(
   handler: StatsHandler,
   path: string,
@@ -133,6 +173,102 @@ test('022-02: pages 端点的 week 窗口从周一 00:00 起算（不是滚动 7
     },
   });
 });
+
+test('041-01: UTC Worker 中 week 仍从上海周一 00:00 起算', async () => {
+  const eventStore = new FakeBehaviorEventStore();
+  eventStore.records = [
+    makeBehaviorEvent({ eventType: 'page_view', path: '/monday', createdAt: '2026-07-13T04:00:00.000Z' }),
+    makeBehaviorEvent({ eventType: 'page_view', path: '/sunday', createdAt: '2026-07-12T15:59:59.999Z' }),
+  ];
+
+  const response = await withMockedUtcNow('2026-07-14T04:00:00.000Z', () =>
+    callStats(getPages, '/api/admin/stats/pages?period=week', { BEHAVIOR_EVENT_STORE: eventStore }),
+  );
+
+  await expect(response.json()).resolves.toEqual({
+    ok: true,
+    data: { items: [{ path: '/monday', count: 1 }] },
+  });
+});
+
+test('041-02: UTC Worker 中自定义同一天包含完整上海自然日', async () => {
+  const eventStore = new FakeBehaviorEventStore();
+  eventStore.records = [
+    makeBehaviorEvent({ eventType: 'page_view', path: '/before', createdAt: '2028-02-28T15:59:59.999Z' }),
+    makeBehaviorEvent({ eventType: 'page_view', path: '/start', createdAt: '2028-02-28T16:00:00.000Z' }),
+    makeBehaviorEvent({ eventType: 'page_view', path: '/end-before', createdAt: '2028-02-29T15:59:59.999Z' }),
+    makeBehaviorEvent({ eventType: 'page_view', path: '/next-day', createdAt: '2028-02-29T16:00:00.000Z' }),
+  ];
+
+  const response = await withMockedUtcNow('2028-03-01T04:00:00.000Z', () =>
+    callStats(getPages, '/api/admin/stats/pages?startDate=2028-02-29&endDate=2028-02-29', { BEHAVIOR_EVENT_STORE: eventStore }),
+  );
+
+  await expect(response.json()).resolves.toEqual({
+    ok: true,
+    data: {
+      items: [
+        { path: '/end-before', count: 1 },
+        { path: '/start', count: 1 },
+      ],
+    },
+  });
+});
+
+test('041-03: 非法自定义日期返回稳定的 400 错误', async () => {
+  const response = await callStats(
+    getPages,
+    '/api/admin/stats/pages?startDate=2026-02-30&endDate=2026-03-01',
+    { BEHAVIOR_EVENT_STORE: new FakeBehaviorEventStore() },
+  );
+
+  expect(response.status).toBe(400);
+  await expect(response.json()).resolves.toEqual({ ok: false, reason: 'invalid_date_range' });
+});
+
+test('041-04: 自定义日期缺少任一边界时返回 400', async () => {
+  const response = await callStats(
+    getPages,
+    '/api/admin/stats/pages?startDate=2026-02-28',
+    { BEHAVIOR_EVENT_STORE: new FakeBehaviorEventStore() },
+  );
+
+  expect(response.status).toBe(400);
+  await expect(response.json()).resolves.toEqual({ ok: false, reason: 'invalid_date_range' });
+});
+
+test('041-07: 自定义日期参数为空字符串时返回 400', async () => {
+  const response = await callStats(
+    getPages,
+    '/api/admin/stats/pages?startDate=&endDate=',
+    { BEHAVIOR_EVENT_STORE: new FakeBehaviorEventStore() },
+  );
+
+  expect(response.status).toBe(400);
+  await expect(response.json()).resolves.toEqual({ ok: false, reason: 'invalid_date_range' });
+});
+
+for (const [name, handler, path] of [
+  ['overview', getOverview, '/api/admin/stats/overview'],
+  ['pages', getPages, '/api/admin/stats/pages'],
+  ['projects', getProjects, '/api/admin/stats/projects'],
+  ['agent-summary', getAgentSummary, '/api/admin/stats/agent-summary'],
+  ['issues', getIssues, '/api/admin/stats/issues'],
+] as const) {
+  test(`041-05: ${name} 对非法日期返回统一 400`, async () => {
+    const response = await callStats(
+      handler,
+      `${path}?startDate=2026-03-02&endDate=2026-03-01`,
+      {
+        BEHAVIOR_EVENT_STORE: new FakeBehaviorEventStore(),
+        AGENT_TURN_STORE: new FakeAgentTurnStore(),
+      },
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({ ok: false, reason: 'invalid_date_range' });
+  });
+}
 
 test('022-03: overview 端点 month 窗口按自然月统计，并带上个完整自然月对照', async () => {
   const eventStore = new FakeBehaviorEventStore();
@@ -268,4 +404,66 @@ test('022-07: store 抛错时 stats 端点返回 db_unavailable', async () => {
 
   expect(response.status).toBe(200);
   await expect(response.json()).resolves.toEqual({ ok: false, reason: 'db_unavailable' });
+});
+
+test('044-01: 只有超过五分钟的停留样本时平均值返回 null', async () => {
+  const eventStore = new FakeBehaviorEventStore();
+  eventStore.records = [
+    makeBehaviorEvent({ eventType: 'page_duration', durationMs: 300_001, createdAt: '2026-06-28T10:00:00.000Z' }),
+  ];
+
+  const response = await withMockedNow('2026-06-28T12:00:00.000Z', () =>
+    callStats(getOverview, '/api/admin/stats/overview?period=today', {
+      BEHAVIOR_EVENT_STORE: eventStore,
+      AGENT_TURN_STORE: new FakeAgentTurnStore(),
+    }),
+  );
+  const payload = await response.json() as {
+    data: { metrics: { avgPageDurationMs: { current: number | null; previous: number | null } } };
+  };
+
+  expect(payload.data.metrics.avgPageDurationMs).toEqual({ current: null, previous: null });
+  expect(eventStore.records[0]?.durationMs).toBe(300_001);
+});
+
+test('044-03: 恰好五分钟参与平均值且当前与对照窗口分别过滤', async () => {
+  const eventStore = new FakeBehaviorEventStore();
+  eventStore.records = [
+    makeBehaviorEvent({ eventType: 'page_duration', durationMs: 300_000, createdAt: '2026-06-28T10:00:00.000Z' }),
+    makeBehaviorEvent({ eventType: 'page_duration', durationMs: 300_001, createdAt: '2026-06-28T11:00:00.000Z' }),
+    makeBehaviorEvent({ eventType: 'page_duration', durationMs: 1_000, createdAt: '2026-06-27T10:00:00.000Z' }),
+    makeBehaviorEvent({ eventType: 'page_duration', durationMs: 600_000, createdAt: '2026-06-27T11:00:00.000Z' }),
+  ];
+
+  const response = await withMockedNow('2026-06-28T12:00:00.000Z', () =>
+    callStats(getOverview, '/api/admin/stats/overview?period=today', {
+      BEHAVIOR_EVENT_STORE: eventStore,
+      AGENT_TURN_STORE: new FakeAgentTurnStore(),
+    }),
+  );
+  const payload = await response.json() as {
+    data: { metrics: { avgPageDurationMs: { current: number | null; previous: number | null } } };
+  };
+
+  expect(payload.data.metrics.avgPageDurationMs).toEqual({ current: 300_000, previous: 1_000 });
+  expect(eventStore.records.map((event) => event.durationMs)).toEqual([300_000, 300_001, 1_000, 600_000]);
+});
+
+test('044-04: 负数停留样本不参与平均值', async () => {
+  const eventStore = new FakeBehaviorEventStore();
+  eventStore.records = [
+    makeBehaviorEvent({ eventType: 'page_duration', durationMs: -1, createdAt: '2026-06-28T10:00:00.000Z' }),
+  ];
+
+  const response = await withMockedNow('2026-06-28T12:00:00.000Z', () =>
+    callStats(getOverview, '/api/admin/stats/overview?period=today', {
+      BEHAVIOR_EVENT_STORE: eventStore,
+      AGENT_TURN_STORE: new FakeAgentTurnStore(),
+    }),
+  );
+  const payload = await response.json() as {
+    data: { metrics: { avgPageDurationMs: { current: number | null } } };
+  };
+
+  expect(payload.data.metrics.avgPageDurationMs.current).toBeNull();
 });

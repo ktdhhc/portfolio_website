@@ -2,7 +2,7 @@
 
 import { StoreUnavailableError } from '../../_store/errors';
 import { type AdminEnv, toJsonResponse } from '../_shared';
-import { resolveWindow } from '../_period';
+import { InvalidDateRangeError, resolveWindow } from '../_period';
 import { type StatsResponse, dbUnavailableResponse, getStoresSnapshot, okResponse } from './_shared';
 
 type IssuesItem = {
@@ -35,6 +35,9 @@ export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
     const response: StatsResponse<IssuesData> = okResponse(data);
     return toJsonResponse(response);
   } catch (error) {
+    if (error instanceof InvalidDateRangeError) {
+      return toJsonResponse({ ok: false, reason: 'invalid_date_range' }, 400);
+    }
     if (error instanceof StoreUnavailableError) {
       return toJsonResponse(dbUnavailableResponse());
     }
